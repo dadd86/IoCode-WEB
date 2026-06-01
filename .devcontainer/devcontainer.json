@@ -1,6 +1,6 @@
 {
   "name": "IoCode SOLUTIONS Astro",
-  "dockerComposeFile": ["../../compose.yml"],
+  "dockerComposeFile": ["../compose.yml"],
   "service": "dev",
   "workspaceFolder": "/app",
   "runServices": ["dev"],

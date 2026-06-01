@@ -90,4 +90,5 @@ public/Logo/
 !public/logo/iocode-logo.svg
 !public/logo/3d/
 !public/logo/3d/iocode_solutions_logo_extruded_3d.glb
-
+!.devcontainer/
+!.devcontainer/devcontainer.json
