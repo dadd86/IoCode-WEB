@@ -1,0 +1,31 @@
+.pageHero { padding-block: var(--space-20) var(--space-16); background: linear-gradient(135deg, rgba(56,189,248,.12), rgba(139,92,246,.12)), rgba(3,7,18,.38); border-bottom: 1px solid var(--color-border); }
+.pageHero__content { max-width: 920px; }
+.pageHero h1 { max-width: 950px; font-size: clamp(2.4rem,6vw,5rem); line-height: 1.02; letter-spacing: -.055em; }
+.pageHero p:not(.eyebrow) { max-width: 760px; margin-top: var(--space-5); color: var(--color-muted); font-size: 1.1rem; }
+.serviceGrid, .skillMatrix, .projectGrid { display: grid; gap: var(--space-5); }
+.serviceGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.skillMatrix { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.projectGrid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.serviceCard, .skillBlock, .projectCard, .contactPanel, .contactForm, .timelineItem { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-card); box-shadow: var(--shadow-soft); }
+.serviceCard, .skillBlock, .contactPanel, .contactForm { padding: var(--space-6); }
+.serviceCard h2, .skillBlock h3, .projectCard h2, .contactPanel h2, .timelineItem h2 { margin-bottom: var(--space-3); color: var(--color-primary); }
+.serviceCard p, .skillBlock p, .projectCard p, .contactPanel p, .timelineItem p, .serviceCard li { color: var(--color-muted); }
+.serviceCard ul { margin-top: var(--space-4); padding-left: var(--space-6); }
+.timeline { display: grid; gap: var(--space-5); max-width: 980px; }
+.timelineItem { display: grid; grid-template-columns: auto 1fr; gap: var(--space-5); padding: var(--space-6); }
+.timelineItem > span { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); color: white; font-weight: 900; }
+.projectCard { overflow: hidden; }
+.projectCard__top { padding: var(--space-5); border-bottom: 1px solid var(--color-border); background: linear-gradient(135deg, rgba(56,189,248,.22), rgba(139,92,246,.2)); }
+.projectCard__type { display: inline-flex; border-radius: var(--radius-pill); padding: .25rem .7rem; background: rgba(56,189,248,.12); color: var(--color-primary); font-size: .78rem; font-weight: 900; }
+.projectCard__body { display: grid; gap: var(--space-4); padding: var(--space-5); }
+.tagList, .projectLinks, .pillGroup { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.tag, .pillGroup span { border: 1px solid var(--color-border); border-radius: var(--radius-pill); padding: .35rem .65rem; color: var(--color-muted); background: rgba(255,255,255,.035); font-size: .85rem; font-weight: 800; }
+.projectLinks a, .contactLinks a { color: var(--color-primary); font-weight: 900; }
+.contactGrid { display: grid; grid-template-columns: .9fr 1.1fr; gap: var(--space-8); align-items: start; }
+.contactForm { display: grid; gap: var(--space-4); }
+.contactForm label { font-weight: 800; }
+.formNote { color: var(--color-muted); }
+.contactLinks { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+.contactPanel__logo { width: 220px; margin-bottom: var(--space-6); }
+@media (max-width: 1040px) { .serviceGrid, .skillMatrix, .projectGrid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 760px) { .serviceGrid, .skillMatrix, .projectGrid, .contactGrid, .timelineItem { grid-template-columns: 1fr; } }

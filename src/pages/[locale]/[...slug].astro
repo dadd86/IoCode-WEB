@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Button from "../../components/Button.astro";
+import Hero3D from "../../components/Hero3D.astro";
+import PageHero from "../../components/PageHero.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import SkillCard from "../../components/SkillCard.astro";
+import ContactForm from "../../components/ContactForm.astro";
+import { pageContent } from "../../data/pageContent";
+import { projects } from "../../data/projects";
+import { skillGroups } from "../../data/skills";
+import { ui } from "../../i18n/ui";
+import { getLocalizedPath, getStaticRouteParams } from "../../i18n/routes";
+import type { Locale } from "../../i18n/config";
+import type { RouteKey } from "../../i18n/routes";
+
+export function getStaticPaths() {
+  return getStaticRouteParams();
+}
+
+const { locale, routeKey } = Astro.props as { locale: Locale; routeKey: RouteKey };
+const content = pageContent[locale][routeKey];
+const labels = ui[locale];
+---
+
+<BaseLayout locale={locale} routeKey={routeKey} title={content.title} description={content.description}>
+  {routeKey === "home" ? (
+    <>
+      <section class="hero3d">
+        <div class="container hero3d__grid">
+          <div class="hero3d__content">
+            <p class="eyebrow">{content.eyebrow}</p>
+            <h1>{content.heading}</h1>
+            <p class="hero3d__text">{content.intro}</p>
+            <div class="buttonGroup">
+              <Button href={getLocalizedPath("contact", locale)} label={labels.requestProposal} />
+              <Button href={getLocalizedPath("projects", locale)} label={labels.viewProjects} variant="secondary" />
+            </div>
+          </div>
+          <Hero3D locale={locale} />
+        </div>
+      </section>
+      {content.cards && <CardGrid cards={content.cards} />}
+    </>
+  ) : (
+    <PageHero eyebrow={content.eyebrow} title={content.heading} text={content.intro} />
+  )}
+
+  {routeKey === "services" || routeKey === "plc" || routeKey === "robotics" ? (
+    content.cards && <CardGrid cards={content.cards} />
+  ) : null}
+
+  {routeKey === "process" ? (
+    content.cards && <CardGrid cards={content.cards} variant="timeline" />
+  ) : null}
+
+  {routeKey === "projects" ? (
+    <section class="section">
+      <div class="container projectGrid">
+        {projects[locale].map((project) => <ProjectCard project={project} labels={labels} />)}
+      </div>
+    </section>
+  ) : null}
+
+  {routeKey === "skills" ? (
+    <section class="section">
+      <div class="container skillMatrix">
+        {skillGroups[locale].map((skill) => <SkillCard title={skill.title} text={skill.text} items={skill.items} />)}
+      </div>
+    </section>
+  ) : null}
+
+  {routeKey === "contact" ? (
+    <section class="section">
+      <div class="container">
+        <ContactForm locale={locale} />
+      </div>
+    </section>
+  ) : null}
+</BaseLayout>

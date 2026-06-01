@@ -1,0 +1,20 @@
+---
+import Navigation from "./Navigation.astro";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import { siteConfig } from "../data/site";
+import type { Locale } from "../i18n/config";
+import type { RouteKey } from "../i18n/routes";
+
+type Props = { locale: Locale; activeKey: RouteKey };
+const { locale, activeKey } = Astro.props;
+---
+
+<header class="siteHeader">
+  <nav class="navbar container" aria-label="Main navigation">
+    <a class="brand" href={`/${locale}/`} aria-label="IoCode SOLUTIONS">
+      <img class="brand__logo" src={siteConfig.logoPath} alt="IoCode SOLUTIONS" />
+    </a>
+    <Navigation locale={locale} activeKey={activeKey} />
+    <LanguageSwitcher locale={locale} activeKey={activeKey} />
+  </nav>
+</header>

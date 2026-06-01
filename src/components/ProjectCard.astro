@@ -1,0 +1,28 @@
+---
+import type { Project } from "../data/projects";
+
+type Props = {
+  project: Project;
+  labels: Record<string, string>;
+};
+const { project, labels } = Astro.props;
+---
+
+<article class="projectCard">
+  <div class="projectCard__top">
+    <span class="projectCard__type">{project.type}</span>
+  </div>
+  <div class="projectCard__body">
+    <h2>{project.title}</h2>
+    <p>{project.summary}</p>
+    <div class="tagList">
+      {project.technologies.map((technology) => <span class="tag">{technology}</span>)}
+    </div>
+    <p><strong>{labels.professionalValue}</strong>{project.value}</p>
+    {project.caution && <p class="projectNote"><strong>{labels.caution}</strong>{project.caution}</p>}
+    <div class="projectLinks">
+      {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">{labels.viewCode}</a>}
+      {project.demoUrl && <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">{labels.viewDemo}</a>}
+    </div>
+  </div>
+</article>

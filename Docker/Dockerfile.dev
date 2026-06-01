@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1.7
+
+FROM node:lts-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=development
+ENV ASTRO_TELEMETRY_DISABLED=1
+
+RUN apk add --no-cache gcompat \
+  && node --version \
+  && npm --version
+
+COPY package*.json ./
+
+RUN test -f package.json || { echo "ERROR: package.json no existe en la raiz del proyecto." >&2; exit 64; }
+
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+COPY . .
+
+EXPOSE 4321
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

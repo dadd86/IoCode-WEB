@@ -1,0 +1,29 @@
+---
+import { siteConfig } from "../data/site";
+import type { Locale } from "../i18n/config";
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+const panels = {
+  es: [["PLC", "Automatizacion industrial"], ["ROBOTS", "Robotica y motion"], ["SOFTWARE", "Datos y aplicaciones"]],
+  en: [["PLC", "Industrial automation"], ["ROBOTS", "Robotics and motion"], ["SOFTWARE", "Data and applications"]],
+  de: [["SPS", "Industrielle Automatisierung"], ["ROBOTIK", "Robotik und Motion"], ["SOFTWARE", "Daten und Anwendungen"]]
+};
+---
+
+<div class="hero3d__scene" id="hero3dScene" aria-label="IoCode SOLUTIONS 3D logo" data-model-url={siteConfig.logo3dPath}>
+  <canvas class="hero3d__canvas" id="hero3dCanvas" aria-hidden="true"></canvas>
+  <div class="hero3d__fallback" aria-hidden="true">
+    <img src={siteConfig.logoPath} alt="" />
+  </div>
+  {panels[locale].map(([label, text], index) => (
+    <div class={`hero3d__panel hero3d__panel--${index + 1}`}>
+      <span>{label}</span>
+      <strong>{text}</strong>
+    </div>
+  ))}
+  <div class="hero3d__gridLines" aria-hidden="true"></div>
+</div>
+<script>
+  import "../scripts/hero3d";
+</script>

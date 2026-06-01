@@ -1,0 +1,93 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.example.json
+
+# node / astro
+node_modules/
+dist/
+.astro/
+.output/
+.cache/
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.*
+!.env.example
+!Docker/.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+private/
+keys/
+
+# docker local
+Docker/.env
+docker-compose.override.yml
+compose.override.yml
+.docker/
+docker-data/
+docker-volumes/
+
+# logs / reports
+logs/
+*.log
+coverage/
+playwright-report/
+test-results/
+lighthouse-report/
+reports/
+
+# archives and generated deliverables
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+releases/
+artifacts/
+exports/
+
+# backups and dumps
+backups/
+backup/
+dumps/
+dump/
+database/
+db/
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+
+# do not commit internal/source assets
+Skills/
+Logo/
+public/Logo/
+*.eps
+*.psd
+*.ai
+*.sketch
+
+# keep final assets
+!public/
+!public/logo/
+!public/logo/iocode-logo.svg
+!public/logo/3d/
+!public/logo/3d/iocode_solutions_logo_extruded_3d.glb
+

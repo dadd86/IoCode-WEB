@@ -1,0 +1,112 @@
+---
+import { siteConfig } from "../data/site";
+import type { Locale } from "../i18n/config";
+import { ui } from "../i18n/ui";
+
+type Props = {
+  locale: Locale;
+};
+
+const { locale } = Astro.props;
+const labels = ui[locale];
+
+const options = {
+  es: [
+    "Aplicación web",
+    "Aplicación Android",
+    "Backend / base de datos",
+    "PLC / automatización industrial",
+    "Robótica industrial",
+    "IoT / automatización",
+    "Otro"
+  ],
+  en: [
+    "Web application",
+    "Android application",
+    "Backend / database",
+    "PLC / industrial automation",
+    "Industrial robotics",
+    "IoT / automation",
+    "Other"
+  ],
+  de: [
+    "Webanwendung",
+    "Android-Anwendung",
+    "Backend / Datenbank",
+    "SPS / industrielle Automatisierung",
+    "Industrierobotik",
+    "IoT / Automatisierung",
+    "Andere"
+  ]
+};
+---
+
+<div class="contactGrid">
+  <aside class="contactPanel">
+    <img class="contactPanel__logo" src={siteConfig.logoPath} alt="IoCode SOLUTIONS" />
+    <h2>IoCode SOLUTIONS</h2>
+    <p>{labels.contactNote}</p>
+
+    <div class="contactLinks">
+      <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+      <a href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer">{labels.github}</a>
+      <a href={siteConfig.linkedInUrl} target="_blank" rel="noopener noreferrer">{labels.linkedin}</a>
+    </div>
+  </aside>
+
+  <form class="contactForm" id="contactForm" data-contact-email={siteConfig.email}>
+    <p class="formNote">{labels.contactNote}</p>
+
+    <label for="nombre">{labels.contactName}</label>
+    <input class="input" id="nombre" type="text" name="nombre" autocomplete="name" required />
+
+    <label for="correo">{labels.contactEmail}</label>
+    <input class="input" id="correo" type="email" name="correo" autocomplete="email" required />
+
+    <label for="tipoProyecto">{labels.contactProjectType}</label>
+    <select class="input" id="tipoProyecto" name="tipoProyecto" required>
+      <option value="">{labels.selectOption}</option>
+      {options[locale].map((option) => <option value={option}>{option}</option>)}
+    </select>
+
+    <label for="mensaje">{labels.contactMessage}</label>
+    <textarea class="input" id="mensaje" name="mensaje" rows="6" required></textarea>
+
+    <button class="button button--primary button--full" type="submit">{labels.contactSubmit}</button>
+  </form>
+</div>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-contact-email]");
+
+  if (form) {
+    form.addEventListener("submit", (event: SubmitEvent) => {
+      event.preventDefault();
+
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      const email = form.dataset.contactEmail;
+
+      if (!email) {
+        console.error("Contact email is not configured.");
+        return;
+      }
+
+      const data = new FormData(form);
+      const projectType = String(data.get("tipoProyecto") || "Proyecto");
+      const subject = encodeURIComponent(`IoCode SOLUTIONS - ${projectType}`);
+
+      const body = encodeURIComponent([
+        `Nombre: ${String(data.get("nombre") || "")}`,
+        `Correo: ${String(data.get("correo") || "")}`,
+        `Tipo: ${projectType}`,
+        "",
+        String(data.get("mensaje") || "")
+      ].join("\n"));
+
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    });
+  }
+</script>

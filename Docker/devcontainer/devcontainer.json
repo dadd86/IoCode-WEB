@@ -1,0 +1,27 @@
+{
+  "name": "IoCode SOLUTIONS Astro",
+  "dockerComposeFile": ["../../compose.yml"],
+  "service": "dev",
+  "workspaceFolder": "/app",
+  "runServices": ["dev"],
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "forwardPorts": [4321],
+  "postCreateCommand": "npm ci || npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "astro-build.astro-vscode",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "astro.typescript.tsdk": "node_modules/typescript/lib",
+        "editor.formatOnSave": true,
+        "files.eol": "\n"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+---
+type Props = { title: string; text: string; items?: string[] };
+const { title, text, items = [] } = Astro.props;
+---
+
+<article class="skillBlock">
+  <h3>{title}</h3>
+  <p>{text}</p>
+  {items.length > 0 && (
+    <div class="pillGroup">
+      {items.map((item) => <span>{item}</span>)}
+    </div>
+  )}
+</article>

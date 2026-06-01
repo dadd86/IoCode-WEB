@@ -1,0 +1,24 @@
+---
+type Card = { title: string; text: string; items?: string[] };
+type Props = { cards: Card[]; variant?: "cards" | "timeline" };
+const { cards, variant = "cards" } = Astro.props;
+---
+
+<section class="section">
+  <div class={`container ${variant === "timeline" ? "timeline" : "serviceGrid"}`}>
+    {cards.map((card, index) => (
+      <article class={variant === "timeline" ? "timelineItem" : "serviceCard"}>
+        {variant === "timeline" && <span>{String(index + 1).padStart(2, "0")}</span>}
+        <div>
+          <h2>{card.title}</h2>
+          <p>{card.text}</p>
+          {card.items && card.items.length > 0 && (
+            <ul>
+              {card.items.map((item) => <li>{item}</li>)}
+            </ul>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
