@@ -876,8 +876,3 @@ No publicar si ocurre cualquiera:
 
 ```
 ```
-genera el contenido de los siguiente archvios actualizados, teniendo en cuenta los skills y el proyecto: 
-docs/ARCHITECTURE.md 
-docs/I18N.md 
-docs/MAINTENANCE.md 
-docs/MIGRATION_FROM_STATIC_HTML.md
