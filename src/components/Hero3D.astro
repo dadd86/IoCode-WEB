@@ -2,28 +2,70 @@
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 
-type Props = { locale: Locale };
+type Props = {
+  locale: Locale;
+};
+
+type HeroPanel = {
+  label: string;
+  text: string;
+  priority: "primary" | "secondary";
+};
+
 const { locale } = Astro.props;
-const panels = {
-  es: [["PLC", "Automatizacion industrial"], ["ROBOTS", "Robotica y motion"], ["SOFTWARE", "Datos y aplicaciones"]],
-  en: [["PLC", "Industrial automation"], ["ROBOTS", "Robotics and motion"], ["SOFTWARE", "Data and applications"]],
-  de: [["SPS", "Industrielle Automatisierung"], ["ROBOTIK", "Robotik und Motion"], ["SOFTWARE", "Daten und Anwendungen"]]
+
+const panels: Record<Locale, HeroPanel[]> = {
+  es: [
+    { label: "PLC", text: "Automatización industrial", priority: "primary" },
+    { label: "ROBOTS", text: "Robótica y motion", priority: "primary" },
+    { label: "SOFTWARE", text: "Datos y aplicaciones", priority: "primary" },
+    { label: "HMI", text: "Diagnóstico y operación", priority: "secondary" },
+    { label: "IoT", text: "Sensores y trazabilidad", priority: "secondary" },
+    { label: "DATA", text: "Industria 4.0", priority: "secondary" }
+  ],
+  en: [
+    { label: "PLC", text: "Industrial automation", priority: "primary" },
+    { label: "ROBOTS", text: "Robotics and motion", priority: "primary" },
+    { label: "SOFTWARE", text: "Data and applications", priority: "primary" },
+    { label: "HMI", text: "Diagnostics and operation", priority: "secondary" },
+    { label: "IoT", text: "Sensors and traceability", priority: "secondary" },
+    { label: "DATA", text: "Industry 4.0", priority: "secondary" }
+  ],
+  de: [
+    { label: "SPS", text: "Industrielle Automatisierung", priority: "primary" },
+    { label: "ROBOTIK", text: "Robotik und Motion", priority: "primary" },
+    { label: "SOFTWARE", text: "Daten und Anwendungen", priority: "primary" },
+    { label: "HMI", text: "Diagnose und Bedienung", priority: "secondary" },
+    { label: "IoT", text: "Sensoren und Rückverfolgbarkeit", priority: "secondary" },
+    { label: "DATA", text: "Industrie 4.0", priority: "secondary" }
+  ]
 };
 ---
 
-<div class="hero3d__scene" id="hero3dScene" aria-label="IoCode SOLUTIONS 3D logo" data-model-url={siteConfig.logo3dPath}>
+<div
+  class="hero3d__scene"
+  id="hero3dScene"
+  aria-label="Logo 3D de IoCode SOLUTIONS"
+  data-model-url={siteConfig.logo3dPath}
+>
   <canvas class="hero3d__canvas" id="hero3dCanvas" aria-hidden="true"></canvas>
+
   <div class="hero3d__fallback" aria-hidden="true">
     <img src={siteConfig.logoPath} alt="" />
   </div>
-  {panels[locale].map(([label, text], index) => (
-    <div class={`hero3d__panel hero3d__panel--${index + 1}`}>
-      <span>{label}</span>
-      <strong>{text}</strong>
+
+  {panels[locale].map((panel, index) => (
+    <div
+      class={`hero3d__panel hero3d__panel--${index + 1} hero3d__panel--${panel.priority}`}
+    >
+      <span>{panel.label}</span>
+      <strong>{panel.text}</strong>
     </div>
   ))}
+
   <div class="hero3d__gridLines" aria-hidden="true"></div>
 </div>
+
 <script>
   import "../scripts/hero3d";
 </script>
