@@ -1,0 +1,69 @@
+---
+import Hero3D from "./Hero3D.astro";
+import Button from "./Button.astro";
+import type { Locale } from "../i18n/config";
+import type { RouteKey } from "../i18n/routes";
+import { getLocalizedPath } from "../i18n/routes";
+
+type HeroAction = {
+  label: string;
+  href: string;
+  variant?: "primary" | "secondary" | "ghost";
+};
+
+type HomeHeroContent = {
+  eyebrow?: string;
+  heading: string;
+  intro: string;
+  primaryAction?: string;
+  secondaryAction?: string;
+};
+
+type Props = {
+  locale: Locale;
+  content: HomeHeroContent;
+};
+
+const { locale, content } = Astro.props;
+
+const actions: HeroAction[] = [
+  content.primaryAction
+    ? {
+        label: content.primaryAction,
+        href: getLocalizedPath("contact" as RouteKey, locale),
+        variant: "primary"
+      }
+    : null,
+  content.secondaryAction
+    ? {
+        label: content.secondaryAction,
+        href: getLocalizedPath("projects" as RouteKey, locale),
+        variant: "secondary"
+      }
+    : null
+].filter(Boolean) as HeroAction[];
+---
+
+<section class="hero3d" aria-labelledby="homeHeroTitle">
+  <div class="hero3d__grid">
+    <div class="hero3d__content">
+      {content.eyebrow && <p class="eyebrow">{content.eyebrow}</p>}
+
+      <h1 id="homeHeroTitle">{content.heading}</h1>
+
+      <p class="hero3d__text">{content.intro}</p>
+
+      {actions.length > 0 && (
+        <div class="buttonGroup" aria-label="Acciones principales">
+          {actions.map((action) => (
+            <Button href={action.href} variant={action.variant ?? "primary"}>
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <Hero3D locale={locale} />
+  </div>
+</section>
