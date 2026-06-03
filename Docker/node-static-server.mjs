@@ -60,6 +60,7 @@ function resolveRequestPath(requestUrl) {
   const safePath = normalize(decodedPath).replace(/^[/\\]+/, "");
 
   let filePath = resolve(join(rootDir, safePath));
+  let statusCode = 200;
 
   if (!isInsideRoot(filePath)) {
     return null;
@@ -74,6 +75,7 @@ function resolveRequestPath(requestUrl) {
   }
 
   if (!existsSync(filePath)) {
+    statusCode = 404;
     filePath = resolve(join(rootDir, "404.html"));
   }
 
@@ -81,37 +83,82 @@ function resolveRequestPath(requestUrl) {
     return null;
   }
 
-  return filePath;
+  return { filePath, statusCode };
+}
+
+function sendPlainText(response, statusCode, message) {
+  response.writeHead(statusCode, { "Content-Type": "text/plain; charset=utf-8" });
+  response.end(message);
 }
 
 const server = createServer((request, response) => {
   setSecurityHeaders(response);
 
+  if (!request.url) {
+    sendPlainText(response, 400, "Bad request");
+    return;
+  }
+
+  if (!request.method || !["GET", "HEAD"].includes(request.method)) {
+    response.setHeader("Allow", "GET, HEAD");
+    sendPlainText(response, 405, "Method not allowed");
+    return;
+  }
+
   if (request.url === "/health") {
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+
+    if (request.method === "HEAD") {
+      response.end();
+      return;
+    }
+
     response.end(JSON.stringify({ status: "ok" }));
     return;
   }
 
-  const filePath = resolveRequestPath(request.url || "/");
+  let resolvedPath;
 
-  if (!filePath) {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end("Not found");
+  try {
+    resolvedPath = resolveRequestPath(request.url);
+  } catch {
+    sendPlainText(response, 400, "Bad request");
     return;
   }
 
+  if (!resolvedPath) {
+    sendPlainText(response, 404, "Not found");
+    return;
+  }
+
+  const { filePath, statusCode } = resolvedPath;
   const extension = extname(filePath);
   const contentType = mimeTypes[extension] || "application/octet-stream";
 
-  if (isAssetPath(filePath)) {
-    response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-  } else {
-    response.setHeader("Cache-Control", "no-cache");
+  response.setHeader(
+    "Cache-Control",
+    statusCode === 200 && isAssetPath(filePath)
+      ? "public, max-age=31536000, immutable"
+      : "no-cache"
+  );
+
+  response.writeHead(statusCode, { "Content-Type": contentType });
+
+  if (request.method === "HEAD") {
+    response.end();
+    return;
   }
 
-  response.writeHead(200, { "Content-Type": contentType });
-  createReadStream(filePath).pipe(response);
+  createReadStream(filePath)
+    .on("error", () => {
+      if (!response.headersSent) {
+        sendPlainText(response, 500, "Internal server error");
+        return;
+      }
+
+      response.destroy();
+    })
+    .pipe(response);
 });
 
 server.listen(port, "0.0.0.0", () => {

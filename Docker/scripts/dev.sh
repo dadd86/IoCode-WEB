@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 set -eu
-docker compose up --build
+
+docker compose up --build dev

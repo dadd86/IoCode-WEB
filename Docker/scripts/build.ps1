@@ -1,4 +1,3 @@
-#!/usr/bin/env sh
-set -eu
+$ErrorActionPreference = "Stop"
 
 docker compose --profile prod build web

@@ -6,16 +6,16 @@ export const ui = {
     viewProjects: "Ver proyectos",
     professionalValue: "Valor profesional: ",
     caution: "Cautela: ",
-    viewCode: "Ver codigo",
+    viewCode: "Ver código",
     viewDemo: "Ver demo",
     contactName: "Nombre",
     contactEmail: "Correo",
     contactProjectType: "Tipo de proyecto",
     contactMessage: "Mensaje",
     contactSubmit: "Preparar correo",
-    contactNote: "No escribas contrasenas, tokens, datos bancarios ni informacion sensible.",
-    selectOption: "Selecciona una opcion",
-    github: "GitHub publico",
+    contactNote: "No escribas contraseñas, tokens, datos bancarios ni información sensible.",
+    selectOption: "Selecciona una opción",
+    github: "GitHub público",
     linkedin: "LinkedIn profesional"
   },
   en: {
@@ -47,9 +47,9 @@ export const ui = {
     contactProjectType: "Projekttyp",
     contactMessage: "Nachricht",
     contactSubmit: "E-Mail vorbereiten",
-    contactNote: "Bitte keine Passwoerter, Tokens, Bankdaten oder sensiblen Informationen eingeben.",
-    selectOption: "Option auswaehlen",
-    github: "Oeffentliches GitHub",
+    contactNote: "Bitte keine Passwörter, Tokens, Bankdaten oder sensiblen Informationen eingeben.",
+    selectOption: "Option auswählen",
+    github: "Öffentliches GitHub",
     linkedin: "Professionelles LinkedIn"
   }
 } satisfies Record<Locale, Record<string, string>>;

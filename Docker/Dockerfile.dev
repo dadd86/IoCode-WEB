@@ -21,4 +21,4 @@ COPY . .
 
 EXPOSE 4321
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["sh", "-c", "if [ ! -d node_modules/astro ]; then if [ -f package-lock.json ]; then npm ci; else npm install; fi; fi; npm run dev -- --host 0.0.0.0"]

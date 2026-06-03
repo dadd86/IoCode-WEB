@@ -1,0 +1,82 @@
+---
+import Button from "./Button.astro";
+import { phase1Sections } from "../data/phase1Sections";
+import { getLocalizedPath } from "../i18n/routes";
+import type { Locale } from "../i18n/config";
+
+type Props = {
+  locale: Locale;
+  variant: "home" | "services";
+};
+
+const { locale, variant } = Astro.props as Props;
+const content = phase1Sections[locale][variant];
+---
+
+<section class={`businessSection businessSection--${variant}`}>
+  <div class="container businessSection__content">
+    <div class="businessSection__header">
+      <p class="eyebrow">{content.eyebrow}</p>
+      <h2>{content.title}</h2>
+      <p>{content.text}</p>
+    </div>
+
+    <div class="outcomeBlock" aria-labelledby={`${variant}OutcomesTitle`}>
+      <h3 id={`${variant}OutcomesTitle`}>{content.outcomesTitle}</h3>
+
+      <div class="outcomeStrip">
+        {content.outcomes.map((outcome) => (
+          <article class="outcomeItem">
+            <span>{outcome.label}</span>
+            <div>
+              <h4>{outcome.title}</h4>
+              <p>{outcome.text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="businessSection__header businessSection__header--compact">
+      <h3>{content.pathsTitle}</h3>
+      <p>{content.pathsText}</p>
+    </div>
+
+    <div class="servicePathGrid">
+      {content.servicePaths.map((path) => (
+        <article class="servicePathCard">
+          <div>
+            <h3>{path.title}</h3>
+            <p>{path.text}</p>
+          </div>
+
+          <ul aria-label={path.title}>
+            {path.points.map((point) => <li>{point}</li>)}
+          </ul>
+
+          <Button
+            href={getLocalizedPath(path.routeKey, locale)}
+            label={path.ctaLabel}
+            variant="ghost"
+          />
+        </article>
+      ))}
+    </div>
+
+    <div class="evidencePanel">
+      <div class="businessSection__header businessSection__header--compact">
+        <h3>{content.evidenceTitle}</h3>
+        <p>{content.evidenceText}</p>
+      </div>
+
+      <div class="evidenceGrid">
+        {content.evidence.map((item) => (
+          <article class="evidenceCard">
+            <h4>{item.title}</h4>
+            <p>{item.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

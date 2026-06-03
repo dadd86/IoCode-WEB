@@ -1,0 +1,119 @@
+---
+import Button from "./Button.astro";
+import { processSections } from "../data/processSections";
+import { getLocalizedPath } from "../i18n/routes";
+import type { Locale } from "../i18n/config";
+
+type Props = {
+  locale: Locale;
+};
+
+const { locale } = Astro.props as Props;
+const content = processSections[locale];
+---
+
+<section class="processHero" aria-labelledby="processHeroTitle">
+  <div class="container processHero__grid">
+    <div class="processHero__content">
+      <p class="eyebrow">{content.hero.eyebrow}</p>
+      <h1 id="processHeroTitle">{content.hero.title}</h1>
+      <p>{content.hero.text}</p>
+    </div>
+
+    <aside class="processMethodCard" aria-label={content.methodCard.label}>
+      <p class="eyebrow">{content.methodCard.label}</p>
+      <h2>{content.methodCard.title}</h2>
+      <p>{content.methodCard.text}</p>
+
+      <ol class="processFlow" aria-label={content.methodCard.title}>
+        {content.methodCard.flow.map((item, index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{item}</strong>
+          </li>
+        ))}
+      </ol>
+    </aside>
+  </div>
+</section>
+
+<section class="processSection" aria-labelledby="processTimelineTitle">
+  <div class="container processSection__content">
+    <div class="processSection__header">
+      <p class="eyebrow">{content.timeline.eyebrow}</p>
+      <h2 id="processTimelineTitle">{content.timeline.title}</h2>
+      <p>{content.timeline.text}</p>
+    </div>
+
+    <ol class="processTimeline">
+      {content.timeline.phases.map((phase) => (
+        <li class="processPhase">
+          <article>
+            <div class="processPhase__number" aria-hidden="true">{phase.number}</div>
+
+            <div class="processPhase__body">
+              <h3>{phase.title}</h3>
+
+              <div class="processPhase__block">
+                <strong>{phase.objectiveLabel}</strong>
+                <p>{phase.objective}</p>
+              </div>
+
+              <div class="processPhase__block">
+                <strong>{phase.deliverablesLabel}</strong>
+                <ul>
+                  {phase.deliverables.map((deliverable) => <li>{deliverable}</li>)}
+                </ul>
+              </div>
+
+              <div class="processPhase__block processPhase__block--value">
+                <strong>{phase.valueLabel}</strong>
+                <p>{phase.value}</p>
+              </div>
+            </div>
+          </article>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<section class="processSection processSection--risk" aria-labelledby="processRiskTitle">
+  <div class="container processRiskPanel">
+    <div class="processSection__header processSection__header--compact">
+      <p class="eyebrow">{content.riskControls.eyebrow}</p>
+      <h2 id="processRiskTitle">{content.riskControls.title}</h2>
+      <p>{content.riskControls.text}</p>
+    </div>
+
+    <div class="processRiskGrid">
+      {content.riskControls.items.map((item) => (
+        <article class="processRiskCard">
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="processCta" aria-labelledby="processCtaTitle">
+  <div class="container processCta__panel">
+    <div>
+      <h2 id="processCtaTitle">{content.cta.title}</h2>
+      <p>{content.cta.text}</p>
+    </div>
+
+    <div class="buttonGroup">
+      <Button
+        href={getLocalizedPath(content.cta.primaryRouteKey, locale)}
+        label={content.cta.primaryLabel}
+      />
+      <Button
+        href={getLocalizedPath(content.cta.secondaryRouteKey, locale)}
+        label={content.cta.secondaryLabel}
+        variant="secondary"
+      />
+    </div>
+  </div>
+</section>

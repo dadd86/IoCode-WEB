@@ -18,10 +18,116 @@ const { locale, routeKey, title, description } = Astro.props;
 const alternatePaths = getAlternatePaths(routeKey);
 const canonicalPath = getLocalizedPath(routeKey, locale);
 const canonicalUrl = `${siteConfig.url}${canonicalPath}`;
-const skipText = {
+
+const skipText: Record<Locale, string> = {
   es: "Saltar al contenido principal",
   en: "Skip to main content",
   de: "Zum Hauptinhalt springen"
+};
+
+const ogLocale: Record<Locale, string> = {
+  es: "es_ES",
+  en: "en_US",
+  de: "de_DE"
+};
+
+const structuredDataGraph: Array<Record<string, unknown>> = [
+  {
+    "@type": "Organization",
+    "@id": `${siteConfig.url}/#organization`,
+    name: siteConfig.name,
+    legalName: siteConfig.legalName,
+    url: siteConfig.url,
+    email: siteConfig.email,
+    logo: `${siteConfig.url}${siteConfig.logoPath}`,
+    description: siteConfig.businessDescription[locale],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: siteConfig.location.city,
+      addressRegion: siteConfig.location.region,
+      addressCountry: siteConfig.location.country
+    },
+    sameAs: siteConfig.socialLinks
+  },
+  {
+    "@type": "ProfessionalService",
+    "@id": `${siteConfig.url}/#professional-service`,
+    name: siteConfig.name,
+    legalName: siteConfig.legalName,
+    url: siteConfig.url,
+    email: siteConfig.email,
+    image: `${siteConfig.url}${siteConfig.logoPath}`,
+    slogan: siteConfig.tagline[locale],
+    description,
+    serviceType: siteConfig.serviceTypes[locale],
+    areaServed: [
+      siteConfig.location.city,
+      siteConfig.location.region,
+      siteConfig.location.country,
+      "European Union"
+    ],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: siteConfig.location.city,
+      addressRegion: siteConfig.location.region,
+      addressCountry: siteConfig.location.country
+    },
+    sameAs: siteConfig.socialLinks
+  },
+  {
+    "@type": "WebSite",
+    "@id": `${siteConfig.url}/#website`,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    inLanguage: locale,
+    publisher: {
+      "@id": `${siteConfig.url}/#organization`
+    }
+  },
+  {
+    "@type": "WebPage",
+    "@id": `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: title,
+    description,
+    inLanguage: locale,
+    isPartOf: {
+      "@id": `${siteConfig.url}/#website`
+    },
+    about: {
+      "@id": `${siteConfig.url}/#professional-service`
+    }
+  }
+];
+
+if (routeKey === "contact") {
+  structuredDataGraph.push({
+    "@type": "Person",
+    "@id": `${siteConfig.url}/#contact-person`,
+    name: siteConfig.contactPerson.name,
+    alternateName: siteConfig.contactPerson.shortName,
+    jobTitle: siteConfig.contactPerson.role[locale],
+    description: siteConfig.contactPerson.description[locale],
+    worksFor: {
+      "@id": `${siteConfig.url}/#organization`
+    },
+    sameAs: [
+      siteConfig.contactPerson.links.linkedin,
+      siteConfig.contactPerson.links.github
+    ],
+    knowsAbout: siteConfig.contactPerson.knowsAbout[locale],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: siteConfig.location.city,
+      addressRegion: siteConfig.location.region,
+      addressCountry: siteConfig.location.country
+    }
+  });
+}
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": structuredDataGraph
 };
 ---
 
@@ -32,17 +138,27 @@ const skipText = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang="es" href={`${siteConfig.url}${alternatePaths.es}`} />
     <link rel="alternate" hreflang="en" href={`${siteConfig.url}${alternatePaths.en}`} />
     <link rel="alternate" hreflang="de" href={`${siteConfig.url}${alternatePaths.de}`} />
     <link rel="alternate" hreflang="x-default" href={`${siteConfig.url}${alternatePaths.es}`} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
     <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={ogLocale[locale]} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
     <a class="skipLink" href="#contenido">{skipText[locale]}</a>

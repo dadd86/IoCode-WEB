@@ -24,24 +24,25 @@ type Props = {
   content: HomeHeroContent;
 };
 
-const { locale, content } = Astro.props;
+const { locale, content } = Astro.props as Props;
 
-const actions: HeroAction[] = [
-  content.primaryAction
-    ? {
-        label: content.primaryAction,
-        href: getLocalizedPath("contact" as RouteKey, locale),
-        variant: "primary"
-      }
-    : null,
-  content.secondaryAction
-    ? {
-        label: content.secondaryAction,
-        href: getLocalizedPath("projects" as RouteKey, locale),
-        variant: "secondary"
-      }
-    : null
-].filter(Boolean) as HeroAction[];
+const actions: HeroAction[] = [];
+
+if (content.primaryAction) {
+  actions.push({
+    label: content.primaryAction,
+    href: getLocalizedPath("contact" as RouteKey, locale),
+    variant: "primary"
+  });
+}
+
+if (content.secondaryAction) {
+  actions.push({
+    label: content.secondaryAction,
+    href: getLocalizedPath("projects" as RouteKey, locale),
+    variant: "secondary"
+  });
+}
 ---
 
 <section class="hero3d" aria-labelledby="homeHeroTitle">
@@ -56,9 +57,11 @@ const actions: HeroAction[] = [
       {actions.length > 0 && (
         <div class="buttonGroup" aria-label="Acciones principales">
           {actions.map((action) => (
-            <Button href={action.href} variant={action.variant ?? "primary"}>
-              {action.label}
-            </Button>
+            <Button
+              href={action.href}
+              label={action.label}
+              variant={action.variant ?? "primary"}
+            />
           ))}
         </div>
       )}

@@ -1,2 +1,3 @@
 $ErrorActionPreference = "Stop"
-docker compose up --build
+
+docker compose up --build dev

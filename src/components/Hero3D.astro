@@ -8,7 +8,7 @@ type Props = {
   locale: Locale;
 };
 
-const { locale } = Astro.props;
+const { locale } = Astro.props as Props;
 
 const panels = getHeroPanels(locale).map((panel) => ({
   ...panel,

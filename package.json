@@ -8,7 +8,9 @@
     "check": "astro check",
     "build": "astro build",
     "preview": "astro preview",
-    "audit:prod": "npm audit --omit=dev"
+    "qa": "npm run check && npm run build && npm run audit:prod",
+    "audit:prod": "npm audit --omit=dev",
+    "audit:all": "npm audit"
   },
   "dependencies": {
     "astro": "6.4.2",

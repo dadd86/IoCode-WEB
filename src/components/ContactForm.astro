@@ -7,51 +7,120 @@ type Props = {
   locale: Locale;
 };
 
-const { locale } = Astro.props;
+const { locale } = Astro.props as Props;
 const labels = ui[locale];
+const contactPerson = siteConfig.contactPerson;
 
-const options = {
+const options: Record<Locale, string[]> = {
   es: [
-    "Aplicación web",
-    "Aplicación Android",
-    "Backend / base de datos",
-    "PLC / automatización industrial",
+    "Automatización PLC / HMI",
     "Robótica industrial",
-    "IoT / automatización",
+    "Industria 4.0 / IoT",
+    "Software industrial",
+    "ERP / bases de datos",
+    "Soporte técnico",
     "Otro"
   ],
   en: [
-    "Web application",
-    "Android application",
-    "Backend / database",
-    "PLC / industrial automation",
+    "PLC / HMI automation",
     "Industrial robotics",
-    "IoT / automation",
+    "Industry 4.0 / IoT",
+    "Industrial software",
+    "ERP / databases",
+    "Technical support",
     "Other"
   ],
   de: [
-    "Webanwendung",
-    "Android-Anwendung",
-    "Backend / Datenbank",
-    "SPS / industrielle Automatisierung",
+    "SPS / HMI-Automatisierung",
     "Industrierobotik",
-    "IoT / Automatisierung",
+    "Industrie 4.0 / IoT",
+    "Industriesoftware",
+    "ERP / Datenbanken",
+    "Technischer Support",
     "Andere"
   ]
 };
+
+const contactCopy: Record<
+  Locale,
+  {
+    companyTitle: string;
+    personEyebrow: string;
+    personTitle: string;
+    profileNote: string;
+    emailLabel: string;
+  }
+> = {
+  es: {
+    companyTitle: "Contacto empresarial",
+    personEyebrow: "Persona de contacto",
+    personTitle: "Quién está detrás de IoCode SOLUTIONS",
+    profileNote:
+      "Los enlaces externos permiten verificar experiencia profesional, proyectos técnicos y trayectoria pública.",
+    emailLabel: "Correo"
+  },
+  en: {
+    companyTitle: "Business contact",
+    personEyebrow: "Contact person",
+    personTitle: "Who is behind IoCode SOLUTIONS",
+    profileNote:
+      "The external links help verify professional experience, technical projects and public track record.",
+    emailLabel: "Email"
+  },
+  de: {
+    companyTitle: "Geschäftlicher Kontakt",
+    personEyebrow: "Ansprechpartner",
+    personTitle: "Wer hinter IoCode SOLUTIONS steht",
+    profileNote:
+      "Die externen Links helfen dabei, Berufserfahrung, technische Projekte und den öffentlichen Werdegang zu prüfen.",
+    emailLabel: "E-Mail"
+  }
+};
+
+const copy = contactCopy[locale];
 ---
 
 <div class="contactGrid">
   <aside class="contactPanel">
-    <img class="contactPanel__logo" src={siteConfig.logoPath} alt="IoCode SOLUTIONS" />
-    <h2>IoCode SOLUTIONS</h2>
-    <p>{labels.contactNote}</p>
+    <img class="contactPanel__logo" src={siteConfig.logoPath} alt={siteConfig.name} />
 
-    <div class="contactLinks">
-      <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
-      <a href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer">{labels.github}</a>
-      <a href={siteConfig.linkedInUrl} target="_blank" rel="noopener noreferrer">{labels.linkedin}</a>
+    <div class="contactPanel__section">
+      <p class="eyebrow">{copy.companyTitle}</p>
+      <h2>{siteConfig.name}</h2>
+      <p>{siteConfig.businessDescription[locale]}</p>
     </div>
+
+    <div class="contactLinks" aria-label={copy.emailLabel}>
+      <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+    </div>
+
+    <article class="contactPersonCard" aria-labelledby="contactPersonTitle">
+      <p class="eyebrow">{copy.personEyebrow}</p>
+      <h3 id="contactPersonTitle">{copy.personTitle}</h3>
+
+      <p class="contactPersonCard__name">{contactPerson.name}</p>
+      <p class="contactPersonCard__role">{contactPerson.role[locale]}</p>
+      <p>{contactPerson.description[locale]}</p>
+
+      <p class="contactPersonCard__note">{copy.profileNote}</p>
+
+      <div class="contactSocialLinks">
+        <a
+          href={contactPerson.links.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {labels.linkedin}
+        </a>
+        <a
+          href={contactPerson.links.github}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {labels.github}
+        </a>
+      </div>
+    </article>
   </aside>
 
   <form class="contactForm" id="contactForm" data-contact-email={siteConfig.email}>

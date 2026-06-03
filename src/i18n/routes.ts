@@ -5,6 +5,7 @@ export type RouteKey =
   | "services"
   | "plc"
   | "robotics"
+  | "about"
   | "projects"
   | "skills"
   | "process"
@@ -38,9 +39,15 @@ export const routeAlternates: Record<RouteKey, LocalizedRoute> = {
   },
   robotics: {
     key: "robotics",
-    label: { es: "Robotica", en: "Robotics", de: "Robotik" },
+    label: { es: "Robótica", en: "Robotics", de: "Robotik" },
     slug: { es: "robotica-industrial", en: "industrial-robotics", de: "industrierobotik" },
     path: { es: "/es/robotica-industrial/", en: "/en/industrial-robotics/", de: "/de/industrierobotik/" }
+  },
+  about: {
+    key: "about",
+    label: { es: "Empresa", en: "Company", de: "Unternehmen" },
+    slug: { es: "empresa", en: "company", de: "unternehmen" },
+    path: { es: "/es/empresa/", en: "/en/company/", de: "/de/unternehmen/" }
   },
   projects: {
     key: "projects",
@@ -50,7 +57,7 @@ export const routeAlternates: Record<RouteKey, LocalizedRoute> = {
   },
   skills: {
     key: "skills",
-    label: { es: "Habilidades", en: "Skills", de: "Faehigkeiten" },
+    label: { es: "Habilidades", en: "Skills", de: "Fähigkeiten" },
     slug: { es: "habilidades", en: "skills", de: "faehigkeiten" },
     path: { es: "/es/habilidades/", en: "/en/skills/", de: "/de/faehigkeiten/" }
   },
@@ -73,6 +80,7 @@ export const navigationRouteKeys: RouteKey[] = [
   "services",
   "plc",
   "robotics",
+  "about",
   "projects",
   "skills",
   "process",

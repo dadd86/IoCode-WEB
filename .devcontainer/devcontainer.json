@@ -7,7 +7,7 @@
   "shutdownAction": "stopCompose",
   "overrideCommand": false,
   "forwardPorts": [4321],
-  "postCreateCommand": "npm ci || npm install",
+  "postCreateCommand": "if [ -f package-lock.json ]; then npm ci; else npm install; fi",
   "customizations": {
     "vscode": {
       "extensions": [

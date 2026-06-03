@@ -7,6 +7,8 @@ import CardGrid from "../../components/CardGrid.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 import SkillCard from "../../components/SkillCard.astro";
 import ContactForm from "../../components/ContactForm.astro";
+import BusinessValueSections from "../../components/BusinessValueSections.astro";
+import ProcessMethod from "../../components/ProcessMethod.astro";
 import { pageContent } from "../../data/pageContent";
 import { projects } from "../../data/projects";
 import { skillGroups } from "../../data/skills";
@@ -22,6 +24,8 @@ export function getStaticPaths() {
 const { locale, routeKey } = Astro.props as { locale: Locale; routeKey: RouteKey };
 const content = pageContent[locale][routeKey];
 const labels = ui[locale];
+
+const routesWithStandardCards: RouteKey[] = ["services", "plc", "robotics", "about"];
 ---
 
 <BaseLayout locale={locale} routeKey={routeKey} title={content.title} description={content.description}>
@@ -41,18 +45,22 @@ const labels = ui[locale];
           <Hero3D locale={locale} />
         </div>
       </section>
+
       {content.cards && <CardGrid cards={content.cards} />}
+
+      <BusinessValueSections locale={locale} variant="home" />
     </>
+  ) : routeKey === "process" ? (
+    <ProcessMethod locale={locale} />
   ) : (
     <PageHero eyebrow={content.eyebrow} title={content.heading} text={content.intro} />
   )}
 
-  {routeKey === "services" || routeKey === "plc" || routeKey === "robotics" ? (
-    content.cards && <CardGrid cards={content.cards} />
-  ) : null}
-
-  {routeKey === "process" ? (
-    content.cards && <CardGrid cards={content.cards} variant="timeline" />
+  {routesWithStandardCards.includes(routeKey) ? (
+    <>
+      {content.cards && <CardGrid cards={content.cards} />}
+      {routeKey === "services" && <BusinessValueSections locale={locale} variant="services" />}
+    </>
   ) : null}
 
   {routeKey === "projects" ? (

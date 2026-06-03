@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 set -eu
-docker compose --profile qa run --rm qa
+
+docker compose run --rm qa
