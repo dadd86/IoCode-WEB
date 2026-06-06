@@ -1,125 +1,112 @@
-# Docker · IoCode SOLUTIONS Web
+# Docker
 
-## Estado
+DocumentaciÃ³n de Docker para IoCode SOLUTIONS Web.
 
-Configuración Docker completa para el sitio Astro estático de IoCode SOLUTIONS.
+## Servicios
 
-Incluye contenedores para:
+El archivo actual de orquestaciÃ³n estÃ¡ en la raÃ­z del proyecto:
 
-- desarrollo local con Astro Dev Server;
-- QA/build/audit en contenedor;
-- preview Astro;
-- runtime estático con Nginx no privilegiado.
+    compose.yml
 
-## Requisitos
+Servicios definidos:
 
-- Docker Engine.
-- Docker Compose v2.
-- Archivo `package.json` válido en la raíz del proyecto.
-- Proyecto Astro con `npm run check`, `npm run build` y `npm run audit:prod`.
-
-## Preparación
-
-Desde la raíz del proyecto:
-
-```bash
-cp Docker/.env.example Docker/.env
-```
-
-No escribas secretos reales en `Docker/.env`. Este sitio es estático; no necesita credenciales para ejecutarse.
+- `dev`: servidor de desarrollo Astro.
+- `qa`: validaciÃ³n automatizada local.
+- `preview`: build + Astro preview.
+- `web`: producciÃ³n local con servidor estÃ¡tico Node.
 
 ## Desarrollo
 
-```bash
-./Docker/scripts/dev.sh
-```
+    docker compose up -d dev
 
-Abrir:
+URL:
 
-```text
-http://localhost:4321/es/
-```
+    http://localhost:4321/es/
 
-Equivalente sin script:
+## QA
 
-```bash
-docker compose --env-file Docker/.env -f Docker/compose.yml --profile dev up --build dev
-```
-
-## QA en contenedor
-
-```bash
-./Docker/scripts/qa.sh
-```
+    docker compose run --rm qa
 
 Ejecuta:
 
-```text
-npm install
-npm run check
-npm run build
-npm run audit:prod
-```
+- `npm run check`.
+- `npm run build`.
+- `npm run audit:prod`.
 
-## Preview Astro
+## Preview
 
-```bash
-./Docker/scripts/preview.sh
-```
+    docker compose --profile preview up --build preview
 
-Abrir:
+URL:
 
-```text
-http://localhost:4322/es/
-```
+    http://localhost:4322/es/
 
-## Producción local con Nginx
+## ProducciÃ³n local
 
-```bash
-./Docker/scripts/prod.sh
-```
+    docker compose --profile prod up --build -d web
 
-Abrir:
+URL:
 
-```text
-http://localhost:8080/es/
-```
+    http://localhost:8080/es/
 
-## Build de imagen de producción
+Healthcheck:
 
-```bash
-./Docker/scripts/build.sh
-```
+    http://localhost:8080/health
 
-## Servicios definidos
+## VolÃºmenes
 
-| Servicio | Perfil | Puerto | Uso |
-|---|---:|---:|---|
-| `dev` | `dev` | `4321` | Desarrollo con hot reload |
-| `qa` | `qa` | N/A | Check/build/audit |
-| `preview` | `preview` | `4322` | Preview de Astro |
-| `web` | `prod` | `8080` | Runtime Nginx estático |
+- `iocode_node_modules`: dependencias dentro de Docker.
+- `iocode_astro_cache`: cachÃ© de Astro.
 
-## Seguridad aplicada
+## Puertos
 
-El contenedor `web` usa:
+- desarrollo: 4321 por defecto.
+- preview: 4322 por defecto.
+- producciÃ³n local: 8080 por defecto.
 
-- imagen Nginx no privilegiada;
-- puerto interno `8080`;
-- `read_only: true`;
-- `tmpfs` para rutas temporales;
-- `cap_drop: [ALL]`;
-- `no-new-privileges`;
-- cabeceras HTTP básicas de seguridad;
+Se pueden sobrescribir con `.env` local no versionado o variables de entorno.
+
+## Seguridad del contenedor web
+
+El servicio `web` usa:
+
+- usuario no root en runtime.
+- filesystem read-only.
+- `tmpfs` para `/tmp`.
+- `no-new-privileges`.
+- `cap_drop: ALL`.
 - healthcheck HTTP.
+- servidor estÃ¡tico con cabeceras de seguridad.
 
-## Limitaciones
+## HSTS
 
-Esta configuración no sustituye una validación de producción real. Antes de publicar:
+Variables disponibles:
 
-- ejecuta `qa`;
-- ejecuta `prod`;
-- revisa consola del navegador;
-- revisa que el `.glb` cargue sin 404;
-- prueba `/es/`, `/en/`, `/de/`;
-- confirma que `.git`, `.env`, ZIPs internos y assets fuente no entran en el deploy.
+- `ENABLE_HSTS`.
+- `ENABLE_UPGRADE_INSECURE_REQUESTS`.
+
+Mantener en `false` en local. Activar solo cuando el dominio final funcione por HTTPS.
+
+## Build pipeline
+
+El Dockerfile de producciÃ³n ejecuta:
+
+- instalaciÃ³n determinista con `npm ci`.
+- `npm run check`.
+- `npm run build`.
+- copia de `dist` al runtime.
+- arranque de `Docker/node-static-server.mjs`.
+
+Si `check` o `build` fallan, la imagen de producciÃ³n no se construye.
+
+## No-go operativo
+
+No publicar si:
+
+- `npm run check` falla.
+- `npm run build` falla.
+- `npm run audit:prod` reporta vulnerabilidades.
+- `/health` no responde 200.
+- `/no-existe/` no responde 404.
+- rutas sin slash no redirigen con 308.
+- el correo de contacto no existe.

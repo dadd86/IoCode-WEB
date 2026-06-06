@@ -78,6 +78,7 @@ const contactCopy: Record<
 };
 
 const copy = contactCopy[locale];
+const noteId = `contact-note-${locale}`;
 ---
 
 <div class="contactGrid">
@@ -123,8 +124,13 @@ const copy = contactCopy[locale];
     </article>
   </aside>
 
-  <form class="contactForm" id="contactForm" data-contact-email={siteConfig.email}>
-    <p class="formNote">{labels.contactNote}</p>
+  <form
+    class="contactForm"
+    id="contactForm"
+    data-contact-email={siteConfig.email}
+    aria-describedby={noteId}
+  >
+    <p class="formNote" id={noteId}>{labels.contactNote}</p>
 
     <label for="nombre">{labels.contactName}</label>
     <input class="input" id="nombre" type="text" name="nombre" autocomplete="name" required />

@@ -7,12 +7,24 @@ import type { RouteKey } from "../i18n/routes";
 
 type Props = { locale: Locale; activeKey: RouteKey };
 const { locale, activeKey } = Astro.props;
+
+const navLabel: Record<Locale, string> = {
+  es: "Navegación principal",
+  en: "Main navigation",
+  de: "Hauptnavigation"
+};
+
+const brandLabel: Record<Locale, string> = {
+  es: "Ir al inicio de IoCode SOLUTIONS",
+  en: "Go to IoCode SOLUTIONS home",
+  de: "Zur Startseite von IoCode SOLUTIONS"
+};
 ---
 
 <header class="siteHeader">
-  <nav class="navbar container" aria-label="Main navigation">
-    <a class="brand" href={`/${locale}/`} aria-label="IoCode SOLUTIONS">
-      <img class="brand__logo" src={siteConfig.logoPath} alt="IoCode SOLUTIONS" />
+  <nav class="navbar container" aria-label={navLabel[locale]}>
+    <a class="brand" href={`/${locale}/`} aria-label={brandLabel[locale]}>
+      <img class="brand__logo" src={siteConfig.logoPath} alt={siteConfig.name} />
     </a>
     <Navigation locale={locale} activeKey={activeKey} />
     <LanguageSwitcher locale={locale} activeKey={activeKey} />

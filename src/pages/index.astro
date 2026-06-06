@@ -1,14 +1,30 @@
 ---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageContent } from "../data/pageContent";
+
 const target = "/es/";
+const content = pageContent.es.home;
 ---
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content={`0; url=${target}`} />
-    <link rel="canonical" href={target} />
-    <title>IoCode SOLUTIONS</title>
-  </head>
-  <body>
-    <a href={target}>Ir a IoCode SOLUTIONS</a>
-  </body>
-</html>
+
+<BaseLayout
+  locale="es"
+  routeKey="home"
+  title={content.title}
+  description={content.description}
+  robots="noindex, follow"
+  refreshTo={target}
+  refreshDelay={0}
+>
+  <section class="pageHero" aria-labelledby="root-redirect-title">
+    <div class="container pageHero__content">
+      <p class="eyebrow">IoCode SOLUTIONS</p>
+      <h1 id="root-redirect-title">IoCode SOLUTIONS en español</h1>
+      <p>
+        Estás entrando a la versión principal en español de IoCode SOLUTIONS.
+      </p>
+      <p>
+        <a class="button button--primary" href={target}>Ir a /es/</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

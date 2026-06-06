@@ -19,7 +19,7 @@ export type PageContent = {
 export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
   es: {
     home: {
-      title: "IoCode SOLUTIONS | Automatización industrial, PLC, robótica e Industria 4.0",
+      title: "IoCode SOLUTIONS | Automatización PLC, robótica e Industria 4.0",
       description:
         "Empresa técnica en Aachen especializada en automatización industrial, PLC, robótica, software industrial, datos, ERP e Industria 4.0.",
       eyebrow: "IoCode SOLUTIONS",
@@ -170,19 +170,13 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         "La combinación clave es entender el cuadro eléctrico, el PLC, el robot, la HMI, la base de datos y la aplicación."
     },
     process: {
-      title: "Proceso | Diagnóstico, arquitectura, desarrollo y validación",
+      title: "Proceso técnico | Diagnóstico, propuesta, desarrollo y validación",
       description:
-        "Proceso de trabajo para proyectos de automatización, software industrial, IoT, datos, ERP e integración técnica.",
+        "Método de trabajo de IoCode SOLUTIONS para proyectos industriales: diagnóstico técnico, propuesta, desarrollo modular, validación, control de riesgos y entrega verificable.",
       eyebrow: "Proceso",
-      heading: "Trabajo por fases, con claridad técnica y foco en resultados.",
+      heading: "Método técnico para reducir incertidumbre antes de construir.",
       intro:
-        "Un buen proyecto técnico empieza entendiendo el problema real, los riesgos, los datos disponibles y los criterios de aceptación.",
-      cards: [
-        { title: "Diagnóstico", text: "Objetivos, usuarios, máquinas, datos, restricciones, riesgos, entorno técnico y alcance real." },
-        { title: "Propuesta técnica", text: "Arquitectura, entregables, tecnologías, fases, dependencias y criterios de aceptación." },
-        { title: "Desarrollo modular", text: "Construcción por partes pequeñas, mantenibles, documentadas y revisables." },
-        { title: "Validación", text: "Pruebas funcionales, revisión de enlaces, build, responsive, accesibilidad básica y riesgos pendientes." }
-      ]
+        "IoCode SOLUTIONS trabaja por fases para entender el problema real, controlar riesgos, definir criterios de aceptación y entregar soluciones industriales mantenibles."
     },
     contact: {
       title: "Contacto | IoCode SOLUTIONS",
@@ -197,7 +191,7 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
 
   en: {
     home: {
-      title: "IoCode SOLUTIONS | Industrial Automation, PLC, Robotics & Industry 4.0",
+      title: "IoCode SOLUTIONS | PLC Automation, Robotics and Industry 4.0",
       description:
         "Technical company in Aachen for industrial automation, PLC programming, robotics, industrial software, data integration, ERP and Industry 4.0.",
       eyebrow: "IoCode SOLUTIONS",
@@ -312,19 +306,13 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         "The key combination is understanding the electrical cabinet, the PLC, the robot, the HMI, the database and the application."
     },
     process: {
-      title: "Process | Diagnostics, Architecture, Development and Validation",
+      title: "Technical Process | Diagnostics, Proposal, Development and Validation",
       description:
-        "Work process for automation, industrial software, IoT, data, ERP and technical integration projects.",
+        "IoCode SOLUTIONS work method for industrial projects: technical diagnostics, proposal, modular development, validation, risk control and verifiable delivery.",
       eyebrow: "Process",
-      heading: "Work in phases, with technical clarity and focus on results.",
+      heading: "A technical method to reduce uncertainty before building.",
       intro:
-        "A good technical project starts by understanding the real problem, risks, available data and acceptance criteria.",
-      cards: [
-        { title: "Diagnostics", text: "Goals, users, machines, data, constraints, risks, technical environment and real scope." },
-        { title: "Technical proposal", text: "Architecture, deliverables, technologies, phases, dependencies and acceptance criteria." },
-        { title: "Modular development", text: "Small, maintainable, documented and reviewable parts." },
-        { title: "Validation", text: "Functional tests, link review, build, responsive behavior, basic accessibility and remaining risks." }
-      ]
+        "IoCode SOLUTIONS works in phases to understand the real problem, control risks, define acceptance criteria and deliver maintainable industrial solutions."
     },
     contact: {
       title: "Contact | IoCode SOLUTIONS",
@@ -341,7 +329,7 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
     home: {
       title: "IoCode SOLUTIONS | SPS, Automatisierung, Robotik und Industrie 4.0",
       description:
-        "Technisches Unternehmen in Aachen für industrielle Automatisierung, SPS-Programmierung, Robotik, Industriesoftware, Datenintegration, ERP und Industrie 4.0.",
+        "Technisches Unternehmen in Aachen für SPS-Programmierung, industrielle Automatisierung, Robotik, Industriesoftware, Daten, ERP und Industrie 4.0.",
       eyebrow: "IoCode SOLUTIONS",
       heading: "Industrielle Automatisierung, Robotik und Software zur Verbindung von Maschinen, Daten und Prozessen.",
       intro:
@@ -454,19 +442,13 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         "Die entscheidende Kombination ist das Verständnis von Schaltschrank, SPS, Roboter, HMI, Datenbank und Anwendung."
     },
     process: {
-      title: "Prozess | Diagnose, Architektur, Entwicklung und Validierung",
+      title: "Technischer Prozess | Diagnose, Vorschlag, Entwicklung und Validierung",
       description:
-        "Arbeitsprozess für Automatisierung, Industriesoftware, IoT, Daten, ERP und technische Integrationsprojekte.",
+        "Arbeitsmethode von IoCode SOLUTIONS für Industrieprojekte: technische Diagnose, Vorschlag, modulare Entwicklung, Validierung, Risikokontrolle und überprüfbare Übergabe.",
       eyebrow: "Prozess",
-      heading: "Arbeit in Phasen, mit technischer Klarheit und Fokus auf Ergebnisse.",
+      heading: "Ein technischer Ablauf, um Unsicherheit vor der Umsetzung zu reduzieren.",
       intro:
-        "Ein gutes technisches Projekt beginnt mit dem Verständnis des realen Problems, der Risiken, der verfügbaren Daten und der Akzeptanzkriterien.",
-      cards: [
-        { title: "Diagnose", text: "Ziele, Benutzer, Maschinen, Daten, Einschränkungen, Risiken, technische Umgebung und realer Umfang." },
-        { title: "Technischer Vorschlag", text: "Architektur, Lieferobjekte, Technologien, Phasen, Abhängigkeiten und Akzeptanzkriterien." },
-        { title: "Modulare Entwicklung", text: "Kleine, wartbare, dokumentierte und überprüfbare Teile." },
-        { title: "Validierung", text: "Funktionale Tests, Link-Prüfung, Build, Responsive-Verhalten, grundlegende Barrierefreiheit und verbleibende Risiken." }
-      ]
+        "IoCode SOLUTIONS arbeitet in Phasen, um das reale Problem zu verstehen, Risiken zu kontrollieren, Akzeptanzkriterien zu definieren und wartbare industrielle Lösungen zu liefern."
     },
     contact: {
       title: "Kontakt | IoCode SOLUTIONS",

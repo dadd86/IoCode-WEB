@@ -1,13 +1,20 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-<BaseLayout locale="es" routeKey="home" title="Pagina no encontrada | IoCode SOLUTIONS" description="Pagina no encontrada.">
+
+<BaseLayout
+  locale="es"
+  routeKey="home"
+  title="Página no encontrada | IoCode SOLUTIONS"
+  description="La página solicitada no existe o ha cambiado de ubicación. Vuelve al inicio de IoCode SOLUTIONS para seguir navegando."
+  robots="noindex, follow"
+>
   <section class="pageHero">
     <div class="container pageHero__content">
       <p class="eyebrow">404</p>
-      <h1>Pagina no encontrada</h1>
-      <p>Vuelve al inicio para seguir navegando.</p>
-      <p><a class="button button--primary" href="/es/">Inicio</a></p>
+      <h1>Página no encontrada</h1>
+      <p>La página solicitada no existe o ha cambiado de ubicación.</p>
+      <p><a class="button button--primary" href="/es/">Volver al inicio</a></p>
     </div>
   </section>
 </BaseLayout>

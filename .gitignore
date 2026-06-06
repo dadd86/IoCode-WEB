@@ -92,3 +92,11 @@ public/Logo/
 !public/logo/3d/iocode_solutions_logo_extruded_3d.glb
 !.devcontainer/
 !.devcontainer/devcontainer.json
+
+# Phase 1.1C QA artifacts
+qa-artifacts/
+playwright-report/
+test-results/
+
+
+Prompt.md

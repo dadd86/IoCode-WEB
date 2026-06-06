@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1.7
+
+ARG PLAYWRIGHT_VERSION=1.60.0
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
+
+ARG PLAYWRIGHT_VERSION=1.60.0
+
+WORKDIR /app
+
+ENV CI=1 \
+    ASTRO_TELEMETRY_DISABLED=1 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
+    PLAYWRIGHT_BASE_URL=http://web:8080 \
+    LIGHTHOUSE_BASE_URL=http://web:8080
+
+COPY package*.json ./
+
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi \
+  && npm install --no-save \
+    @playwright/test@${PLAYWRIGHT_VERSION} \
+    playwright@${PLAYWRIGHT_VERSION} \
+    axe-core@^4.10.0 \
+    lighthouse@^12.2.0 \
+  && npx playwright --version
+
+COPY . .
+
+CMD ["npm", "run", "qa:phase-1-1c"]

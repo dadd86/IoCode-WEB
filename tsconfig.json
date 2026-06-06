@@ -2,5 +2,18 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "noUncheckedIndexedAccess": true
-  }
+  },
+  "exclude": [
+    "tests",
+    "tests/**/*",
+    "playwright.config.ts",
+    "qa-artifacts",
+    "qa-artifacts/**/*",
+    "test-results",
+    "test-results/**/*",
+    "playwright-report",
+    "playwright-report/**/*",
+    "dist",
+    "dist/**/*"
+  ]
 }

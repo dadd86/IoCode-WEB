@@ -5,6 +5,9 @@ import { extname, isAbsolute, join, normalize, relative, resolve } from "node:pa
 const port = Number(process.env.PORT || 8080);
 const rootDir = resolve("dist");
 
+const enableHsts = process.env.ENABLE_HSTS === "true";
+const enableUpgradeInsecureRequests = process.env.ENABLE_UPGRADE_INSECURE_REQUESTS === "true";
+
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -25,27 +28,44 @@ const mimeTypes = {
 function setSecurityHeaders(response) {
   response.setHeader("X-Content-Type-Options", "nosniff");
   response.setHeader("X-Frame-Options", "DENY");
+  response.setHeader("X-DNS-Prefetch-Control", "off");
+  response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
-  response.setHeader(
-    "Content-Security-Policy",
-    [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data:",
-      "font-src 'self' data:",
-      "model-src 'self'",
-      "connect-src 'self'",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self' mailto:"
-    ].join("; ")
-  );
-}
+  response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  response.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  response.setHeader("Origin-Agent-Cluster", "?1");
+  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=()");
 
-function isAssetPath(pathname) {
-  return /\.(css|js|mjs|json|svg|png|jpg|jpeg|webp|ico|glb|xml|txt)$/i.test(pathname);
+  if (enableHsts) {
+    response.setHeader(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains"
+    );
+  }
+
+  const cspDirectives = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self' mailto:",
+    "script-src 'self' 'unsafe-inline'",
+    "script-src-attr 'none'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self' data:",
+    "model-src 'self'",
+    "connect-src 'self'",
+    "manifest-src 'self'",
+    "media-src 'self'",
+    "worker-src 'self'"
+  ];
+
+  if (enableUpgradeInsecureRequests) {
+    cspDirectives.push("upgrade-insecure-requests");
+  }
+
+  response.setHeader("Content-Security-Policy", cspDirectives.join("; "));
 }
 
 function isInsideRoot(filePath) {
@@ -54,10 +74,87 @@ function isInsideRoot(filePath) {
   return relation === "" || (!relation.startsWith("..") && !isAbsolute(relation));
 }
 
-function resolveRequestPath(requestUrl) {
+function safeStat(filePath) {
+  try {
+    return statSync(filePath);
+  } catch {
+    return null;
+  }
+}
+
+function isAssetPath(pathname) {
+  return /\.(css|js|mjs|json|svg|png|jpg|jpeg|webp|ico|glb|txt)$/i.test(pathname);
+}
+
+function isXmlPath(pathname) {
+  return /\.xml$/i.test(pathname);
+}
+
+function getCacheControl(pathname, statusCode) {
+  if (statusCode !== 200) {
+    return "no-cache";
+  }
+
+  if (pathname === "/health") {
+    return "no-store";
+  }
+
+  if (pathname.endsWith(".xml") || pathname.endsWith("robots.txt")) {
+    return "public, max-age=3600";
+  }
+
+  if (pathname.startsWith("/_astro/") || isAssetPath(pathname)) {
+    return "public, max-age=31536000, immutable";
+  }
+
+  return "no-cache";
+}
+
+function buildWeakEtag(stats) {
+  return `W/"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`;
+}
+
+function shouldReturnNotModified(request, stats) {
+  const etag = buildWeakEtag(stats);
+  const ifNoneMatch = request.headers["if-none-match"];
+  const ifModifiedSince = request.headers["if-modified-since"];
+
+  if (typeof ifNoneMatch === "string" && ifNoneMatch.split(",").map((value) => value.trim()).includes(etag)) {
+    return true;
+  }
+
+  if (typeof ifModifiedSince === "string") {
+    const since = Date.parse(ifModifiedSince);
+
+    if (!Number.isNaN(since) && stats.mtime.getTime() <= since) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function parseRequestUrl(requestUrl) {
   const url = new URL(requestUrl, `http://localhost:${port}`);
-  const decodedPath = decodeURIComponent(url.pathname);
+
+  if (url.pathname.includes("\0")) {
+    return null;
+  }
+
+  const decodedPath = decodeURIComponent(url.pathname).replaceAll("\\", "/");
   const safePath = normalize(decodedPath).replace(/^[/\\]+/, "");
+
+  return { url, decodedPath, safePath };
+}
+
+function resolveRequestPath(requestUrl) {
+  const parsed = parseRequestUrl(requestUrl);
+
+  if (!parsed) {
+    return null;
+  }
+
+  const { url, safePath } = parsed;
 
   let filePath = resolve(join(rootDir, safePath));
   let statusCode = 200;
@@ -66,11 +163,18 @@ function resolveRequestPath(requestUrl) {
     return null;
   }
 
-  if (existsSync(filePath) && statSync(filePath).isDirectory()) {
+  const initialStats = safeStat(filePath);
+
+  if (initialStats?.isDirectory()) {
+    if (!url.pathname.endsWith("/")) {
+      const redirectUrl = `${url.pathname}/${url.search}`;
+      return { redirectUrl, statusCode: 308 };
+    }
+
     filePath = resolve(join(filePath, "index.html"));
   }
 
-  if (!existsSync(filePath) && !isAssetPath(safePath)) {
+  if (!existsSync(filePath) && !isAssetPath(safePath) && !isXmlPath(safePath)) {
     filePath = resolve(join(rootDir, safePath, "index.html"));
   }
 
@@ -91,6 +195,18 @@ function sendPlainText(response, statusCode, message) {
   response.end(message);
 }
 
+function sendJson(response, statusCode, payload) {
+  const body = JSON.stringify(payload);
+
+  response.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store",
+    "Content-Length": Buffer.byteLength(body)
+  });
+
+  response.end(body);
+}
+
 const server = createServer((request, response) => {
   setSecurityHeaders(response);
 
@@ -106,14 +222,16 @@ const server = createServer((request, response) => {
   }
 
   if (request.url === "/health") {
-    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-
     if (request.method === "HEAD") {
+      response.writeHead(200, {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store"
+      });
       response.end();
       return;
     }
 
-    response.end(JSON.stringify({ status: "ok" }));
+    sendJson(response, 200, { status: "ok" });
     return;
   }
 
@@ -131,18 +249,36 @@ const server = createServer((request, response) => {
     return;
   }
 
+  if ("redirectUrl" in resolvedPath) {
+    response.writeHead(resolvedPath.statusCode, {
+      Location: resolvedPath.redirectUrl,
+      "Cache-Control": "no-cache"
+    });
+    response.end();
+    return;
+  }
+
   const { filePath, statusCode } = resolvedPath;
   const extension = extname(filePath);
   const contentType = mimeTypes[extension] || "application/octet-stream";
+  const stats = statSync(filePath);
+  const etag = buildWeakEtag(stats);
+  const lastModified = stats.mtime.toUTCString();
 
-  response.setHeader(
-    "Cache-Control",
-    statusCode === 200 && isAssetPath(filePath)
-      ? "public, max-age=31536000, immutable"
-      : "no-cache"
-  );
+  response.setHeader("Cache-Control", getCacheControl(new URL(request.url, `http://localhost:${port}`).pathname, statusCode));
+  response.setHeader("ETag", etag);
+  response.setHeader("Last-Modified", lastModified);
 
-  response.writeHead(statusCode, { "Content-Type": contentType });
+  if (statusCode === 200 && shouldReturnNotModified(request, stats)) {
+    response.writeHead(304);
+    response.end();
+    return;
+  }
+
+  response.writeHead(statusCode, {
+    "Content-Type": contentType,
+    "Content-Length": stats.size
+  });
 
   if (request.method === "HEAD") {
     response.end();

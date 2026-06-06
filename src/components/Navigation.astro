@@ -14,10 +14,15 @@ const { locale, activeKey } = Astro.props as Props;
 <ul class="navLinks">
   {navigationRouteKeys.map((routeKey) => {
     const item = routeAlternates[routeKey];
+    const isActive = item.key === activeKey;
 
     return (
       <li>
-        <a href={item.path[locale]} class:list={{ "is-active": item.key === activeKey }}>
+        <a
+          href={item.path[locale]}
+          class:list={{ "is-active": isActive }}
+          aria-current={isActive ? "page" : undefined}
+        >
           {item.label[locale]}
         </a>
       </li>

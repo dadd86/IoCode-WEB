@@ -1,3 +1,23 @@
+import type { RouteKey } from "../i18n/routes";
+
+export type LocalizedText = {
+  es: string;
+  en: string;
+  de: string;
+};
+
+export type LocalizedList = {
+  es: string[];
+  en: string[];
+  de: string[];
+};
+
+export type OfferCatalogItem = {
+  name: LocalizedText;
+  description: LocalizedText;
+  routeKey: RouteKey;
+};
+
 export const siteConfig = {
   name: "IoCode SOLUTIONS",
   legalName: "IoCode SOLUTIONS",
@@ -10,6 +30,7 @@ export const siteConfig = {
     region: "North Rhine-Westphalia",
     country: "Germany"
   },
+  availableLanguages: ["Spanish", "English", "German"],
   tagline: {
     es: "Automatización industrial, PLC, robótica y software para conectar máquinas, datos y procesos.",
     en: "Industrial automation, PLC, robotics and software to connect machines, data and processes.",
@@ -19,6 +40,13 @@ export const siteConfig = {
     es: "Empresa técnica especializada en automatización industrial, programación PLC, robótica, software industrial, datos e integración Industria 4.0.",
     en: "Technical company specialized in industrial automation, PLC programming, robotics, industrial software, data and Industry 4.0 integration.",
     de: "Technisches Unternehmen für industrielle Automatisierung, SPS-Programmierung, Industrierobotik, Industriesoftware, Datenintegration und Industrie-4.0-Lösungen."
+  },
+  contactPoint: {
+    contactType: {
+      es: "Consultas empresariales y diagnóstico técnico",
+      en: "Business enquiries and technical diagnostics",
+      de: "Geschäftliche Anfragen und technische Diagnose"
+    }
   },
   serviceTypes: {
     es: [
@@ -75,7 +103,61 @@ export const siteConfig = {
       "Linux",
       "Windows Server"
     ]
-  },
+  } satisfies Record<keyof LocalizedText, string[]>,
+  offerCatalog: [
+    {
+      routeKey: "plc",
+      name: {
+        es: "Automatización PLC y HMI",
+        en: "PLC and HMI automation",
+        de: "SPS- und HMI-Automatisierung"
+      },
+      description: {
+        es: "Programación, diagnóstico y optimización de sistemas PLC, HMI, motion control, safety y comunicaciones industriales.",
+        en: "Programming, diagnostics and optimization of PLC, HMI, motion control, safety and industrial communication systems.",
+        de: "Programmierung, Diagnose und Optimierung von SPS, HMI, Motion Control, Safety und industrieller Kommunikation."
+      }
+    },
+    {
+      routeKey: "robotics",
+      name: {
+        es: "Robótica industrial",
+        en: "Industrial robotics",
+        de: "Industrierobotik"
+      },
+      description: {
+        es: "Programación, ajuste, calibración y diagnóstico de robots industriales y sistemas de manipulación.",
+        en: "Programming, adjustment, calibration and diagnostics of industrial robots and handling systems.",
+        de: "Programmierung, Einstellung, Kalibrierung und Diagnose von Industrierobotern und Handlingsystemen."
+      }
+    },
+    {
+      routeKey: "skills",
+      name: {
+        es: "Industria 4.0 e integración de datos",
+        en: "Industry 4.0 and data integration",
+        de: "Industrie 4.0 und Datenintegration"
+      },
+      description: {
+        es: "Integración de sensores, PLCs, robots, bases de datos y aplicaciones para monitorización, trazabilidad y transparencia operativa.",
+        en: "Integration of sensors, PLCs, robots, databases and applications for monitoring, traceability and operational transparency.",
+        de: "Integration von Sensoren, SPS, Robotern, Datenbanken und Anwendungen für Monitoring, Traceability und operative Transparenz."
+      }
+    },
+    {
+      routeKey: "projects",
+      name: {
+        es: "Software industrial y ERP",
+        en: "Industrial software and ERP",
+        de: "Industriesoftware und ERP"
+      },
+      description: {
+        es: "Aplicaciones técnicas, herramientas internas, bases de datos, integración ERP y automatización de procesos.",
+        en: "Technical applications, internal tools, databases, ERP integration and process automation.",
+        de: "Technische Anwendungen, interne Werkzeuge, Datenbanken, ERP-Integration und Prozessautomatisierung."
+      }
+    }
+  ] satisfies OfferCatalogItem[],
   socialLinks: [],
   contactPerson: {
     name: "Diego Armando Diaz Devia",

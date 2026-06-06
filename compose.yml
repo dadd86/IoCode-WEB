@@ -90,6 +90,8 @@ services:
       NODE_ENV: production
       PORT: "8080"
       ASTRO_TELEMETRY_DISABLED: "1"
+      ENABLE_HSTS: "false"
+      ENABLE_UPGRADE_INSECURE_REQUESTS: "false"
     ports:
       - "${WEB_PORT:-8080}:8080"
     read_only: true
@@ -113,6 +115,31 @@ services:
       start_period: 20s
     profiles:
       - prod
+
+  browser-qa:
+    container_name: iocode-solutions-browser-qa
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile.browser-qa
+      args:
+        PLAYWRIGHT_VERSION: "1.60.0"
+    init: true
+    environment:
+      CI: "1"
+      ASTRO_TELEMETRY_DISABLED: "1"
+      PLAYWRIGHT_BASE_URL: "http://web:8080"
+      LIGHTHOUSE_BASE_URL: "http://web:8080"
+      LH_MIN_PERFORMANCE: "0.50"
+      LH_MIN_ACCESSIBILITY: "0.90"
+      LH_MIN_BEST_PRACTICES: "0.85"
+      LH_MIN_SEO: "0.90"
+    depends_on:
+      web:
+        condition: service_healthy
+    volumes:
+      - ./qa-artifacts:/app/qa-artifacts
+    profiles:
+      - qa
 
 volumes:
   iocode_node_modules:
