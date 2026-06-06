@@ -1,28 +1,28 @@
 # IoCode SOLUTIONS Web
 
-Sitio web estÃ¡tico y multilingÃ¼e de IoCode SOLUTIONS.
+Sitio web estático y multilingüe de IoCode SOLUTIONS.
 
-El proyecto usa Astro, TypeScript, Three.js y Docker Compose. La web estÃ¡ orientada a automatizaciÃ³n industrial, PLC, robÃ³tica, software industrial, datos e Industria 4.0.
+El proyecto usa Astro, TypeScript, Three.js y Docker Compose. La web está orientada a automatización industrial, PLC, robótica, software industrial, datos e Industria 4.0.
 
 ## Estado validado localmente
 
-Ãšltima fase validada: Fase 1.1A.
+Última fase validada: Fase 1.1A.
 
 Estado comprobado por terminal:
 
 - `npm run check` dentro del contenedor: 0 errores, 0 warnings, 0 hints.
-- `npm run build` dentro del contenedor: 29 pÃ¡ginas generadas.
-- `npm run audit:prod`: 0 vulnerabilidades de producciÃ³n.
-- Imagen Docker de producciÃ³n construida correctamente.
+- `npm run build` dentro del contenedor: 29 páginas generadas.
+- `npm run audit:prod`: 0 vulnerabilidades de producción.
+- Imagen Docker de producción construida correctamente.
 - Contenedor `web` iniciado correctamente.
 - `/health`: 200 OK.
 - `/es/proceso/`, `/en/process/`, `/de/prozess/`: 200 OK.
 - `/sitemap.xml`: 200 OK.
 - `/no-existe/`: 404 Not Found.
 - Rutas sin slash final redirigen con 308.
-- Headers HTTP avanzados activos en el servidor estÃ¡tico local.
+- Headers HTTP avanzados activos en el servidor estático local.
 
-No se afirma posicionamiento real en Google ni rendimiento Lighthouse todavÃ­a. Eso requiere publicaciÃ³n, mediciÃ³n y Search Console.
+No se afirma posicionamiento real en Google ni rendimiento Lighthouse todavía. Eso requiere publicación, medición y Search Console.
 
 ## Stack
 
@@ -31,21 +31,21 @@ No se afirma posicionamiento real en Google ni rendimiento Lighthouse todavÃ­a
 - Three.js para escena 3D.
 - Docker Compose.
 - Node.js Alpine para desarrollo y runtime local.
-- Sitio estÃ¡tico generado en `dist/`.
-- Servidor estÃ¡tico Node en `Docker/node-static-server.mjs`.
+- Sitio estático generado en `dist/`.
+- Servidor estático Node en `Docker/node-static-server.mjs`.
 
 ## Estructura principal
 
-- `src/`: cÃ³digo fuente Astro, componentes, datos e i18n.
-- `src/data/`: contenidos y configuraciÃ³n semÃ¡ntica.
+- `src/`: código fuente Astro, componentes, datos e i18n.
+- `src/data/`: contenidos y configuración semántica.
 - `src/i18n/`: rutas, locales y UI strings.
-- `src/pages/`: pÃ¡ginas Astro y sitemap.
+- `src/pages/`: páginas Astro y sitemap.
 - `src/components/`: componentes visuales y funcionales.
 - `src/assets/`: CSS global y componentes.
-- `public/`: assets pÃºblicos servidos como raÃ­z del sitio.
-- `Docker/`: Dockerfiles y servidor estÃ¡tico.
-- `docs/`: documentaciÃ³n tÃ©cnica.
-- `compose.yml`: definiciÃ³n actual de servicios Docker.
+- `public/`: assets públicos servidos como raíz del sitio.
+- `Docker/`: Dockerfiles y servidor estático.
+- `docs/`: documentación técnica.
+- `compose.yml`: definición actual de servicios Docker.
 - `.env.example`: variables locales no sensibles.
 
 ## Requisitos
@@ -57,9 +57,9 @@ Recomendado:
 - VS Code opcional.
 - Node.js local no es obligatorio si trabajas con Docker.
 
-## Inicio rÃ¡pido con Docker
+## Inicio rápido con Docker
 
-Desde la raÃ­z del proyecto:
+Desde la raíz del proyecto:
 
     docker compose up -d dev
 
@@ -71,7 +71,7 @@ Abrir:
 
 ## QA local
 
-Desde la raÃ­z:
+Desde la raíz:
 
     docker compose exec dev npm run check
     docker compose exec dev npm run build
@@ -81,9 +81,9 @@ O usando el servicio QA:
 
     docker compose run --rm qa
 
-## ProducciÃ³n local
+## Producción local
 
-Construir y levantar producciÃ³n local:
+Construir y levantar producción local:
 
     docker compose --profile prod up --build -d web
 
@@ -99,17 +99,17 @@ Comprobar:
 Resultados esperados:
 
 - `/health`: 200.
-- pÃ¡ginas principales: 200.
+- páginas principales: 200.
 - `/sitemap.xml`: 200.
 - ruta inexistente: 404.
-- ruta sin slash final: 308 hacia la versiÃ³n con slash.
+- ruta sin slash final: 308 hacia la versión con slash.
 
 ## Servicios Docker
 
 - `dev`: Astro dev server en puerto 4321.
-- `qa`: ejecuta check, build y audit de producciÃ³n.
+- `qa`: ejecuta check, build y audit de producción.
 - `preview`: build + Astro preview en puerto 4322.
-- `web`: runtime estÃ¡tico de producciÃ³n local en puerto 8080.
+- `web`: runtime estático de producción local en puerto 8080.
 
 ## Variables locales
 
@@ -121,8 +121,8 @@ Variables soportadas:
 
 - `ASTRO_DEV_PORT`: puerto local de desarrollo. Por defecto 4321.
 - `ASTRO_PREVIEW_PORT`: puerto local de preview. Por defecto 4322.
-- `WEB_PORT`: puerto local de producciÃ³n. Por defecto 8080.
-- `ASTRO_TELEMETRY_DISABLED`: desactiva telemetrÃ­a de Astro.
+- `WEB_PORT`: puerto local de producción. Por defecto 8080.
+- `ASTRO_TELEMETRY_DISABLED`: desactiva telemetría de Astro.
 - `ENABLE_HSTS`: activar solo en despliegue HTTPS real.
 - `ENABLE_UPGRADE_INSECURE_REQUESTS`: activar solo en despliegue HTTPS real.
 
@@ -130,7 +130,7 @@ No guardes secretos reales en archivos versionados.
 
 ## Seguridad HTTP local
 
-El servidor estÃ¡tico incluye:
+El servidor estático incluye:
 
 - `Content-Security-Policy`.
 - `X-Content-Type-Options`.
@@ -142,15 +142,15 @@ El servidor estÃ¡tico incluye:
 - `ETag`.
 - `Last-Modified`.
 - cache diferenciado para HTML, sitemap, health y assets.
-- redirect 308 para rutas canÃ³nicas con slash final.
+- redirect 308 para rutas canónicas con slash final.
 
-HSTS estÃ¡ desactivado por defecto. No lo actives hasta verificar HTTPS real en el dominio final.
+HSTS está desactivado por defecto. No lo actives hasta verificar HTTPS real en el dominio final.
 
-## SEO tÃ©cnico
+## SEO técnico
 
 Implementado:
 
-- pÃ¡ginas estÃ¡ticas indexables.
+- páginas estáticas indexables.
 - rutas ES/EN/DE.
 - canonical.
 - hreflang HTML.
@@ -161,26 +161,26 @@ Implementado:
 - schema `ContactPoint`.
 - schema `OfferCatalog`.
 - schema `BreadcrumbList`.
-- schema `Person` solo en pÃ¡ginas de contacto.
+- schema `Person` solo en páginas de contacto.
 
-No se garantiza ranking. La indexaciÃ³n real debe comprobarse con Google Search Console despuÃ©s de publicar.
+No se garantiza ranking. La indexación real debe comprobarse con Google Search Console después de publicar.
 
 ## Contacto
 
-El formulario es estÃ¡tico y usa `mailto:`. No envÃ­a datos a un backend.
+El formulario es estático y usa `mailto:`. No envía datos a un backend.
 
 Antes de publicar, confirma que el correo configurado en `src/data/site.ts` existe y recibe mensajes.
 
-## DocumentaciÃ³n relacionada
+## Documentación relacionada
 
-- `RUN_GUIDE.md`: guÃ­a de ejecuciÃ³n.
-- `SECURITY.md`: modelo de seguridad y lÃ­mites.
-- `QA_CHECKLIST.md`: checklist de validaciÃ³n.
+- `RUN_GUIDE.md`: guía de ejecución.
+- `SECURITY.md`: modelo de seguridad y límites.
+- `QA_CHECKLIST.md`: checklist de validación.
 - `Docker/README.md`: uso de servicios Docker.
 - `Docker/OPERATIONS.md`: runbook operativo.
 - `docs/ARCHITECTURE.md`: arquitectura.
 - `docs/MAINTENANCE.md`: mantenimiento.
-- `docs/I18N.md`: internacionalizaciÃ³n.
+- `docs/I18N.md`: internacionalización.
 - `docs/PROJECT_SELECTION.md`: criterios de proyectos.
 
 ## No hacer
@@ -189,4 +189,4 @@ Antes de publicar, confirma que el correo configurado en `src/data/site.ts` exis
 - No depender de archivos env dentro de la carpeta Docker.
 - No ejecutar `npm audit fix --force` sin revisar impacto.
 - No publicar ZIPs con `.git`, `node_modules`, `.astro` o `dist`.
-- No afirmar producciÃ³n real sin validar dominio, HTTPS, Search Console, Lighthouse y correo.
+- No afirmar producción real sin validar dominio, HTTPS, Search Console, Lighthouse y correo.

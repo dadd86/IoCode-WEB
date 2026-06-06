@@ -1,6 +1,6 @@
 # Maintenance
 
-GuÃ­a de mantenimiento del sitio.
+Guía de mantenimiento del sitio.
 
 ## Cambiar datos de empresa
 
@@ -8,11 +8,11 @@ Archivo:
 
     src/data/site.ts
 
-Revisar despuÃ©s:
+Revisar después:
 
 - `npm run check`.
 - `npm run build`.
-- pÃ¡ginas de contacto.
+- páginas de contacto.
 - schema generado.
 - sitemap si cambia URL base.
 
@@ -22,7 +22,7 @@ Archivo principal:
 
     src/i18n/routes.ts
 
-DespuÃ©s de cambiar rutas:
+Después de cambiar rutas:
 
     docker compose exec dev npm run check
     docker compose exec dev npm run build
@@ -31,13 +31,13 @@ Validar:
 
     docker compose exec dev sh -lc "grep -n 'hreflang' dist/sitemap.xml | head"
 
-## Cambiar contenido de pÃ¡ginas
+## Cambiar contenido de páginas
 
 Archivo:
 
     src/data/pageContent.ts
 
-Para Home y Servicios tambiÃ©n revisar:
+Para Home y Servicios también revisar:
 
     src/data/phase1Sections.ts
 
@@ -55,10 +55,10 @@ Validar ES/EN/DE en:
 
 - contacto.
 - botones.
-- navegaciÃ³n.
+- navegación.
 - formularios.
 
-## Cambiar navegaciÃ³n
+## Cambiar navegación
 
 Archivos:
 
@@ -100,7 +100,7 @@ Archivo:
 
     Docker/node-static-server.mjs
 
-Validar producciÃ³n local:
+Validar producción local:
 
     docker compose --profile prod up --build -d web
     curl.exe -I http://localhost:8080/es/
@@ -134,11 +134,11 @@ El email se configura en:
 
 Antes de publicar:
 
-- confirmar que el buzÃ³n existe.
+- confirmar que el buzón existe.
 - enviar correo de prueba.
 - probar el formulario en navegador real.
 
-## PublicaciÃ³n
+## Publicación
 
 Antes de publicar:
 
@@ -157,7 +157,7 @@ Smoke test:
 ## No hacer
 
 - No introducir secretos en frontend.
-- No publicar carpetas `.git`, `node_modules`, `.astro` ni `dist` dentro de un ZIP de cÃ³digo fuente.
+- No publicar carpetas `.git`, `node_modules`, `.astro` ni `dist` dentro de un ZIP de código fuente.
 - No activar HSTS sin HTTPS real.
-- No aÃ±adir analytics sin revisar privacidad y consentimiento.
+- No añadir analytics sin revisar privacidad y consentimiento.
 - No duplicar rutas fuera de `src/i18n/routes.ts`.

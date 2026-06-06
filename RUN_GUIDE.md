@@ -1,6 +1,6 @@
 # Run Guide
 
-GuÃ­a operativa para ejecutar IoCode SOLUTIONS Web en local.
+Guía operativa para ejecutar IoCode SOLUTIONS Web en local.
 
 ## Requisitos
 
@@ -32,7 +32,7 @@ Parar servicios:
 
     docker compose down --remove-orphans
 
-## ValidaciÃ³n rÃ¡pida
+## Validación rápida
 
     docker compose exec dev npm run check
     docker compose exec dev npm run build
@@ -41,7 +41,7 @@ Parar servicios:
 Resultado esperado:
 
 - `check`: 0 errores, 0 warnings, 0 hints.
-- `build`: 29 pÃ¡ginas.
+- `build`: 29 páginas.
 - `audit:prod`: 0 vulnerabilidades.
 
 ## QA completo
@@ -50,8 +50,8 @@ Resultado esperado:
 
 Este servicio ejecuta:
 
-- versiÃ³n de Node.
-- versiÃ³n de npm.
+- versión de Node.
+- versión de npm.
 - `npm run qa`.
 - `check`.
 - `build`.
@@ -65,7 +65,7 @@ Abrir:
 
     http://localhost:4322/es/
 
-## ProducciÃ³n local
+## Producción local
 
     docker compose --profile prod up --build -d web
 
@@ -73,7 +73,7 @@ Comprobar healthcheck:
 
     curl.exe -I http://localhost:8080/health
 
-Comprobar pÃ¡ginas principales:
+Comprobar páginas principales:
 
     curl.exe -I http://localhost:8080/es/
     curl.exe -I http://localhost:8080/en/
@@ -93,21 +93,21 @@ Comprobar 404 real:
 
     curl.exe -I http://localhost:8080/no-existe/
 
-Comprobar redirect canÃ³nico:
+Comprobar redirect canónico:
 
     curl.exe -I http://localhost:8080/es/proceso
 
 Resultado esperado:
 
 - `/health`: 200.
-- pÃ¡ginas vÃ¡lidas: 200.
+- páginas válidas: 200.
 - `/sitemap.xml`: 200.
 - `/no-existe/`: 404.
 - `/es/proceso`: 308 hacia `/es/proceso/`.
 
-## VerificaciÃ³n de persona fÃ­sica en contacto
+## Verificación de persona física en contacto
 
-LinkedIn y GitHub personales deben aparecer solo en pÃ¡ginas de contacto.
+LinkedIn y GitHub personales deben aparecer solo en páginas de contacto.
 
 Confirmar que aparecen en contacto:
 
@@ -121,19 +121,19 @@ Resultado esperado del segundo comando:
 
 - sin salida.
 
-## VerificaciÃ³n de documentaciÃ³n
+## Verificación de documentación
 
-DespuÃ©s de Fase 1.1B:
+Después de Fase 1.1B:
 
     powershell -ExecutionPolicy Bypass -File tools\validate-docs-phase-1-1b.ps1
 
 ## Limpieza fuerte
 
-Usar solo si necesitas borrar volÃºmenes de dependencias del proyecto:
+Usar solo si necesitas borrar volúmenes de dependencias del proyecto:
 
     docker compose down -v --remove-orphans
 
-En este proyecto no hay base de datos, pero `-v` elimina volÃºmenes Docker. Usarlo con criterio.
+En este proyecto no hay base de datos, pero `-v` elimina volúmenes Docker. Usarlo con criterio.
 
 ## Problemas frecuentes
 
@@ -146,7 +146,7 @@ Usa:
     docker compose exec dev npm run check
     docker compose exec dev npm run build
 
-### El contenedor web sigue mostrando una versiÃ³n vieja
+### El contenedor web sigue mostrando una versión vieja
 
 Reconstruye:
 
@@ -154,7 +154,7 @@ Reconstruye:
 
 ### La ruta sin slash no redirige
 
-AsegÃºrate de que la imagen de producciÃ³n fue reconstruida despuÃ©s de modificar `Docker/node-static-server.mjs`.
+Asegúrate de que la imagen de producción fue reconstruida después de modificar `Docker/node-static-server.mjs`.
 
 ### El contacto no abre correctamente
 

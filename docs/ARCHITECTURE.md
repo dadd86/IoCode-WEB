@@ -2,24 +2,24 @@
 
 Arquitectura actual de IoCode SOLUTIONS Web.
 
-## Tipo de aplicaciÃ³n
+## Tipo de aplicación
 
-Sitio estÃ¡tico multilingÃ¼e generado con Astro.
+Sitio estático multilingüe generado con Astro.
 
-No hay backend propio, base de datos, autenticaciÃ³n ni API de aplicaciÃ³n en esta fase.
+No hay backend propio, base de datos, autenticación ni API de aplicación en esta fase.
 
 ## Capas
 
-## 1. Contenido y configuraciÃ³n
+## 1. Contenido y configuración
 
 - `src/data/site.ts`: entidad empresarial, contacto, servicios, schema y datos SEO.
 - `src/data/pageContent.ts`: contenido base por ruta e idioma.
 - `src/data/phase1Sections.ts`: secciones CEO/SEO/AI de Home y Servicios.
-- `src/data/processSections.ts`: contenido especializado de la pÃ¡gina Proceso.
+- `src/data/processSections.ts`: contenido especializado de la página Proceso.
 - `src/data/projects.ts`: proyectos y casos.
 - `src/data/skills.ts`: habilidades.
 
-## 2. InternacionalizaciÃ³n
+## 2. Internacionalización
 
 - `src/i18n/config.ts`: locales soportados.
 - `src/i18n/routes.ts`: rutas localizadas.
@@ -33,20 +33,20 @@ Locales actuales:
 
 ## 3. Rendering
 
-- `src/pages/[locale]/[...slug].astro`: renderiza pÃ¡ginas localizadas.
-- `src/pages/index.astro`: entrada raÃ­z.
-- `src/pages/404.astro`: error estÃ¡tico.
+- `src/pages/[locale]/[...slug].astro`: renderiza páginas localizadas.
+- `src/pages/index.astro`: entrada raíz.
+- `src/pages/404.astro`: error estático.
 - `src/pages/sitemap.xml.ts`: sitemap XML avanzado.
 
 ## 4. Layout y componentes
 
 - `src/layouts/BaseLayout.astro`: HTML base, SEO, schema, header y footer.
-- `src/components/Header.astro`: navegaciÃ³n.
+- `src/components/Header.astro`: navegación.
 - `src/components/Navigation.astro`: rutas principales.
 - `src/components/LanguageSwitcher.astro`: alternancia de idiomas.
 - `src/components/BusinessValueSections.astro`: secciones CEO/SEO.
-- `src/components/ProcessMethod.astro`: pÃ¡gina Proceso.
-- `src/components/ContactForm.astro`: contacto estÃ¡tico con `mailto`.
+- `src/components/ProcessMethod.astro`: página Proceso.
+- `src/components/ContactForm.astro`: contacto estático con `mailto`.
 - `src/components/Hero3D.astro`: escena 3D y fallback.
 
 ## 5. Estilos
@@ -62,15 +62,15 @@ Comando:
 
     docker compose exec dev npm run build
 
-## 7. Runtime local de producciÃ³n
+## 7. Runtime local de producción
 
 - `Docker/Dockerfile`: build multi-stage.
-- `Docker/node-static-server.mjs`: servidor estÃ¡tico Node.
+- `Docker/node-static-server.mjs`: servidor estático Node.
 - servicio `web` en `compose.yml`.
 
 ## Rutas principales
 
-EspaÃ±ol:
+Español:
 
 - `/es/`
 - `/es/servicios/`
@@ -82,7 +82,7 @@ EspaÃ±ol:
 - `/es/proceso/`
 - `/es/contacto/`
 
-InglÃ©s:
+Inglés:
 
 - `/en/`
 - `/en/services/`
@@ -94,7 +94,7 @@ InglÃ©s:
 - `/en/process/`
 - `/en/contact/`
 
-AlemÃ¡n:
+Alemán:
 
 - `/de/`
 - `/de/leistungen/`
@@ -118,7 +118,7 @@ Implementado:
 - metadata Open Graph.
 - Twitter summary card.
 - JSON-LD con Organization, ProfessionalService, ContactPoint, OfferCatalog, BreadcrumbList y WebPage.
-- Person solo en pÃ¡ginas de contacto.
+- Person solo en páginas de contacto.
 
 ## Seguridad
 
@@ -126,21 +126,21 @@ Implementado en runtime local:
 
 - headers HTTP avanzados.
 - 404 real.
-- redirect 308 para rutas canÃ³nicas.
+- redirect 308 para rutas canónicas.
 - cache control diferenciado.
 - ETag y Last-Modified.
 - contenedor no root.
 - filesystem read-only.
 
-## Decisiones arquitectÃ³nicas
+## Decisiones arquitectónicas
 
 - Static-first: reduce superficie de backend.
 - Docker-first: evita depender de Node/npm local en Windows.
-- MultilingÃ¼e por rutas: mejora claridad SEO y mantenimiento.
+- Multilingüe por rutas: mejora claridad SEO y mantenimiento.
 - Contacto por `mailto`: evita almacenar datos personales en esta fase.
-- Persona fÃ­sica solo en contacto: equilibrio entre marca empresarial y confianza.
+- Persona física solo en contacto: equilibrio entre marca empresarial y confianza.
 
-## LÃ­mites actuales
+## Límites actuales
 
 - No hay CMS.
 - No hay backend para formularios.
