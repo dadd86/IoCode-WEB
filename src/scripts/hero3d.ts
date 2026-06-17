@@ -13,6 +13,11 @@ type PointerState = {
   targetY: number;
 };
 
+type LogoMaterialRuntime = {
+  material: THREE.Material;
+  baseOpacity: number;
+};
+
 type RuntimeState = {
   animationFrameId: number | null;
   abortController: AbortController;
@@ -34,7 +39,7 @@ type LogoScene = {
   panelAnchors: Map<PanelElement, THREE.Vector3>;
   pointer: PointerState;
   getActivePanel: () => PanelElement | null;
-  materials: THREE.MeshPhysicalMaterial[];
+  materials: LogoMaterialRuntime[];
   lights: {
     ambient: THREE.HemisphereLight;
     key: THREE.SpotLight;
@@ -49,6 +54,12 @@ const BRAND = {
   navy: 0x0c375e,
   cyan: 0x1f91a7,
   lightEdge: 0xdfe8ee
+} as const;
+
+const LOGO_ROTATION_LIMIT = {
+  x: THREE.MathUtils.degToRad(6),
+  y: THREE.MathUtils.degToRad(7.5),
+  z: THREE.MathUtils.degToRad(1.5)
 } as const;
 
 function clamp(value: number, min: number, max: number): number {
@@ -137,102 +148,63 @@ function getMaterialList(material: THREE.Material | THREE.Material[]): THREE.Mat
   return Array.isArray(material) ? material : [material];
 }
 
-function getMaterialColor(material: THREE.Material | undefined): THREE.Color | null {
-  const candidate = material as
-    | (THREE.MeshStandardMaterial & { color?: THREE.Color })
-    | undefined;
+const COLOR_TEXTURE_KEYS = [
+  "map",
+  "emissiveMap",
+  "specularColorMap",
+  "sheenColorMap"
+] as const;
 
-  if (candidate?.color instanceof THREE.Color) {
-    return candidate.color.clone();
+const DISPOSABLE_TEXTURE_KEYS = [
+  "map",
+  "alphaMap",
+  "aoMap",
+  "bumpMap",
+  "clearcoatMap",
+  "clearcoatNormalMap",
+  "clearcoatRoughnessMap",
+  "displacementMap",
+  "emissiveMap",
+  "envMap",
+  "iridescenceMap",
+  "iridescenceThicknessMap",
+  "lightMap",
+  "metalnessMap",
+  "normalMap",
+  "roughnessMap",
+  "sheenColorMap",
+  "sheenRoughnessMap",
+  "specularColorMap",
+  "specularIntensityMap",
+  "transmissionMap",
+  "thicknessMap"
+] as const;
+
+type MaterialWithOptionalMaps = THREE.Material & {
+  alphaTest?: number;
+  depthWrite?: boolean;
+  opacity?: number;
+  side?: THREE.Side;
+  toneMapped?: boolean;
+  transparent?: boolean;
+} & Partial<Record<(typeof DISPOSABLE_TEXTURE_KEYS)[number], THREE.Texture | null>>;
+
+function configureColorTexture(texture: THREE.Texture | null | undefined): void {
+  if (!texture) {
+    return;
   }
 
-  return null;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
 }
 
-function inferBrandColor(
-  oldMaterial: THREE.Material | undefined,
-  objectName: string
-): THREE.Color {
-  const materialName = String(oldMaterial?.name || objectName || "").toLowerCase();
-  const sourceColor = getMaterialColor(oldMaterial);
-
-  if (sourceColor) {
-    const hsl = { h: 0, s: 0, l: 0 };
-
-    sourceColor.getHSL(hsl);
-
-    const isCyanish = hsl.h > 0.46 && hsl.h < 0.58 && hsl.s > 0.28;
-    const isBluish = hsl.h > 0.54 && hsl.h < 0.7 && hsl.s > 0.22;
-    const isLight = hsl.l > 0.7 && hsl.s < 0.35;
-    const isDarkNeutral = hsl.l < 0.18 && hsl.s < 0.18;
-
-    if (isCyanish) {
-      return new THREE.Color(BRAND.cyan);
-    }
-
-    if (isBluish || isDarkNeutral) {
-      return new THREE.Color(BRAND.navy);
-    }
-
-    if (isLight) {
-      return new THREE.Color(BRAND.lightEdge);
-    }
-
-    return sourceColor;
-  }
-
-  if (
-    materialName.includes("cyan") ||
-    materialName.includes("cian") ||
-    materialName.includes("turquesa")
-  ) {
-    return new THREE.Color(BRAND.cyan);
-  }
-
-  if (
-    materialName.includes("white") ||
-    materialName.includes("blanco") ||
-    materialName.includes("edge")
-  ) {
-    return new THREE.Color(BRAND.lightEdge);
-  }
-
-  return new THREE.Color(BRAND.navy);
+function materialHasLogoTexture(material: MaterialWithOptionalMaps): boolean {
+  return COLOR_TEXTURE_KEYS.some((key) => material[key] instanceof THREE.Texture);
 }
 
-function createBrandMaterial(mesh: THREE.Mesh): THREE.MeshPhysicalMaterial {
-  const previousMaterials = getMaterialList(mesh.material);
-  const primaryPreviousMaterial = previousMaterials[0];
-  const color = inferBrandColor(primaryPreviousMaterial, mesh.name);
-  const hsl = { h: 0, s: 0, l: 0 };
-
-  color.getHSL(hsl);
-
-  const isCyan = hsl.h > 0.46 && hsl.h < 0.58 && hsl.s > 0.28;
-  const isLight = hsl.l > 0.7 && hsl.s < 0.35;
-
-  const material = new THREE.MeshPhysicalMaterial({
-    name: primaryPreviousMaterial?.name || `${mesh.name || "logo"}_brandMetal`,
-    color,
-    metalness: isLight ? 0.18 : isCyan ? 0.26 : 0.34,
-    roughness: isLight ? 0.38 : isCyan ? 0.3 : 0.34,
-    clearcoat: 0.42,
-    clearcoatRoughness: 0.3,
-    envMapIntensity: isLight ? 0.48 : isCyan ? 0.78 : 0.68,
-    emissive: color,
-    emissiveIntensity: isCyan ? 0.018 : 0.006,
-    transparent: true,
-    opacity: 0
-  });
-
-  material.userData.originalColorHex = `#${color.getHexString()}`;
-
-  return material;
-}
-
-function applyBrandMaterials(logo: THREE.Object3D): THREE.MeshPhysicalMaterial[] {
-  const newMaterials: THREE.MeshPhysicalMaterial[] = [];
-  const oldMaterials = new Set<THREE.Material>();
+function prepareLogoMaterials(logo: THREE.Object3D): LogoMaterialRuntime[] {
+  const materialRuntimes: LogoMaterialRuntime[] = [];
+  const seenMaterials = new Set<THREE.Material>();
 
   logo.traverse((child: THREE.Object3D) => {
     if (!(child instanceof THREE.Mesh)) {
@@ -244,20 +216,61 @@ function applyBrandMaterials(logo: THREE.Object3D): THREE.MeshPhysicalMaterial[]
       THREE.Material | THREE.Material[]
     >;
 
-    getMaterialList(mesh.material).forEach((material) => oldMaterials.add(material));
-
     mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    mesh.receiveShadow = false;
+    mesh.frustumCulled = false;
 
-    const material = createBrandMaterial(mesh);
+    getMaterialList(mesh.material).forEach((material) => {
+      if (seenMaterials.has(material)) {
+        return;
+      }
 
-    mesh.material = material;
-    newMaterials.push(material);
+      seenMaterials.add(material);
+
+      const logoMaterial = material as MaterialWithOptionalMaps;
+      const hasTexture = materialHasLogoTexture(logoMaterial);
+      const baseOpacity = typeof logoMaterial.opacity === "number" ? logoMaterial.opacity : 1;
+
+      COLOR_TEXTURE_KEYS.forEach((key) => configureColorTexture(logoMaterial[key]));
+
+      if (hasTexture) {
+        logoMaterial.transparent = true;
+        logoMaterial.alphaTest = Math.max(logoMaterial.alphaTest || 0, 0.05);
+        logoMaterial.depthWrite = true;
+        logoMaterial.side = THREE.DoubleSide;
+
+        if ("toneMapped" in logoMaterial) {
+          logoMaterial.toneMapped = false;
+        }
+      } else {
+        logoMaterial.transparent = true;
+      }
+
+      logoMaterial.opacity = 0;
+      logoMaterial.needsUpdate = true;
+
+      materialRuntimes.push({
+        material,
+        baseOpacity
+      });
+    });
   });
 
-  oldMaterials.forEach((material) => material.dispose());
+  return materialRuntimes;
+}
 
-  return newMaterials;
+function disposeMaterial(material: THREE.Material): void {
+  const materialWithMaps = material as MaterialWithOptionalMaps;
+
+  DISPOSABLE_TEXTURE_KEYS.forEach((key) => {
+    const texture = materialWithMaps[key];
+
+    if (texture instanceof THREE.Texture) {
+      texture.dispose();
+    }
+  });
+
+  material.dispose();
 }
 
 function disposeObject3D(object: THREE.Object3D): void {
@@ -272,7 +285,7 @@ function disposeObject3D(object: THREE.Object3D): void {
     >;
 
     mesh.geometry.dispose();
-    getMaterialList(mesh.material).forEach((material) => material.dispose());
+    getMaterialList(mesh.material).forEach((material) => disposeMaterial(material));
   });
 }
 
@@ -481,8 +494,12 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
     runtime.pointer.x += (runtime.pointer.targetX - runtime.pointer.x) * 0.045;
     runtime.pointer.y += (runtime.pointer.targetY - runtime.pointer.y) * 0.045;
 
-    runtime.materials.forEach((material) => {
-      material.opacity = intro;
+    runtime.materials.forEach(({ material, baseOpacity }) => {
+      const logoMaterial = material as THREE.Material & { opacity?: number };
+
+      if (typeof logoMaterial.opacity === "number") {
+        logoMaterial.opacity = baseOpacity * intro;
+      }
     });
 
     runtime.logo.scale.setScalar(runtime.logoBaseScale * (0.9 + 0.1 * intro));
@@ -495,25 +512,43 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
       0.045
     );
 
+    const targetRotationX = clamp(
+      -0.02 + runtime.pointer.y * 0.018 * motionFactor,
+      -LOGO_ROTATION_LIMIT.x,
+      LOGO_ROTATION_LIMIT.x
+    );
+
+    const targetRotationY = clamp(
+      hasActivePanel
+        ? -0.035
+        : -0.055 +
+            Math.sin(elapsed * 0.32) * 0.035 * motionFactor +
+            runtime.pointer.x * 0.02 * motionFactor,
+      -LOGO_ROTATION_LIMIT.y,
+      LOGO_ROTATION_LIMIT.y
+    );
+
+    const targetRotationZ = clamp(
+      runtime.pointer.x * -0.004 * motionFactor,
+      -LOGO_ROTATION_LIMIT.z,
+      LOGO_ROTATION_LIMIT.z
+    );
+
     runtime.logo.rotation.x = THREE.MathUtils.lerp(
       runtime.logo.rotation.x,
-      -0.02 + runtime.pointer.y * 0.018 * motionFactor,
+      targetRotationX,
       0.045
     );
 
     runtime.logo.rotation.y = THREE.MathUtils.lerp(
       runtime.logo.rotation.y,
-      hasActivePanel
-        ? -0.035
-        : -0.055 +
-            Math.sin(elapsed * 0.32) * 0.045 * motionFactor +
-            runtime.pointer.x * 0.026 * motionFactor,
+      targetRotationY,
       0.04
     );
 
     runtime.logo.rotation.z = THREE.MathUtils.lerp(
       runtime.logo.rotation.z,
-      runtime.pointer.x * -0.004 * motionFactor,
+      targetRotationZ,
       0.045
     );
 
@@ -631,7 +666,7 @@ async function initHero(host: HTMLElement): Promise<void> {
 
     scene.add(logo);
 
-    const materials = applyBrandMaterials(logo);
+    const materials = prepareLogoMaterials(logo);
 
     const logoBaseScale = normalizeLogoByWidth(logo, 5.95);
 

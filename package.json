@@ -16,7 +16,8 @@
     "qa:browser": "playwright test",
     "qa:lighthouse": "node tools/lighthouse-phase-1-1c.mjs",
     "qa:phase-1-1c": "npm run build && npm run qa:static && npm run qa:browser && npm run qa:lighthouse",
-    "qa:phase-1-1d": "npm run build && npm run qa:static && npm run qa:static:1.1d && npm run check && npm run audit:prod"
+    "qa:phase-1-1d": "npm run build && npm run qa:static && npm run qa:static:1.1d && npm run check && npm run audit:prod",
+    "release:zip": "sh tools/create-release-zip.sh"
   },
   "dependencies": {
     "astro": "6.4.2",

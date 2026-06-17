@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LoCode Solutions - GLB Viewer</title>
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+    #canvas3d { width: 100%; height: 100%; display: block; }
+  </style>
+</head>
+<body>
+<canvas id="canvas3d"></canvas>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+const canvas = document.querySelector('#canvas3d');
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.01, 100);
+camera.position.set(0, 0.15, 8.5);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x1f2a44, 1.15));
+const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+keyLight.position.set(3, 5, 6);
+scene.add(keyLight);
+const rimLight = new THREE.DirectionalLight(0x66d9ff, 1.1);
+rimLight.position.set(-4, 2, -3);
+scene.add(rimLight);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.65;
+controls.enablePan = false;
+
+const loader = new GLTFLoader();
+loader.load('./locodeSolutions_3d_logo.glb', (gltf) => {
+  const model = gltf.scene;
+  scene.add(model);
+
+  model.traverse((child) => {
+    if (child.isMesh && child.material) {
+      if (child.material.map) {
+        child.material.transparent = true;
+        child.material.alphaTest = 0.035;
+        child.material.depthWrite = false;
+      } else {
+        child.material.transparent = false;
+        child.material.depthWrite = true;
+      }
+      child.material.needsUpdate = true;
+    }
+  });
+
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.sub(center);
+
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fov = camera.fov * Math.PI / 180;
+  camera.position.z = Math.abs(maxDim / (2 * Math.tan(fov / 2))) * 1.55;
+  controls.target.set(0, 0, 0);
+  controls.update();
+}, undefined, (error) => {
+  console.error('No se pudo cargar el GLB:', error);
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

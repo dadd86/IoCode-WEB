@@ -7,9 +7,11 @@ WORKDIR /app
 ENV NODE_ENV=development
 ENV ASTRO_TELEMETRY_DISABLED=1
 
-RUN apk add --no-cache gcompat \
+RUN apk add --no-cache gcompat git unzip \
   && node --version \
-  && npm --version
+  && npm --version \
+  && git --version \
+  && unzip -v | head -1
 
 COPY package*.json ./
 
