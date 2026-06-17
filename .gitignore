@@ -75,7 +75,8 @@ db/
 *.db
 *.dump
 
-# do not commit internal/source assets
+# local/internal source assets not shipped in the website
+assets-source/
 Skills/
 Logo/
 public/Logo/
@@ -84,10 +85,10 @@ public/Logo/
 *.ai
 *.sketch
 
-# keep final assets
+# keep final public assets
 !public/
 !public/logo/
-!public/logo/iocode-logo.svg
+!public/logo/iocode-logo.png
 !public/logo/3d/
 !public/logo/3d/iocode_solutions_logo_extruded_3d.glb
 !.devcontainer/
@@ -99,4 +100,5 @@ playwright-report/
 test-results/
 
 
+# internal prompt / working notes, not part of release
 Prompt.md

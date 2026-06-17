@@ -1,23 +1,47 @@
 .git
 .gitignore
+
 node_modules
 dist
 .astro
 .output
 .cache
 coverage
+*.tsbuildinfo
 
 .env
 .env.*
+!.env.example
 !Docker/.env.example
 
 Docker/.env
+docker-compose.override.yml
+compose.override.yml
 
 logs
 *.log
+reports
+playwright-report
+test-results
+lighthouse-report
+qa-artifacts
+
+releases
+artifacts
+exports
 
 backups
+backup
 dumps
+dump
+database
+db
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+
 tmp
 temp
 
@@ -26,8 +50,21 @@ temp
 *.7z
 *.tar
 *.tar.gz
+*.tgz
 
 .vscode
 .idea
 .devcontainer
 Docker/devcontainer
+
+assets-source
+Skills
+Logo
+public/Logo
+
+*.eps
+*.psd
+*.ai
+*.sketch
+
+Prompt.md

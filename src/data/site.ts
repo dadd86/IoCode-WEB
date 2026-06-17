@@ -23,7 +23,7 @@ export const siteConfig = {
   legalName: "IoCode SOLUTIONS",
   url: "https://iocode-solutions.com",
   email: "contact@iocode-solutions.com",
-  logoPath: "/logo/iocode-logo.svg",
+  logoPath: "/logo/iocode-logo.png",
   logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb",
   location: {
     city: "Aachen",
