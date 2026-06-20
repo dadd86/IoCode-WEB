@@ -17,13 +17,7 @@ services:
       - .:/app
       - iocode_node_modules:/app/node_modules
       - iocode_astro_cache:/app/.astro
-    command: >
-      sh -c "
-      if [ ! -d node_modules/astro ]; then
-        if [ -f package-lock.json ]; then npm ci; else npm install; fi;
-      fi;
-      npm run dev -- --host 0.0.0.0
-      "
+    command: npm run dev -- --host 0.0.0.0
     restart: unless-stopped
 
   qa:
@@ -42,9 +36,6 @@ services:
       - iocode_astro_cache:/app/.astro
     command: >
       sh -c "
-      if [ ! -d node_modules/astro ]; then
-        if [ -f package-lock.json ]; then npm ci; else npm install; fi;
-      fi;
       node --version &&
       npm --version &&
       npm run qa
@@ -69,9 +60,6 @@ services:
       - iocode_astro_cache:/app/.astro
     command: >
       sh -c "
-      if [ ! -d node_modules/astro ]; then
-        if [ -f package-lock.json ]; then npm ci; else npm install; fi;
-      fi;
       node --version &&
       npm --version &&
       npm run build &&

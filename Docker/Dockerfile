@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:lts-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY package*.json ./
 
 RUN test -f package.json || { echo "ERROR: package.json no existe en la raiz del proyecto." >&2; exit 64; }
 
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+RUN npm ci
 
 COPY . .
 
@@ -23,7 +23,7 @@ RUN npm run check
 RUN npm run build
 
 
-FROM node:lts-alpine AS runtime
+FROM node:24-alpine AS runtime
 
 WORKDIR /app
 

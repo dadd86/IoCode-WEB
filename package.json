@@ -10,22 +10,29 @@
     "preview": "astro preview",
     "qa": "npm run check && npm run build && npm run audit:prod",
     "audit:prod": "npm audit --omit=dev",
+    "audit:prod:strict": "npm audit --omit=dev",
     "audit:all": "npm audit",
-    "qa:static": "node tools/qa-static-phase-1-1c.mjs",
-    "qa:static:1.1d": "node tools/qa-static-phase-1-1d.mjs",
-    "qa:browser": "playwright test",
-    "qa:lighthouse": "node tools/lighthouse-phase-1-1c.mjs",
-    "qa:phase-1-1c": "npm run build && npm run qa:static && npm run qa:browser && npm run qa:lighthouse",
-    "qa:phase-1-1d": "npm run build && npm run qa:static && npm run qa:static:1.1d && npm run check && npm run audit:prod",
-    "release:zip": "sh tools/create-release-zip.sh"
+    "docker:check": "npm run check",
+    "docker:build": "npm run build",
+    "docker:audit:prod": "npm run audit:prod",
+    "docker:validate": "npm run check && npm run build && npm run audit:prod"
   },
   "dependencies": {
-    "astro": "6.4.2",
+    "astro": "^6.4.8",
     "three": "0.184.0"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "yaml": "2.8.3",
+    "cookie": "0.7.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@playwright/test": "1.60.0",
     "@types/three": "^0.184.1",
+    "axe-core": "4.10.0",
+    "lighthouse": "12.6.1",
+    "playwright": "1.60.0",
     "typescript": "6.0.3"
   }
 }

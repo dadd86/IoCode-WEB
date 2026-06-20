@@ -3,8 +3,6 @@
 ARG PLAYWRIGHT_VERSION=1.60.0
 FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
 
-ARG PLAYWRIGHT_VERSION=1.60.0
-
 WORKDIR /app
 
 ENV CI=1 \
@@ -15,12 +13,7 @@ ENV CI=1 \
 
 COPY package*.json ./
 
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi \
-  && npm install --no-save \
-    @playwright/test@${PLAYWRIGHT_VERSION} \
-    playwright@${PLAYWRIGHT_VERSION} \
-    axe-core@^4.10.0 \
-    lighthouse@^12.2.0 \
+RUN npm ci \
   && npx playwright --version
 
 COPY . .
