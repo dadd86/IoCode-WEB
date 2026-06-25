@@ -80,6 +80,7 @@ services:
       ASTRO_TELEMETRY_DISABLED: "1"
       ENABLE_HSTS: "false"
       ENABLE_UPGRADE_INSECURE_REQUESTS: "false"
+      ENABLE_COOP: "false"
     ports:
       - "${WEB_PORT:-8080}:8080"
     read_only: true
@@ -117,10 +118,11 @@ services:
       ASTRO_TELEMETRY_DISABLED: "1"
       PLAYWRIGHT_BASE_URL: "http://web:8080"
       LIGHTHOUSE_BASE_URL: "http://web:8080"
+      SECURITY_BASE_URL: "http://web:8080"
       LH_MIN_PERFORMANCE: "0.50"
-      LH_MIN_ACCESSIBILITY: "0.90"
+      LH_MIN_ACCESSIBILITY: "1"
       LH_MIN_BEST_PRACTICES: "0.85"
-      LH_MIN_SEO: "0.90"
+      LH_MIN_SEO: "1"
     depends_on:
       web:
         condition: service_healthy

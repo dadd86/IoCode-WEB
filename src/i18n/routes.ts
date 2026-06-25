@@ -21,7 +21,7 @@ export type LocalizedRoute = {
 export const routeAlternates: Record<RouteKey, LocalizedRoute> = {
   home: {
     key: "home",
-    label: { es: "Inicio", en: "Home", de: "Start" },
+    label: { es: "Inicio", en: "Home", de: "IoCode SOLUTIONS Startseite" },
     slug: { es: undefined, en: undefined, de: undefined },
     path: { es: "/es/", en: "/en/", de: "/de/" }
   },

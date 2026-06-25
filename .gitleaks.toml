@@ -1,0 +1,25 @@
+title = "IoCode SOLUTIONS Gitleaks allowlist"
+
+[allowlist]
+description = "Archivos generados, dependencias, artifacts y placeholders permitidos para IoCode-WEB."
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)\.git/''',
+  '''(^|/)dist/''',
+  '''(^|/)\.astro/''',
+  '''(^|/)qa-artifacts/''',
+  '''(^|/)playwright-report/''',
+  '''(^|/)test-results/''',
+  '''(^|/)releases/''',
+  '''(^|/)artifacts/''',
+  '''(^|/)exports/'''
+]
+regexes = [
+  '''(?i)changeme''',
+  '''(?i)change-me''',
+  '''(?i)placeholder''',
+  '''(?i)redacted''',
+  '''(?i)example''',
+  '''<placeholder>''',
+  '''<redacted>'''
+]

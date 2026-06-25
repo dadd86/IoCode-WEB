@@ -7,6 +7,7 @@ const rootDir = resolve("dist");
 
 const enableHsts = process.env.ENABLE_HSTS === "true";
 const enableUpgradeInsecureRequests = process.env.ENABLE_UPGRADE_INSECURE_REQUESTS === "true";
+const enableCoop = process.env.ENABLE_COOP === "true";
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -31,7 +32,9 @@ function setSecurityHeaders(response) {
   response.setHeader("X-DNS-Prefetch-Control", "off");
   response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  if (enableCoop) {
+    response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  }
   response.setHeader("Cross-Origin-Resource-Policy", "same-origin");
   response.setHeader("Origin-Agent-Cluster", "?1");
   response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=()");
@@ -52,13 +55,12 @@ function setSecurityHeaders(response) {
     "script-src 'self' 'unsafe-inline'",
     "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "model-src 'self'",
-    "connect-src 'self'",
+    "connect-src 'self' blob:",
     "manifest-src 'self'",
-    "media-src 'self'",
-    "worker-src 'self'"
+    "media-src 'self' blob:",
+    "worker-src 'self' blob:"
   ];
 
   if (enableUpgradeInsecureRequests) {

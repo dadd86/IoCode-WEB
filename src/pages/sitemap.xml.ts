@@ -14,13 +14,7 @@ function escapeXml(value: string): string {
     .replaceAll("'", "&apos;");
 }
 
-function getLastModified(): string {
-  return new Date().toISOString();
-}
-
 export const GET: APIRoute = () => {
-  const lastmod = getLastModified();
-
   const urls = Object.values(routeAlternates)
     .flatMap((route) =>
       locales.map((locale) => {
@@ -42,7 +36,6 @@ export const GET: APIRoute = () => {
         return [
           "  <url>",
           `    <loc>${escapeXml(loc)}</loc>`,
-          `    <lastmod>${lastmod}</lastmod>`,
           alternates,
           xDefault,
           "  </url>"

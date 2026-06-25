@@ -1,8 +1,16 @@
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync
+} from "node:fs";
+import { extname, join, relative } from "node:path";
 import process from "node:process";
 
 const rootDir = process.cwd();
+const artifactRoot = "qa-artifacts/security/phase-1-1d";
 const errors = [];
 const warnings = [];
 
@@ -28,6 +36,17 @@ const contactPages = [
       "Bitte keine Passwörter, Tokens, Bankdaten oder sensiblen Informationen eingeben."
   }
 ];
+
+const ignoredDirectories = new Set([
+  ".astro",
+  ".git",
+  "dist",
+  "node_modules",
+  "playwright-report",
+  "qa-artifacts",
+  "test-results",
+  "releases"
+]);
 
 const textFileExtensions = new Set([
   ".astro",
@@ -83,6 +102,12 @@ function readText(relativePath) {
   return readFileSync(absolutePath, "utf8");
 }
 
+function assertFileExists(relativePath) {
+  if (!existsSync(projectPath(relativePath))) {
+    errors.push(`${relativePath}: archivo requerido no encontrado.`);
+  }
+}
+
 function assertContains(relativePath, expectedText, label) {
   const text = readText(relativePath);
 
@@ -99,19 +124,8 @@ function assertNotContains(relativePath, forbiddenPattern, label) {
   }
 }
 
-function getExtension(filePath) {
-  const fileName = filePath.split(/[\\/]/).pop() || "";
-  const dotIndex = fileName.lastIndexOf(".");
-
-  if (dotIndex === -1) {
-    return "";
-  }
-
-  return fileName.slice(dotIndex).toLowerCase();
-}
-
 function isLikelyTextFile(filePath) {
-  const extension = getExtension(filePath);
+  const extension = extname(filePath).toLowerCase();
 
   if (binaryFileExtensions.has(extension)) {
     return false;
@@ -147,16 +161,6 @@ function walk(inputPath) {
     return [absolutePath];
   }
 
-  const ignoredDirectories = new Set([
-    ".astro",
-    ".git",
-    "dist",
-    "node_modules",
-    "playwright-report",
-    "qa-artifacts",
-    "test-results"
-  ]);
-
   const files = [];
 
   for (const entry of readdirSync(absolutePath, { withFileTypes: true })) {
@@ -179,11 +183,23 @@ function walk(inputPath) {
   return files;
 }
 
+function writeArtifact(name, payload) {
+  mkdirSync(artifactRoot, { recursive: true });
+
+  writeFileSync(
+    join(artifactRoot, name),
+    JSON.stringify(payload, null, 2),
+    "utf8"
+  );
+}
+
 function scanForCredentialAssignments() {
   const scanTargets = [
     "src",
     "docs",
     "Docker",
+    "public",
+    "tools",
     ".env.example",
     "compose.yml",
     "README.md",
@@ -197,7 +213,7 @@ function scanForCredentialAssignments() {
     /\b(password|passwd|pwd|token|secret|api[_-]?key|private[_-]?key|access[_-]?key|client[_-]?secret)\b\s*[:=]\s*["']?([^"'\s#;]+)/gim;
 
   const privateKeyPattern =
-    /-----BEGIN (RSA |DSA |EC |OPENSSH |)?PRIVATE KEY-----/gm;
+    /-----BEGIN (RSA |DSA |EC |OPENSSH |)?PRIVATE KEY-----/m;
 
   const allowedValues = new Set([
     "",
@@ -289,12 +305,12 @@ function scanForMojibake() {
     assertNotContains(
       page.path,
       mojibakePattern,
-      "texto visible con codificación dañada"
+      `texto visible con codificación dañada en ${page.locale}`
     );
   }
 }
 
-function checkContactEmail() {
+function checkContactEmailAndMicrocopy() {
   assertContains(
     "src/data/site.ts",
     `email: "${expectedContactEmail}"`,
@@ -302,6 +318,8 @@ function checkContactEmail() {
   );
 
   for (const page of contactPages) {
+    assertFileExists(page.path);
+
     assertContains(
       page.path,
       `mailto:${expectedContactEmail}`,
@@ -372,99 +390,69 @@ function checkCspAndDocumentation() {
   const serverFile = "Docker/node-static-server.mjs";
   const securityFile = "SECURITY.md";
 
-  assertContains(
-    serverFile,
-    "Content-Security-Policy",
-    "cabecera Content-Security-Policy"
-  );
+  assertContains(serverFile, "Content-Security-Policy", "cabecera CSP");
+  assertContains(serverFile, "default-src 'self'", "CSP default-src self");
+  assertContains(serverFile, "base-uri 'self'", "CSP base-uri self");
+  assertContains(serverFile, "object-src 'none'", "CSP object-src none");
+  assertContains(serverFile, "frame-ancestors 'none'", "CSP frame-ancestors none");
+  assertContains(serverFile, "form-action 'self' mailto:", "CSP form-action mailto controlado");
+  assertContains(serverFile, "script-src 'self' 'unsafe-inline'", "deuda CSP script-src unsafe-inline explícita");
+  assertContains(serverFile, "style-src 'self' 'unsafe-inline'", "deuda CSP style-src unsafe-inline explícita");
 
-  assertContains(
-    serverFile,
-    "default-src 'self'",
-    "CSP default-src self"
-  );
-
-  assertContains(
-    serverFile,
-    "object-src 'none'",
-    "CSP object-src none"
-  );
-
-  assertContains(
-    serverFile,
-    "frame-ancestors 'none'",
-    "CSP frame-ancestors none"
-  );
-
-  assertContains(
-    serverFile,
-    "script-src 'self' 'unsafe-inline'",
-    "deuda CSP script-src unsafe-inline explícita"
-  );
-
-  assertContains(
-    serverFile,
-    "style-src 'self' 'unsafe-inline'",
-    "deuda CSP style-src unsafe-inline explícita"
-  );
-
-  assertContains(
-    securityFile,
-    "unsafe-inline",
-    "documentación de deuda CSP unsafe-inline"
-  );
-
-  assertContains(
-    securityFile,
-    "Deuda aceptada temporalmente",
-    "aceptación temporal documentada de CSP"
-  );
+  assertContains(securityFile, "unsafe-inline", "documentación de deuda CSP unsafe-inline");
+  assertContains(securityFile, "Deuda aceptada temporalmente", "aceptación temporal documentada de CSP");
 }
 
 function checkDockerReleaseGuards() {
-  assertContains(
-    "compose.yml",
-    "read_only: true",
-    "filesystem read-only en servicio web"
-  );
-
-  assertContains(
-    "compose.yml",
-    "no-new-privileges:true",
-    "no-new-privileges en servicio web"
-  );
-
-  assertContains(
-    "compose.yml",
-    "cap_drop:",
-    "cap_drop en servicio web"
-  );
-
-  assertContains(
-    "Docker/Dockerfile",
-    "USER node",
-    "usuario no root en runtime"
-  );
-
-  assertContains(
-    ".dockerignore",
-    ".env",
-    "exclusión de .env en Docker context"
-  );
-
-  assertContains(
-    ".dockerignore",
-    ".git",
-    "exclusión de .git en Docker context"
-  );
+  assertContains("compose.yml", "read_only: true", "filesystem read-only en servicio web");
+  assertContains("compose.yml", "no-new-privileges:true", "no-new-privileges en servicio web");
+  assertContains("compose.yml", "cap_drop:", "cap_drop en servicio web");
+  assertContains("Docker/Dockerfile", "USER node", "usuario no root en runtime");
+  assertContains(".dockerignore", ".env", "exclusión de .env en Docker context");
+  assertContains(".dockerignore", ".git", "exclusión de .git en Docker context");
+  assertContains(".dockerignore", "node_modules", "exclusión de node_modules en Docker context");
+  assertContains(".dockerignore", "qa-artifacts", "exclusión de qa-artifacts en Docker context");
 }
 
-checkContactEmail();
+function checkReleaseScriptsExist() {
+  assertFileExists("tools/create-release-zip.sh");
+  assertContains("tools/create-release-zip.sh", ".git", "bloqueo de .git en ZIP release");
+  assertContains("tools/create-release-zip.sh", "node_modules", "bloqueo de node_modules en ZIP release");
+  assertContains("tools/create-release-zip.sh", "qa-artifacts", "bloqueo de qa-artifacts en ZIP release");
+  assertContains("tools/create-release-zip.sh", ".env", "bloqueo de .env en ZIP release");
+}
+
+checkContactEmailAndMicrocopy();
 checkContactPersonAndSocialScope();
 checkCspAndDocumentation();
 checkDockerReleaseGuards();
+checkReleaseScriptsExist();
 scanForCredentialAssignments();
 scanForMojibake();
+
+const status = errors.length === 0 ? "passed" : "failed";
+
+writeArtifact("static.json", {
+  phase: "1.1D",
+  check: "static-security-privacy",
+  status,
+  contactEmail: expectedContactEmail,
+  checks: {
+    contactEmail: "checked",
+    privacyMicrocopy: "checked",
+    personalDataExposure: "checked",
+    cspDocumentation: "checked",
+    dockerRuntimeGuards: "checked",
+    releaseScripts: "checked",
+    secretRegexScan: "checked",
+    encoding: "checked"
+  },
+  warningCount: warnings.length,
+  errorCount: errors.length,
+  warnings,
+  errors,
+  generatedAt: new Date().toISOString()
+});
 
 if (warnings.length > 0) {
   console.warn("Warnings Fase 1.1D:");
