@@ -8,13 +8,16 @@ import { join } from "node:path";
 
 const artifactRoot = "qa-artifacts/security/phase-1-1d";
 const errors = [];
-const warnings = [];
+const requireGitleaksArtifact = process.env.REQUIRE_GITLEAKS_ARTIFACT === "true";
 
-function readJsonArtifact(name) {
+function readJsonArtifact(name, required = true) {
   const path = join(artifactRoot, name);
 
   if (!existsSync(path)) {
-    errors.push(`${path}: artifact requerido no encontrado.`);
+    if (required) {
+      errors.push(`${path}: artifact requerido no encontrado.`);
+    }
+
     return null;
   }
 
@@ -35,12 +38,12 @@ function assertPassed(artifact, name) {
     errors.push(`${name}: status esperado "passed", recibido "${artifact.status}".`);
   }
 
-  if (artifact.warningCount > 0) {
-    warnings.push(`${name}: contiene ${artifact.warningCount} warning(s).`);
+  if (artifact.warningCount !== 0) {
+    errors.push(`${name}: warningCount debe ser 0, recibido ${artifact.warningCount}.`);
   }
 
-  if (artifact.errorCount > 0) {
-    errors.push(`${name}: contiene ${artifact.errorCount} error(es).`);
+  if (artifact.errorCount !== 0) {
+    errors.push(`${name}: errorCount debe ser 0, recibido ${artifact.errorCount}.`);
   }
 }
 
@@ -48,18 +51,21 @@ const staticArtifact = readJsonArtifact("static.json");
 const headersArtifact = readJsonArtifact("headers.json");
 const privacyArtifact = readJsonArtifact("privacy-surface.json");
 const releaseArtifact = readJsonArtifact("release-hygiene.json");
+const gitleaksArtifact = readJsonArtifact("gitleaks.json", requireGitleaksArtifact);
 
 assertPassed(staticArtifact, "static.json");
 assertPassed(headersArtifact, "headers.json");
 assertPassed(privacyArtifact, "privacy-surface.json");
 assertPassed(releaseArtifact, "release-hygiene.json");
 
+if (requireGitleaksArtifact) {
+  assertPassed(gitleaksArtifact, "gitleaks.json");
+}
+
 const emailConfirmed = process.env.EMAIL_CONFIRMED === "true";
 
 if (!emailConfirmed) {
-  warnings.push(
-    "EMAIL_CONFIRMED no está en true; la recepción real de contact@iocode-solutions.com queda como verificación manual pendiente."
-  );
+  errors.push("EMAIL_CONFIRMED debe ser true para cerrar 1.1D.");
 }
 
 const status = errors.length === 0 ? "passed" : "failed";
@@ -68,10 +74,14 @@ const summary = {
   phase: "1.1D",
   status,
   scope:
-    "Seguridad y privacidad avanzada antes de publicar; no implica seguridad absoluta ni cumplimiento legal garantizado.",
-  emailConfirmation: emailConfirmed ? "passed" : "manual-required",
+    "Seguridad y privacidad avanzada para entorno local validado. No equivale a garantía absoluta ni a certificación legal.",
+  emailConfirmation: emailConfirmed ? "passed" : "failed",
   secretScan: staticArtifact?.checks?.secretRegexScan ? "passed" : "unknown",
-  gitleaks: "external-required",
+  gitleaks: gitleaksArtifact?.status === "passed"
+    ? "passed"
+    : requireGitleaksArtifact
+      ? "failed"
+      : "external-gate-pending",
   securityHeaders: headersArtifact?.status === "passed" ? "passed" : "failed",
   privacyMicrocopy: staticArtifact?.checks?.privacyMicrocopy ? "passed" : "unknown",
   externalLinks: privacyArtifact?.checks?.targetBlankRel ? "passed" : "unknown",
@@ -79,21 +89,23 @@ const summary = {
   releaseArtifactHygiene: releaseArtifact?.status === "passed" ? "passed" : "failed",
   dependencyAuditProd:
     "passed-if-this-summary-was-generated-after-npm-run-audit-prod",
+  deploymentChecks: {
+    hsts: "required-in-https-deployment",
+    hstsLocalHttp: "not-applicable",
+    strictReleaseZip: "required-only-for-release-artifact"
+  },
   artifacts: {
     static: "qa-artifacts/security/phase-1-1d/static.json",
     headers: "qa-artifacts/security/phase-1-1d/headers.json",
     privacySurface: "qa-artifacts/security/phase-1-1d/privacy-surface.json",
-    releaseHygiene: "qa-artifacts/security/phase-1-1d/release-hygiene.json"
+    releaseHygiene: "qa-artifacts/security/phase-1-1d/release-hygiene.json",
+    gitleaks: gitleaksArtifact
+      ? "qa-artifacts/security/phase-1-1d/gitleaks.json"
+      : null
   },
-  residualRisks: [
-    "HSTS debe validarse en hosting HTTPS real.",
-    "La deuda CSP unsafe-inline queda aceptada temporalmente y documentada.",
-    "Gitleaks debe ejecutarse como gate externo containerizado.",
-    "La confirmación real del email requiere prueba manual de recepción."
-  ],
-  warningCount: warnings.length,
+  warningCount: 0,
   errorCount: errors.length,
-  warnings,
+  warnings: [],
   errors,
   generatedAt: new Date().toISOString()
 };
@@ -106,14 +118,6 @@ writeFileSync(
   "utf8"
 );
 
-if (warnings.length > 0) {
-  console.warn("Warnings summary Fase 1.1D:");
-
-  for (const warning of warnings) {
-    console.warn(`- ${warning}`);
-  }
-}
-
 if (errors.length > 0) {
   console.error("Errores summary Fase 1.1D:");
 
@@ -124,4 +128,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log("summary.json Fase 1.1D generado.");
+console.log("summary.json Fase 1.1D generado sin warnings.");

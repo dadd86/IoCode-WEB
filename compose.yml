@@ -119,6 +119,7 @@ services:
       PLAYWRIGHT_BASE_URL: "http://web:8080"
       LIGHTHOUSE_BASE_URL: "http://web:8080"
       SECURITY_BASE_URL: "http://web:8080"
+      DEVOPS_BASE_URL: "http://web:8080"
       LH_MIN_PERFORMANCE: "0.50"
       LH_MIN_ACCESSIBILITY: "1"
       LH_MIN_BEST_PRACTICES: "0.85"

@@ -55,76 +55,25 @@ Docker runtime:
 - `no-new-privileges`;
 - `tmpfs` para `/tmp`.
 
-## CSP actual
+## CSP sin unsafe-inline
 
-La política CSP actual se define en:
+La política CSP efectiva se define en:
 
 ```text
 Docker/node-static-server.mjs
-```
 
-Política efectiva esperada:
-
-```text
-default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; model-src 'self'; connect-src 'self'; manifest-src 'self'; media-src 'self'; worker-src 'self'
-```
-
-## Deuda aceptada temporalmente
-
-`unsafe-inline` está permitido temporalmente en `script-src` y `style-src`.
-
-Riesgo residual:
-
-- `unsafe-inline` reduce la protección frente a XSS si en el futuro se introduce HTML no confiable, interpolación insegura o contenido de terceros.
-
-Motivo de aceptación temporal:
-
-- el sitio es estático;
-- no hay backend;
-- no hay sesiones;
-- no hay cookies de aplicación;
-- no hay almacenamiento de mensajes;
-- no se renderiza HTML de usuario en servidor;
-- el formulario solo prepara un `mailto:`;
-- Astro genera estilos y scripts inline en partes del build actual.
-
-Condición para mantener esta deuda:
-
-- no introducir `set:html` con contenido no confiable;
-- no añadir CMS sin sanitización;
-- no insertar HTML procedente de formularios, query params, APIs o traducciones externas;
-- revisar CSP antes de introducir analítica, formularios reales o scripts de terceros.
-
-Mejora futura:
-
-- mover scripts inline a módulos externos cuando sea viable;
-- evaluar hashes CSP para scripts estáticos;
-- eliminar `unsafe-inline` en `script-src`;
-- reducir `unsafe-inline` en `style-src` si el build lo permite;
-- añadir reporte CSP en entorno de staging antes de endurecer producción.
-
+```md id="rmmq70"
 ## HSTS
 
-HSTS está desactivado por defecto.
+HSTS es un control de despliegue HTTPS.
 
-Motivo:
+En auditoría local HTTP no se exige `Strict-Transport-Security`, porque el objetivo local es validar el servidor estático, CSP, headers base y superficie de privacidad.
 
-- el entorno local usa HTTP;
-- HSTS debe activarse solo en el dominio final con HTTPS real validado.
-
-Variable operativa:
-
-```text
-ENABLE_HSTS=false
-```
-
-Para producción con HTTPS validado puede evaluarse:
+Para despliegue HTTPS real:
 
 ```text
 ENABLE_HSTS=true
-```
-
-No activar HSTS si el dominio final no tiene HTTPS correcto y estable.
+SECURITY_REQUIRE_HSTS=true
 
 ## Formulario de contacto
 

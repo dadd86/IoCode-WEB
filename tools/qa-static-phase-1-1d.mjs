@@ -396,11 +396,26 @@ function checkCspAndDocumentation() {
   assertContains(serverFile, "object-src 'none'", "CSP object-src none");
   assertContains(serverFile, "frame-ancestors 'none'", "CSP frame-ancestors none");
   assertContains(serverFile, "form-action 'self' mailto:", "CSP form-action mailto controlado");
-  assertContains(serverFile, "script-src 'self' 'unsafe-inline'", "deuda CSP script-src unsafe-inline explícita");
-  assertContains(serverFile, "style-src 'self' 'unsafe-inline'", "deuda CSP style-src unsafe-inline explícita");
+  assertContains(serverFile, "createSha256Source", "hashes CSP SHA-256 para inline controlado");
+  assertContains(serverFile, "script-src", "CSP script-src definido");
+  assertContains(serverFile, "style-src", "CSP style-src definido");
+  assertNotContains(serverFile, /'unsafe-inline'/, "CSP con unsafe-inline");
 
-  assertContains(securityFile, "unsafe-inline", "documentación de deuda CSP unsafe-inline");
-  assertContains(securityFile, "Deuda aceptada temporalmente", "aceptación temporal documentada de CSP");
+  assertContains(securityFile, "CSP sin unsafe-inline", "documentación CSP sin unsafe-inline");
+  const forbiddenSecurityDebtPattern = new RegExp(
+  [
+    "Deuda aceptada " + "temporalmente",
+    "deuda " + "CSP",
+    "unsafe-inline está permitido " + "temporalmente"
+  ].join("|"),
+  "i"
+  );
+
+  assertNotContains(
+    securityFile,
+    forbiddenSecurityDebtPattern,
+    "CSP temporal obsoleta"
+  );
 }
 
 function checkDockerReleaseGuards() {

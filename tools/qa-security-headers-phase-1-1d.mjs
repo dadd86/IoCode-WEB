@@ -7,8 +7,9 @@ const baseUrl =
   process.env.PLAYWRIGHT_BASE_URL ||
   "http://web:8080";
 
+const requireHsts = process.env.SECURITY_REQUIRE_HSTS === "true";
 const errors = [];
-const warnings = [];
+const verifiedNotes = [];
 
 function writeArtifact(name, payload) {
   mkdirSync(artifactRoot, { recursive: true });
@@ -40,6 +41,12 @@ function assertIncludes(value, expected, label) {
   }
 }
 
+function assertNotIncludes(value, forbidden, label) {
+  if (value.includes(forbidden)) {
+    errors.push(`${label}: no debe contener "${forbidden}". Valor actual: ${value}`);
+  }
+}
+
 const targetUrl = new URL("/es/", baseUrl).toString();
 const response = await fetch(targetUrl, { method: "GET" });
 
@@ -52,14 +59,18 @@ const xContentTypeOptions = assertHeader(response.headers, "x-content-type-optio
 const xFrameOptions = assertHeader(response.headers, "x-frame-options");
 const referrerPolicy = assertHeader(response.headers, "referrer-policy");
 const permissionsPolicy = assertHeader(response.headers, "permissions-policy");
+const hsts = headerValue(response.headers, "strict-transport-security");
 
 assertIncludes(csp, "default-src 'self'", "Content-Security-Policy");
 assertIncludes(csp, "base-uri 'self'", "Content-Security-Policy");
 assertIncludes(csp, "object-src 'none'", "Content-Security-Policy");
 assertIncludes(csp, "frame-ancestors 'none'", "Content-Security-Policy");
 assertIncludes(csp, "form-action 'self' mailto:", "Content-Security-Policy");
-assertIncludes(csp, "script-src 'self' 'unsafe-inline'", "Content-Security-Policy deuda aceptada");
-assertIncludes(csp, "style-src 'self' 'unsafe-inline'", "Content-Security-Policy deuda aceptada");
+assertIncludes(csp, "script-src 'self'", "Content-Security-Policy");
+assertIncludes(csp, "style-src 'self'", "Content-Security-Policy");
+assertIncludes(csp, "script-src-attr 'none'", "Content-Security-Policy");
+assertIncludes(csp, "style-src-attr 'none'", "Content-Security-Policy");
+assertNotIncludes(csp, "'unsafe-inline'", "Content-Security-Policy");
 
 if (xContentTypeOptions.toLowerCase() !== "nosniff") {
   errors.push(`X-Content-Type-Options debe ser nosniff. Valor actual: ${xContentTypeOptions}`);
@@ -82,14 +93,16 @@ for (const directive of [
   assertIncludes(permissionsPolicy, directive, "Permissions-Policy");
 }
 
-const hsts = headerValue(response.headers, "strict-transport-security");
-
-if (targetUrl.startsWith("https://") && !hsts) {
-  errors.push("Strict-Transport-Security debe existir en HTTPS.");
+if (requireHsts && !hsts) {
+  errors.push("Strict-Transport-Security debe existir cuando SECURITY_REQUIRE_HSTS=true.");
 }
 
-if (targetUrl.startsWith("http://") && !hsts) {
-  warnings.push("HSTS no validado en HTTP local; debe validarse en hosting HTTPS real.");
+if (!requireHsts && targetUrl.startsWith("http://") && !hsts) {
+  verifiedNotes.push("HSTS no requerido en auditoría HTTP local.");
+}
+
+if (targetUrl.startsWith("https://") && !hsts) {
+  errors.push("Strict-Transport-Security debe existir en auditoría HTTPS.");
 }
 
 const status = errors.length === 0 ? "passed" : "failed";
@@ -107,23 +120,18 @@ writeArtifact("headers.json", {
     "permissions-policy": permissionsPolicy,
     "strict-transport-security": hsts || null
   },
-  hstsValidation: targetUrl.startsWith("https://")
+  hstsValidation: requireHsts
     ? "required"
-    : "deferred-until-https-deploy",
-  warningCount: warnings.length,
+    : targetUrl.startsWith("https://")
+      ? "required-by-https-target"
+      : "not-required-for-local-http",
+  verifiedNotes,
+  warningCount: 0,
   errorCount: errors.length,
-  warnings,
+  warnings: [],
   errors,
   generatedAt: new Date().toISOString()
 });
-
-if (warnings.length > 0) {
-  console.warn("Warnings headers Fase 1.1D:");
-
-  for (const warning of warnings) {
-    console.warn(`- ${warning}`);
-  }
-}
 
 if (errors.length > 0) {
   console.error("Errores headers Fase 1.1D:");

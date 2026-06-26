@@ -20,10 +20,31 @@ $payload = [ordered]@{
   status = "passed"
   image = $imageName
   command = "gitleaks detect --source . --no-git --redact --exit-code 1 --config .gitleaks.toml"
+  warningCount = 0
+  errorCount = 0
+  warnings = @()
+  errors = @()
   generatedAt = (Get-Date).ToUniversalTime().ToString("o")
 }
 
-$payload | ConvertTo-Json -Depth 8 | Set-Content -Path $artifactPath -Encoding UTF8
+$json = $payload | ConvertTo-Json -Depth 8
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+$artifactFullPath = [System.IO.Path]::GetFullPath($artifactPath)
+
+[System.IO.File]::WriteAllText($artifactFullPath, $json, $utf8NoBom)
 
 Write-Host "Gitleaks Fase 1.1D superado."
 Write-Host "Artifact generado: $artifactPath"
+
+Write-Host "Regenerando summary.json final con REQUIRE_GITLEAKS_ARTIFACT=true"
+
+docker compose --profile prod --profile qa run --rm `
+  -e EMAIL_CONFIRMED=true `
+  -e REQUIRE_GITLEAKS_ARTIFACT=true `
+  browser-qa npm run summary:security:1.1d
+
+if ($LASTEXITCODE -ne 0) {
+  throw "No se pudo regenerar summary.json final con Gitleaks."
+}
+
+Write-Host "summary.json final actualizado con Gitleaks."

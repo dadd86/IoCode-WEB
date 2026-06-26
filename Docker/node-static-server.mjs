@@ -1,5 +1,11 @@
 import { createServer } from "node:http";
-import { createReadStream, existsSync, statSync } from "node:fs";
+import {
+  createReadStream,
+  existsSync,
+  readFileSync,
+  statSync
+} from "node:fs";
+import { createHash } from "node:crypto";
 import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
 
 const port = Number(process.env.PORT || 8080);
@@ -26,25 +32,54 @@ const mimeTypes = {
   ".txt": "text/plain; charset=utf-8"
 };
 
-function setSecurityHeaders(response) {
-  response.setHeader("X-Content-Type-Options", "nosniff");
-  response.setHeader("X-Frame-Options", "DENY");
-  response.setHeader("X-DNS-Prefetch-Control", "off");
-  response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
-  response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  if (enableCoop) {
-    response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-  }
-  response.setHeader("Cross-Origin-Resource-Policy", "same-origin");
-  response.setHeader("Origin-Agent-Cluster", "?1");
-  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=()");
+function createSha256Source(value) {
+  const hash = createHash("sha256").update(value, "utf8").digest("base64");
 
-  if (enableHsts) {
-    response.setHeader(
-      "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains"
-    );
+  return `'sha256-${hash}'`;
+}
+
+function extractInlineScriptContents(html) {
+  const inlineScripts = [];
+  const scriptPattern = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+
+  for (const match of html.matchAll(scriptPattern)) {
+    const attributes = match[1] || "";
+    const content = match[2] || "";
+
+    if (/\bsrc\s*=/i.test(attributes)) {
+      continue;
+    }
+
+    if (content.length === 0) {
+      continue;
+    }
+
+    inlineScripts.push(content);
   }
+
+  return inlineScripts;
+}
+
+function extractInlineStyleContents(html) {
+  const inlineStyles = [];
+  const stylePattern = /<style\b([^>]*)>([\s\S]*?)<\/style>/gi;
+
+  for (const match of html.matchAll(stylePattern)) {
+    const content = match[2] || "";
+
+    if (content.length === 0) {
+      continue;
+    }
+
+    inlineStyles.push(content);
+  }
+
+  return inlineStyles;
+}
+
+function createCspHeader(html = "") {
+  const scriptHashes = extractInlineScriptContents(html).map(createSha256Source);
+  const styleHashes = extractInlineStyleContents(html).map(createSha256Source);
 
   const cspDirectives = [
     "default-src 'self'",
@@ -52,9 +87,10 @@ function setSecurityHeaders(response) {
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self' mailto:",
-    "script-src 'self' 'unsafe-inline'",
+    ["script-src", "'self'", ...scriptHashes].join(" "),
     "script-src-attr 'none'",
-    "style-src 'self' 'unsafe-inline'",
+    ["style-src", "'self'", ...styleHashes].join(" "),
+    "style-src-attr 'none'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
     "connect-src 'self' blob:",
@@ -67,7 +103,35 @@ function setSecurityHeaders(response) {
     cspDirectives.push("upgrade-insecure-requests");
   }
 
-  response.setHeader("Content-Security-Policy", cspDirectives.join("; "));
+  return cspDirectives.join("; ");
+}
+
+function setSecurityHeaders(response, html = "") {
+  response.setHeader("X-Content-Type-Options", "nosniff");
+  response.setHeader("X-Frame-Options", "DENY");
+  response.setHeader("X-DNS-Prefetch-Control", "off");
+  response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  if (enableCoop) {
+    response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  }
+
+  response.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  response.setHeader("Origin-Agent-Cluster", "?1");
+  response.setHeader(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=()"
+  );
+
+  if (enableHsts) {
+    response.setHeader(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains"
+    );
+  }
+
+  response.setHeader("Content-Security-Policy", createCspHeader(html));
 }
 
 function isInsideRoot(filePath) {
@@ -193,12 +257,19 @@ function resolveRequestPath(requestUrl) {
 }
 
 function sendPlainText(response, statusCode, message) {
-  response.writeHead(statusCode, { "Content-Type": "text/plain; charset=utf-8" });
+  setSecurityHeaders(response);
+
+  response.writeHead(statusCode, {
+    "Content-Type": "text/plain; charset=utf-8"
+  });
+
   response.end(message);
 }
 
 function sendJson(response, statusCode, payload) {
   const body = JSON.stringify(payload);
+
+  setSecurityHeaders(response);
 
   response.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
@@ -210,8 +281,6 @@ function sendJson(response, statusCode, payload) {
 }
 
 const server = createServer((request, response) => {
-  setSecurityHeaders(response);
-
   if (!request.url) {
     sendPlainText(response, 400, "Bad request");
     return;
@@ -225,10 +294,13 @@ const server = createServer((request, response) => {
 
   if (request.url === "/health") {
     if (request.method === "HEAD") {
+      setSecurityHeaders(response);
+
       response.writeHead(200, {
         "Content-Type": "application/json; charset=utf-8",
         "Cache-Control": "no-store"
       });
+
       response.end();
       return;
     }
@@ -252,10 +324,13 @@ const server = createServer((request, response) => {
   }
 
   if ("redirectUrl" in resolvedPath) {
+    setSecurityHeaders(response);
+
     response.writeHead(resolvedPath.statusCode, {
       Location: resolvedPath.redirectUrl,
       "Cache-Control": "no-cache"
     });
+
     response.end();
     return;
   }
@@ -266,8 +341,20 @@ const server = createServer((request, response) => {
   const stats = statSync(filePath);
   const etag = buildWeakEtag(stats);
   const lastModified = stats.mtime.toUTCString();
+  const pathname = new URL(request.url, `http://localhost:${port}`).pathname;
+  const isHtml = contentType.startsWith("text/html");
 
-  response.setHeader("Cache-Control", getCacheControl(new URL(request.url, `http://localhost:${port}`).pathname, statusCode));
+  let html = "";
+  let htmlBuffer = null;
+
+  if (isHtml) {
+    html = readFileSync(filePath, "utf8");
+    htmlBuffer = Buffer.from(html, "utf8");
+  }
+
+  setSecurityHeaders(response, html);
+
+  response.setHeader("Cache-Control", getCacheControl(pathname, statusCode));
   response.setHeader("ETag", etag);
   response.setHeader("Last-Modified", lastModified);
 
@@ -279,11 +366,16 @@ const server = createServer((request, response) => {
 
   response.writeHead(statusCode, {
     "Content-Type": contentType,
-    "Content-Length": stats.size
+    "Content-Length": htmlBuffer ? htmlBuffer.length : stats.size
   });
 
   if (request.method === "HEAD") {
     response.end();
+    return;
+  }
+
+  if (htmlBuffer) {
+    response.end(htmlBuffer);
     return;
   }
 

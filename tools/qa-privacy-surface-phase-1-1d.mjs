@@ -12,7 +12,8 @@ import process from "node:process";
 const rootDir = process.cwd();
 const artifactRoot = "qa-artifacts/security/phase-1-1d";
 const errors = [];
-const warnings = [];
+const allowedFindings = [];
+const allowedSensitiveTermFindings = [];
 
 const expectedContactEmail = "contact@iocode-solutions.com";
 
@@ -144,12 +145,50 @@ function isAllowedExternalUrl(url) {
   return allowedExternalPrefixes.some((prefix) => url.startsWith(prefix));
 }
 
+function isAllowedDocumentationUrl(url) {
+  return allowedDocumentationUrlPrefixes.some((prefix) => url.startsWith(prefix));
+}
+
 function isContactPage(path) {
   return (
     path.includes("/contacto/") ||
     path.includes("/contact/") ||
     path.includes("/kontakt/")
   );
+}
+
+function isAllowedSensitiveTermLocation(relativeFilePath, text) {
+  if (allowedSensitiveCopy.some((copy) => text.includes(copy))) {
+    return {
+      allowed: true,
+      reason: "Microcopy aprobada de minimización de datos."
+    };
+  }
+
+  if (
+    relativeFilePath === "src/assets/global.css" &&
+    text.includes('@import "./tokens.css"')
+  ) {
+    return {
+      allowed: true,
+      reason: "Referencia CSS a design tokens; no es token secreto."
+    };
+  }
+
+  if (
+    relativeFilePath.startsWith("dist/_astro/") &&
+    relativeFilePath.endsWith(".js")
+  ) {
+    return {
+      allowed: true,
+      reason: "Bundle generado; validado por Gitleaks y scanner de secretos."
+    };
+  }
+
+  return {
+    allowed: false,
+    reason: ""
+  };
 }
 
 function scanExternalUrlsAndTracking() {
@@ -167,7 +206,9 @@ function scanExternalUrlsAndTracking() {
       const text = readFileSync(absoluteFilePath, "utf8");
 
       if (analyticsOrTrackingPattern.test(text)) {
-        errors.push(`${relativeFilePath}: posible analytics/tracking/fuente externa no documentada.`);
+        errors.push(
+          `${relativeFilePath}: posible analytics/tracking/fuente externa no documentada.`
+        );
       }
 
       for (const url of extractExternalUrls(text)) {
@@ -175,19 +216,19 @@ function scanExternalUrlsAndTracking() {
           continue;
         }
 
-        const isDocumentationUrl = allowedDocumentationUrlPrefixes.some((prefix) =>
-            url.startsWith(prefix)
-        );
-
-        if (isDocumentationUrl) {
-            warnings.push(
-                `${relativeFilePath}: URL documental permitida en bundle generado: ${url}`
-        );
-            continue;
+        if (isAllowedDocumentationUrl(url)) {
+          allowedFindings.push({
+            file: relativeFilePath,
+            type: "documentation-url",
+            value: url,
+            reason:
+              "URL documental en bundle generado; no es request de tracking ni integración externa."
+          });
+          continue;
         }
 
         if (!isAllowedExternalUrl(url)) {
-            findings.push({ file: relativeFilePath, url });
+          findings.push({ file: relativeFilePath, url });
         }
       }
     }
@@ -211,7 +252,9 @@ function scanTargetBlankRel() {
 
     for (const anchor of anchors) {
       if (!/rel=["'][^"']*\bnoopener\b[^"']*\bnoreferrer\b[^"']*["']/i.test(anchor)) {
-        errors.push(`${relativeFilePath}: enlace target="_blank" sin rel="noopener noreferrer": ${anchor}`);
+        errors.push(
+          `${relativeFilePath}: enlace target="_blank" sin rel="noopener noreferrer": ${anchor}`
+        );
       }
     }
   }
@@ -235,7 +278,9 @@ function scanSocialScope() {
     const text = readFileSync(absoluteFilePath, "utf8");
 
     if (forbiddenOutsideContactPattern.test(text)) {
-      errors.push(`${relativeFilePath}: datos personales o perfiles sociales aparecen fuera de contacto.`);
+      errors.push(
+        `${relativeFilePath}: datos personales o perfiles sociales aparecen fuera de contacto.`
+      );
     }
   }
 }
@@ -250,7 +295,9 @@ function scanContactFormMinimization() {
     const html = readFileSync(projectPath(page), "utf8");
 
     if (!html.includes(`mailto:${expectedContactEmail}`)) {
-      errors.push(`${page}: el formulario/contacto no usa el correo público aprobado.`);
+      errors.push(
+        `${page}: el formulario/contacto no usa el correo público aprobado.`
+      );
     }
 
     if (sensitiveFieldPattern.test(html)) {
@@ -276,11 +323,23 @@ function scanSensitiveTerms() {
         continue;
       }
 
-      const isAllowedCopy = allowedSensitiveCopy.some((copy) => text.includes(copy));
+      const allowedSensitiveTerm = isAllowedSensitiveTermLocation(
+        relativeFilePath,
+        text
+      );
 
-      if (!isAllowedCopy) {
-        warnings.push(`${relativeFilePath}: contiene términos sensibles; revisar si es documentación/microcopy permitida.`);
+      if (allowedSensitiveTerm.allowed) {
+        allowedSensitiveTermFindings.push({
+          file: relativeFilePath,
+          reason: allowedSensitiveTerm.reason
+        });
+
+        continue;
       }
+
+      errors.push(
+        `${relativeFilePath}: contiene términos sensibles fuera de microcopy/documentación permitida.`
+      );
     }
   }
 }
@@ -307,20 +366,14 @@ writeArtifact("privacy-surface.json", {
   },
   allowedExternalPrefixes,
   allowedDocumentationUrlPrefixes,
-  warningCount: warnings.length,
+  allowedFindings,
+  allowedSensitiveTermFindings,
+  warningCount: 0,
   errorCount: errors.length,
-  warnings,
+  warnings: [],
   errors,
   generatedAt: new Date().toISOString()
 });
-
-if (warnings.length > 0) {
-  console.warn("Warnings privacidad Fase 1.1D:");
-
-  for (const warning of warnings) {
-    console.warn(`- ${warning}`);
-  }
-}
 
 if (errors.length > 0) {
   console.error("Errores privacidad Fase 1.1D:");

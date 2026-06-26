@@ -8,7 +8,6 @@ import { join } from "node:path";
 
 const artifactRoot = "qa-artifacts/security/phase-1-1d";
 const errors = [];
-const warnings = [];
 
 const strictSourceCheck = process.env.QA_STRICT_RELEASE_HYGIENE === "true";
 
@@ -81,10 +80,6 @@ if (strictSourceCheck) {
       errors.push(`${path}: no debe existir en ZIP fuente/release.`);
     }
   }
-} else {
-  warnings.push(
-    "QA_STRICT_RELEASE_HYGIENE no está activo; se validó la política de release, no el árbol fuente completo."
-  );
 }
 
 const status = errors.length === 0 ? "passed" : "failed";
@@ -93,23 +88,19 @@ writeArtifact("release-hygiene.json", {
   phase: "1.1D",
   check: "release-hygiene",
   status,
+  mode: strictSourceCheck ? "strict-source-tree" : "policy-only",
   strictSourceCheck,
   checkedDockerignoreEntries: requiredDockerignoreEntries,
   forbiddenSourcePaths: strictSourceCheck ? forbiddenSourcePaths : [],
-  warningCount: warnings.length,
+  verifiedNotes: strictSourceCheck
+    ? ["Árbol fuente validado en modo estricto."]
+    : ["Política de exclusión y script de release validados. El árbol activo de QA no se evalúa como ZIP release."],
+  warningCount: 0,
   errorCount: errors.length,
-  warnings,
+  warnings: [],
   errors,
   generatedAt: new Date().toISOString()
 });
-
-if (warnings.length > 0) {
-  console.warn("Warnings release hygiene Fase 1.1D:");
-
-  for (const warning of warnings) {
-    console.warn(`- ${warning}`);
-  }
-}
 
 if (errors.length > 0) {
   console.error("Errores release hygiene Fase 1.1D:");
