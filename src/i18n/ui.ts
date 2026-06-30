@@ -16,7 +16,16 @@ export const ui = {
     contactNote: "No escribas contraseñas, tokens, datos bancarios ni información sensible.",
     selectOption: "Selecciona una opción",
     github: "GitHub público",
-    linkedin: "LinkedIn profesional"
+    linkedin: "LinkedIn profesional",
+    projectProblem: "Problema: ",
+    projectSolution: "Solución: ",
+    projectRole: "Rol técnico: ",
+    projectBusinessValue: "Valor empresarial: ",
+    projectEvidenceLevel: "Evidencia: ",
+    projectClaimLevel: "Nivel de claim: ",
+    projectTechnologies: "Tecnologías del proyecto",
+    projectCapabilities: "Capacidades comerciales demostradas",
+    projectNoPublicLink: "Sin enlace público disponible."
   },
   en: {
     requestProposal: "Request proposal",
@@ -33,7 +42,16 @@ export const ui = {
     contactNote: "Do not write passwords, tokens, banking data or sensitive information.",
     selectOption: "Select an option",
     github: "Public GitHub",
-    linkedin: "Professional LinkedIn"
+    linkedin: "Professional LinkedIn",
+    projectProblem: "Problem: ",
+    projectSolution: "Solution: ",
+    projectRole: "Technical role: ",
+    projectBusinessValue: "Business value: ",
+    projectEvidenceLevel: "Evidence: ",
+    projectClaimLevel: "Claim level: ",
+    projectTechnologies: "Project technologies",
+    projectCapabilities: "Commercial capabilities demonstrated",
+    projectNoPublicLink: "No public link available."
   },
   de: {
     requestProposal: "Angebot anfragen",
@@ -50,6 +68,15 @@ export const ui = {
     contactNote: "Bitte keine Passwörter, Tokens, Bankdaten oder sensiblen Informationen eingeben.",
     selectOption: "Option auswählen",
     github: "Öffentliches GitHub",
-    linkedin: "Professionelles LinkedIn"
+    linkedin: "Professionelles LinkedIn",
+    projectProblem: "Problem: ",
+    projectSolution: "Lösung: ",
+    projectRole: "Technische Rolle: ",
+    projectBusinessValue: "Geschäftlicher Wert: ",
+    projectEvidenceLevel: "Nachweis: ",
+    projectClaimLevel: "Claim-Level: ",
+    projectTechnologies: "Projekttechnologien",
+    projectCapabilities: "Nachgewiesene geschäftliche Fähigkeiten",
+    projectNoPublicLink: "Kein öffentlicher Link verfügbar."
   }
 } satisfies Record<Locale, Record<string, string>>;

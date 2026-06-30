@@ -18,4 +18,4 @@ RUN npm ci \
 
 COPY . .
 
-CMD ["npm", "run", "qa:phase-1-1e"]
+CMD ["npm", "run", "qa:phase-2"]

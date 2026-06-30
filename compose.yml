@@ -124,6 +124,15 @@ services:
       LH_MIN_ACCESSIBILITY: "1"
       LH_MIN_BEST_PRACTICES: "0.85"
       LH_MIN_SEO: "1"
+      A11Y_PERF_BASE_URL: "http://web:8080"
+      A11Y_PERF_LIGHTHOUSE_BASE_URL: "http://web:8080"
+      A11Y_PERF_MAX_JS_BYTES: "700000"
+      A11Y_PERF_MAX_CSS_BYTES: "120000"
+      A11Y_PERF_MAX_GLB_BYTES: "8000000"
+      A11Y_PERF_MAX_IMAGE_BYTES: "2000000"
+      A11Y_PERF_MIN_ACCESSIBILITY: "1"
+      A11Y_PERF_MIN_SEO: "1"
+      A11Y_PERF_MIN_BEST_PRACTICES: "0.95"
     depends_on:
       web:
         condition: service_healthy

@@ -121,7 +121,7 @@ function setSecurityHeaders(response, html = "") {
   response.setHeader("Origin-Agent-Cluster", "?1");
   response.setHeader(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), serial=()"
+    "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()"
   );
 
   if (enableHsts) {

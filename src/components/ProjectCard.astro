@@ -5,24 +5,84 @@ type Props = {
   project: Project;
   labels: Record<string, string>;
 };
+
 const { project, labels } = Astro.props;
 ---
 
-<article class="projectCard">
+<article class="projectCard" id={project.slug}>
   <div class="projectCard__top">
     <span class="projectCard__type">{project.type}</span>
+    <span class="projectCard__status">{project.status}</span>
   </div>
+
   <div class="projectCard__body">
     <h2>{project.title}</h2>
+
     <p>{project.summary}</p>
-    <div class="tagList">
-      {project.technologies.map((technology) => <span class="tag">{technology}</span>)}
+
+    <dl class="projectEvidence">
+      <div>
+        <dt>{labels.projectProblem}</dt>
+        <dd>{project.problem}</dd>
+      </div>
+
+      <div>
+        <dt>{labels.projectSolution}</dt>
+        <dd>{project.solution}</dd>
+      </div>
+
+      <div>
+        <dt>{labels.projectRole}</dt>
+        <dd>{project.technicalRole}</dd>
+      </div>
+
+      <div>
+        <dt>{labels.projectBusinessValue}</dt>
+        <dd>{project.businessValue}</dd>
+      </div>
+
+      <div>
+        <dt>{labels.projectEvidenceLevel}</dt>
+        <dd>{project.evidenceLevel}</dd>
+      </div>
+
+      <div>
+        <dt>{labels.projectClaimLevel}</dt>
+        <dd>{project.claimLevel}</dd>
+      </div>
+    </dl>
+
+    <div class="tagList" aria-label={labels.projectTechnologies}>
+      {project.technologies.map((technology) => (
+        <span class="tag">{technology}</span>
+      ))}
     </div>
-    <p><strong>{labels.professionalValue}</strong>{project.value}</p>
-    {project.caution && <p class="projectNote"><strong>{labels.caution}</strong>{project.caution}</p>}
-    <div class="projectLinks">
-      {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">{labels.viewCode}</a>}
-      {project.demoUrl && <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">{labels.viewDemo}</a>}
+
+    <div class="tagList" aria-label={labels.projectCapabilities}>
+      {project.capabilities.map((capability) => (
+        <span class="tag tag--secondary">{capability}</span>
+      ))}
     </div>
+
+    <p class="projectNote">
+      <strong>{labels.caution}</strong>
+      {project.caution}
+    </p>
+
+    {project.publicLinks.length > 0 ? (
+      <div class="projectLinks">
+        {project.publicLinks.map((link) => (
+          <a
+            href={link.href}
+            target={link.external ? "_blank" : undefined}
+            rel={link.external ? "noopener noreferrer" : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="projectNoPublicLink">{labels.projectNoPublicLink}</p>
+    )}
   </div>
 </article>

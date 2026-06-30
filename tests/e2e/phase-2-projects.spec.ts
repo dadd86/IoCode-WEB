@@ -1,0 +1,75 @@
+import { expect, test } from "@playwright/test";
+
+const routes = [
+  "/es/proyectos/",
+  "/en/projects/",
+  "/de/projekte/"
+];
+
+const requiredTexts = [
+  "TechWizards",
+  "NeuronaPrediccion",
+  "MacetaInteligente",
+  "HotelSOL"
+];
+
+const forbiddenTexts = [
+  "guaranteed",
+  "100% secure",
+  "testimonial",
+  "aggregate rating",
+  "AggregateRating",
+  "review rating",
+  "cliente real",
+  "producción certificada",
+  "mejora del"
+];
+
+test.describe("Fase 2 - Proyectos como evidencia comercial", () => {
+  for (const route of routes) {
+    test(`${route} muestra proyectos con evidencia comercial`, async ({ page }) => {
+      await page.goto(route, {
+        waitUntil: "domcontentloaded"
+      });
+
+      await expect(page.locator("main")).toBeVisible();
+
+      const cards = page.locator(".projectCard");
+      const cardCount = await cards.count();
+
+      expect(cardCount).toBeGreaterThanOrEqual(8);
+
+      const pageText = await page.locator("main").innerText();
+
+      for (const requiredText of requiredTexts) {
+        expect(pageText).toContain(requiredText);
+      }
+
+      for (const forbiddenText of forbiddenTexts) {
+        expect(pageText.toLowerCase()).not.toContain(forbiddenText.toLowerCase());
+      }
+
+      for (const card of await cards.all()) {
+        await expect(card.locator("h2")).toBeVisible();
+
+        const text = await card.innerText();
+
+        expect(text.length).toBeGreaterThan(300);
+
+        expect(text.toLowerCase()).toMatch(/problem|problema|lösung|solution|solución/);
+        expect(text.toLowerCase()).toMatch(/evidence|evidencia|nachweis/);
+        expect(text.toLowerCase()).toMatch(/claim|cautela|caution|hinweis/);
+
+        const links = card.locator("a");
+
+        for (const link of await links.all()) {
+          const href = await link.getAttribute("href");
+
+          if (href) {
+            expect(href.startsWith("https://")).toBe(true);
+          }
+        }
+      }
+    });
+  }
+});

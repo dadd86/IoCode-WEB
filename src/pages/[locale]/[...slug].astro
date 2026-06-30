@@ -16,6 +16,7 @@ import { ui } from "../../i18n/ui";
 import { getLocalizedPath, getStaticRouteParams } from "../../i18n/routes";
 import type { Locale } from "../../i18n/config";
 import type { RouteKey } from "../../i18n/routes";
+import { siteConfig } from "../../data/site";
 
 export function getStaticPaths() {
   return getStaticRouteParams();
@@ -26,6 +27,31 @@ const content = pageContent[locale][routeKey];
 const labels = ui[locale];
 
 const routesWithStandardCards: RouteKey[] = ["services", "plc", "robotics", "about"];
+
+const projectStructuredData =
+  routeKey === "projects"
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "@id": `${siteConfig.url}${getLocalizedPath("projects", locale)}#projects`,
+        name: content.heading,
+        description: content.description,
+        itemListElement: projects[locale].map((project, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "CreativeWork",
+            "@id": `${siteConfig.url}${getLocalizedPath("projects", locale)}#${project.slug}`,
+            name: project.title,
+            description: project.summary,
+            inLanguage: locale,
+            genre: project.status,
+            about: project.capabilities,
+            url: `${siteConfig.url}${getLocalizedPath("projects", locale)}#${project.slug}`
+          }
+        }))
+      }
+    : null;
 ---
 
 <BaseLayout locale={locale} routeKey={routeKey} title={content.title} description={content.description}>
@@ -69,6 +95,10 @@ const routesWithStandardCards: RouteKey[] = ["services", "plc", "robotics", "abo
         {projects[locale].map((project) => <ProjectCard project={project} labels={labels} />)}
       </div>
     </section>
+  ) : null}
+  
+  {projectStructuredData ? (
+    <script type="application/ld+json" set:html={JSON.stringify(projectStructuredData)}></script>
   ) : null}
 
   {routeKey === "skills" ? (

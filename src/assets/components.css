@@ -1041,3 +1041,41 @@ textarea.input {
     width: 100%;
   }
 }
+
+.projectCard__status {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.projectEvidence {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+}
+
+.projectEvidence div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.projectEvidence dt {
+  font-weight: 800;
+}
+
+.projectEvidence dd {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.tag--secondary {
+  opacity: 0.9;
+}
+
+.projectNoPublicLink {
+  margin-top: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}

@@ -1,9 +1,21 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["node"],
+    "types": ["node", "@playwright/test"],
     "noEmit": true
   },
-  "include": ["./**/*.ts"],
-  "exclude": []
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts"
+  ],
+  "exclude": [
+    "../../qa-artifacts",
+    "../../qa-artifacts/**/*",
+    "../../test-results",
+    "../../test-results/**/*",
+    "../../playwright-report",
+    "../../playwright-report/**/*",
+    "../../dist",
+    "../../dist/**/*"
+  ]
 }

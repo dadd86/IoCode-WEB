@@ -17,6 +17,7 @@ export default defineConfig({
   ],
   use: {
     baseURL,
+    bypassCSP: true,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure"
@@ -26,7 +27,10 @@ export default defineConfig({
       name: "chromium-desktop",
       use: {
         ...devices["Desktop Chrome"],
-        viewport: { width: 1366, height: 900 }
+        viewport: {
+          width: 1366,
+          height: 900
+        }
       }
     },
     {

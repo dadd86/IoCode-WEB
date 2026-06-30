@@ -644,7 +644,7 @@ async function initHero(host: HTMLElement): Promise<void> {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
 
     viewer.innerHTML = "";
     viewer.appendChild(renderer.domElement);
