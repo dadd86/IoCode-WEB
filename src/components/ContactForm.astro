@@ -1,5 +1,10 @@
 ---
 import { siteConfig } from "../data/site";
+import {
+  contactContent,
+  contactTopics,
+  contactEmailVerification
+} from "../data/contact";
 import type { Locale } from "../i18n/config";
 import { ui } from "../i18n/ui";
 
@@ -10,100 +15,83 @@ type Props = {
 const { locale } = Astro.props as Props;
 const labels = ui[locale];
 const contactPerson = siteConfig.contactPerson;
+const content = contactContent[locale];
+const topics = contactTopics[locale];
 
-const options: Record<Locale, string[]> = {
-  es: [
-    "Automatización PLC / HMI",
-    "Robótica industrial",
-    "Industria 4.0 / IoT",
-    "Software industrial",
-    "ERP / bases de datos",
-    "Soporte técnico",
-    "Otro"
-  ],
-  en: [
-    "PLC / HMI automation",
-    "Industrial robotics",
-    "Industry 4.0 / IoT",
-    "Industrial software",
-    "ERP / databases",
-    "Technical support",
-    "Other"
-  ],
-  de: [
-    "SPS / HMI-Automatisierung",
-    "Industrierobotik",
-    "Industrie 4.0 / IoT",
-    "Industriesoftware",
-    "ERP / Datenbanken",
-    "Technischer Support",
-    "Andere"
-  ]
-};
-
-const contactCopy: Record<
-  Locale,
-  {
-    companyTitle: string;
-    personEyebrow: string;
-    personTitle: string;
-    profileNote: string;
-    emailLabel: string;
-  }
-> = {
-  es: {
-    companyTitle: "Contacto empresarial",
-    personEyebrow: "Persona de contacto",
-    personTitle: "Quién está detrás de IoCode SOLUTIONS",
-    profileNote:
-      "Los enlaces externos permiten verificar experiencia profesional, proyectos técnicos y trayectoria pública.",
-    emailLabel: "Correo"
-  },
-  en: {
-    companyTitle: "Business contact",
-    personEyebrow: "Contact person",
-    personTitle: "Who is behind IoCode SOLUTIONS",
-    profileNote:
-      "The external links help verify professional experience, technical projects and public track record.",
-    emailLabel: "Email"
-  },
-  de: {
-    companyTitle: "Geschäftlicher Kontakt",
-    personEyebrow: "Ansprechpartner",
-    personTitle: "Wer hinter IoCode SOLUTIONS steht",
-    profileNote:
-      "Die externen Links helfen dabei, Berufserfahrung, technische Projekte und den öffentlichen Werdegang zu prüfen.",
-    emailLabel: "E-Mail"
-  }
-};
-
-const copy = contactCopy[locale];
+const contactPersonTitleId = `contact-person-title-${locale}`;
 const noteId = `contact-note-${locale}`;
+const copyStatusId = `copy-status-${locale}`;
 ---
 
-<div class="contactGrid">
+<div class="contactGrid" data-phase="4-contact">
   <aside class="contactPanel">
     <img class="contactPanel__logo" src={siteConfig.logoPath} alt={siteConfig.name} />
 
     <div class="contactPanel__section">
-      <p class="eyebrow">{copy.companyTitle}</p>
+      <p class="eyebrow">{labels.contact}</p>
       <h2>{siteConfig.name}</h2>
       <p>{siteConfig.businessDescription[locale]}</p>
     </div>
 
-    <div class="contactLinks" aria-label={copy.emailLabel}>
-      <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+    <div class="contactLinks" aria-label={labels.contactEmail}>
+      <a
+        data-contact-email-link
+        href={`mailto:${siteConfig.email}`}
+      >
+        {siteConfig.email}
+      </a>
+
+      <button
+        class="button button--secondary button--small"
+        type="button"
+        data-contact-copy
+        data-copy-value={siteConfig.email}
+        data-copy-success={content.copyEmailSuccess}
+        aria-describedby={copyStatusId}
+      >
+        {content.copyEmailLabel}
+      </button>
+
+      <p class="formNote" id={copyStatusId} data-copy-status aria-live="polite"></p>
     </div>
 
-    <article class="contactPersonCard" aria-labelledby="contactPersonTitle">
-      <p class="eyebrow">{copy.personEyebrow}</p>
-      <h3 id="contactPersonTitle">{copy.personTitle}</h3>
+    <section class="contactInfoBlock">
+      <h3>{content.acceptedProjectsTitle}</h3>
+      <ul>
+        {content.acceptedProjects.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
 
-      <p class="contactPersonCard__name">{contactPerson.name}</p>
+    <section class="contactInfoBlock">
+      <h3>{content.whatToSendTitle}</h3>
+      <ul>
+        {content.whatToSend.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="contactInfoBlock contactInfoBlock--warning">
+      <h3>{content.doNotSendTitle}</h3>
+      <ul>
+        {content.doNotSend.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="contactInfoBlock">
+      <h3>{content.responseExpectationTitle}</h3>
+      <p>{content.responseExpectation}</p>
+    </section>
+
+    <section class="contactInfoBlock">
+      <h3>{content.fallbackTitle}</h3>
+      <p>{content.fallbackText}</p>
+    </section>
+
+    <article class="contactPersonCard" aria-labelledby={contactPersonTitleId}>
+      <p class="eyebrow">{labels.contactPerson}</p>
+      <h3 id={contactPersonTitleId}>{contactPerson.name}</h3>
+
       <p class="contactPersonCard__role">{contactPerson.role[locale]}</p>
       <p>{contactPerson.description[locale]}</p>
-
-      <p class="contactPersonCard__note">{copy.profileNote}</p>
 
       <div class="contactSocialLinks">
         <a
@@ -128,31 +116,104 @@ const noteId = `contact-note-${locale}`;
     class="contactForm"
     id="contactForm"
     data-contact-email={siteConfig.email}
+    data-email-verification-status={contactEmailVerification.status}
+    data-last-mailto=""
+    data-mailto-subject-prefix={content.mailtoSubjectPrefix}
+    data-body-label-name={content.mailtoBodyLabels.name}
+    data-body-label-email={content.mailtoBodyLabels.email}
+    data-body-label-project-type={content.mailtoBodyLabels.projectType}
+    data-body-label-message={content.mailtoBodyLabels.message}
+    data-body-label-language={content.mailtoBodyLabels.language}
+    data-locale={locale}
     aria-describedby={noteId}
   >
     <p class="formNote" id={noteId}>{labels.contactNote}</p>
 
-    <label for="nombre">{labels.contactName}</label>
-    <input class="input" id="nombre" type="text" name="nombre" autocomplete="name" required />
+    <label for={`nombre-${locale}`}>{labels.contactName}</label>
+    <input
+      class="input"
+      id={`nombre-${locale}`}
+      type="text"
+      name="nombre"
+      autocomplete="name"
+      minlength="2"
+      maxlength="120"
+      required
+    />
 
-    <label for="correo">{labels.contactEmail}</label>
-    <input class="input" id="correo" type="email" name="correo" autocomplete="email" required />
+    <label for={`correo-${locale}`}>{labels.contactEmail}</label>
+    <input
+      class="input"
+      id={`correo-${locale}`}
+      type="email"
+      name="correo"
+      autocomplete="email"
+      maxlength="160"
+      required
+    />
 
-    <label for="tipoProyecto">{labels.contactProjectType}</label>
-    <select class="input" id="tipoProyecto" name="tipoProyecto" required>
+    <label for={`tipoProyecto-${locale}`}>{labels.contactProjectType}</label>
+    <select class="input" id={`tipoProyecto-${locale}`} name="tipoProyecto" required>
       <option value="">{labels.selectOption}</option>
-      {options[locale].map((option) => <option value={option}>{option}</option>)}
+      {topics.map((topic) => <option value={topic.label}>{topic.label}</option>)}
     </select>
 
-    <label for="mensaje">{labels.contactMessage}</label>
-    <textarea class="input" id="mensaje" name="mensaje" rows="6" required></textarea>
+    <label for={`mensaje-${locale}`}>{labels.contactMessage}</label>
+    <textarea
+      class="input"
+      id={`mensaje-${locale}`}
+      name="mensaje"
+      rows="6"
+      minlength="20"
+      maxlength="4000"
+      required
+    ></textarea>
 
-    <button class="button button--primary button--full" type="submit">{labels.contactSubmit}</button>
+    <button class="button button--primary button--full" type="submit">
+      {labels.contactSubmit}
+    </button>
   </form>
 </div>
 
 <script>
   const form = document.querySelector<HTMLFormElement>("[data-contact-email]");
+  const copyButton = document.querySelector<HTMLButtonElement>("[data-contact-copy]");
+  const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]");
+
+  function buildMailto(formElement: HTMLFormElement): string | null {
+    const email = formElement.dataset.contactEmail;
+
+    if (!email) {
+      return null;
+    }
+
+    const data = new FormData(formElement);
+    const projectType = String(data.get("tipoProyecto") || "Project");
+    const subjectPrefix = formElement.dataset.mailtoSubjectPrefix || "IoCode SOLUTIONS";
+    const locale = formElement.dataset.locale || "es";
+
+    const labels = {
+      name: formElement.dataset.bodyLabelName || "Name",
+      email: formElement.dataset.bodyLabelEmail || "Email",
+      projectType: formElement.dataset.bodyLabelProjectType || "Project type",
+      message: formElement.dataset.bodyLabelMessage || "Message",
+      language: formElement.dataset.bodyLabelLanguage || "Language"
+    };
+
+    const subject = encodeURIComponent(`${subjectPrefix} - ${projectType}`);
+
+    const body = encodeURIComponent([
+      `${labels.name}: ${String(data.get("nombre") || "")}`,
+      `${labels.email}: ${String(data.get("correo") || "")}`,
+      `${labels.projectType}: ${projectType}`,
+      `${labels.language}: ${locale}`,
+      "",
+      `${labels.message}:`,
+      String(data.get("mensaje") || "")
+    ].join("\n"));
+
+    return `mailto:${email}?subject=${subject}&body=${body}`;
+  }
 
   if (form) {
     form.addEventListener("submit", (event: SubmitEvent) => {
@@ -162,26 +223,34 @@ const noteId = `contact-note-${locale}`;
         return;
       }
 
-      const email = form.dataset.contactEmail;
+      const mailto = buildMailto(form);
 
-      if (!email) {
+      if (!mailto) {
         console.error("Contact email is not configured.");
         return;
       }
 
-      const data = new FormData(form);
-      const projectType = String(data.get("tipoProyecto") || "Proyecto");
-      const subject = encodeURIComponent(`IoCode SOLUTIONS - ${projectType}`);
+      form.dataset.lastMailto = mailto;
+      window.location.href = mailto;
+    });
+  }
 
-      const body = encodeURIComponent([
-        `Nombre: ${String(data.get("nombre") || "")}`,
-        `Correo: ${String(data.get("correo") || "")}`,
-        `Tipo: ${projectType}`,
-        "",
-        String(data.get("mensaje") || "")
-      ].join("\n"));
+  if (copyButton) {
+    copyButton.addEventListener("click", async () => {
+      const value = copyButton.dataset.copyValue || "";
+      const successText = copyButton.dataset.copySuccess || "";
 
-      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      try {
+        await navigator.clipboard.writeText(value);
+
+        if (copyStatus) {
+          copyStatus.textContent = successText;
+        }
+      } catch {
+        if (copyStatus) {
+          copyStatus.textContent = value;
+        }
+      }
     });
   }
 </script>

@@ -9,7 +9,8 @@ const pathsToClean = [
   "coverage",
   "logs",
   "artifacts",
-  "exports"
+  "exports",
+  "releases"
 ];
 
 for (const pathToClean of pathsToClean) {
@@ -22,3 +23,4 @@ for (const pathToClean of pathsToClean) {
 }
 
 console.log("Artifacts locales limpiados.");
+console.log("Nota: node_modules y .git no se borran aquí por seguridad.");

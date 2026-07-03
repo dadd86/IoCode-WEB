@@ -14,6 +14,8 @@ export const ui = {
     contactMessage: "Mensaje",
     contactSubmit: "Preparar correo",
     contactNote: "No escribas contraseñas, tokens, datos bancarios ni información sensible.",
+    contact: "Contacto",
+    contactPerson: "Persona responsable",
     selectOption: "Selecciona una opción",
     github: "GitHub público",
     linkedin: "LinkedIn profesional",
@@ -25,7 +27,15 @@ export const ui = {
     projectClaimLevel: "Nivel de claim: ",
     projectTechnologies: "Tecnologías del proyecto",
     projectCapabilities: "Capacidades comerciales demostradas",
-    projectNoPublicLink: "Sin enlace público disponible."
+    projectNoPublicLink: "Sin enlace público disponible.",
+    skillSearchIntent: "Intención de búsqueda",
+    skillBusinessProblem: "Problema empresarial: ",
+    skillBusinessValue: "Valor para empresa: ",
+    skillApplicationLevel: "Nivel de aplicación: ",
+    skillTechnologies: "Tecnologías",
+    skillUseCases: "Casos de uso",
+    skillRelatedServices: "Servicios relacionados",
+    skillRelatedProjects: "Proyectos relacionados"
   },
   en: {
     requestProposal: "Request proposal",
@@ -40,6 +50,8 @@ export const ui = {
     contactMessage: "Message",
     contactSubmit: "Prepare email",
     contactNote: "Do not write passwords, tokens, banking data or sensitive information.",
+    contact: "Contact",
+    contactPerson: "Responsible person",
     selectOption: "Select an option",
     github: "Public GitHub",
     linkedin: "Professional LinkedIn",
@@ -51,7 +63,15 @@ export const ui = {
     projectClaimLevel: "Claim level: ",
     projectTechnologies: "Project technologies",
     projectCapabilities: "Commercial capabilities demonstrated",
-    projectNoPublicLink: "No public link available."
+    projectNoPublicLink: "No public link available.",
+    skillSearchIntent: "Search intent",
+    skillBusinessProblem: "Business problem: ",
+    skillBusinessValue: "Business value: ",
+    skillApplicationLevel: "Application level: ",
+    skillTechnologies: "Technologies",
+    skillUseCases: "Use cases",
+    skillRelatedServices: "Related services",
+    skillRelatedProjects: "Related projects"
   },
   de: {
     requestProposal: "Angebot anfragen",
@@ -66,6 +86,8 @@ export const ui = {
     contactMessage: "Nachricht",
     contactSubmit: "E-Mail vorbereiten",
     contactNote: "Bitte keine Passwörter, Tokens, Bankdaten oder sensiblen Informationen eingeben.",
+    contact: "Kontakt",
+    contactPerson: "Verantwortliche Person",
     selectOption: "Option auswählen",
     github: "Öffentliches GitHub",
     linkedin: "Professionelles LinkedIn",
@@ -77,6 +99,14 @@ export const ui = {
     projectClaimLevel: "Claim-Level: ",
     projectTechnologies: "Projekttechnologien",
     projectCapabilities: "Nachgewiesene geschäftliche Fähigkeiten",
-    projectNoPublicLink: "Kein öffentlicher Link verfügbar."
+    projectNoPublicLink: "Kein öffentlicher Link verfügbar.",
+    skillSearchIntent: "Suchintention",
+    skillBusinessProblem: "Geschäftliches Problem: ",
+    skillBusinessValue: "Geschäftlicher Wert: ",
+    skillApplicationLevel: "Anwendungsniveau: ",
+    skillTechnologies: "Technologien",
+    skillUseCases: "Anwendungsfälle",
+    skillRelatedServices: "Verwandte Leistungen",
+    skillRelatedProjects: "Verwandte Projekte"
   }
 } satisfies Record<Locale, Record<string, string>>;

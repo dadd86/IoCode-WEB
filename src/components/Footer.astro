@@ -10,9 +10,15 @@ const text: Record<Locale, string> = {
   en: "Industrial automation, PLC, robotics, software and Industry 4.0.",
   de: "Industrielle Automatisierung, SPS, Robotik, Software und Industrie 4.0."
 };
+
+const footerLabel: Record<Locale, string> = {
+  es: "Información del sitio y marca IoCode SOLUTIONS",
+  en: "Site information and IoCode SOLUTIONS brand",
+  de: "Website-Informationen und Marke IoCode SOLUTIONS"
+};
 ---
 
-<footer class="siteFooter">
+<footer class="siteFooter" aria-label={footerLabel[locale]}>
   <div class="container footerContent">
     <a href={`/${locale}/`} aria-label={siteConfig.name}>
       <img class="footerLogo" src={siteConfig.logoPath} alt={siteConfig.name} />

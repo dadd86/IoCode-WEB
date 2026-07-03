@@ -8,12 +8,12 @@
 }
 
 .navbar {
-  min-height: var(--header-height);
+  min-height: clamp(5.25rem, 6vw, 6rem);
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: clamp(0.75rem, 2vw, 1.5rem);
-  padding-block: 0.85rem;
+  padding-block: 0.55rem;
 }
 
 .brand {
@@ -24,7 +24,7 @@
 
 .brand__logo {
   width: clamp(8rem, 13vw, 12.5rem);
-  max-height: 3.2rem;
+  max-height: 4.2rem;
   object-fit: contain;
 }
 
@@ -377,7 +377,8 @@ textarea.input {
   }
 
   .brand__logo {
-    width: 7.8rem;
+    width: auto;
+    height: 3.25rem;
   }
 
   .languageSwitcher a {
@@ -1078,4 +1079,131 @@ textarea.input {
   margin-top: 1rem;
   color: var(--color-text-muted);
   font-size: 0.95rem;
+}
+
+.skillBlock {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.skillBlock__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.skillBlock__intent {
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.skillBlock__searchIntent,
+.skillCaution {
+  color: var(--color-text-muted);
+}
+
+.skillEvidence {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.skillEvidence div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.skillEvidence dt {
+  font-weight: 900;
+}
+
+.skillEvidence dd {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.skillBlock__section {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.skillBlock__section h3 {
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+.skillUseCases {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+.skillLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skillLinks a {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.38rem 0.7rem;
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  border-radius: 999px;
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.skillLinks a:hover,
+.skillLinks a:focus-visible {
+  border-color: rgba(34, 211, 238, 0.65);
+}
+
+.contactInfoBlock {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: var(--radius-md);
+  background: rgba(15, 23, 42, 0.28);
+}
+
+.contactInfoBlock h3 {
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+.contactInfoBlock p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.contactInfoBlock ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+.contactInfoBlock--warning {
+  border-color: rgba(251, 191, 36, 0.32);
+  background: rgba(120, 53, 15, 0.16);
+}
+
+.button--small {
+  min-height: auto;
+  padding: 0.55rem 0.9rem;
+  font-size: var(--text-xs);
+}
+
+.contactLinks {
+  align-items: flex-start;
 }

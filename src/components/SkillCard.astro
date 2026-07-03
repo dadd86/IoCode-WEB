@@ -1,14 +1,76 @@
 ---
-type Props = { title: string; text: string; items?: string[] };
-const { title, text, items = [] } = Astro.props;
+import type { Locale } from "../i18n/config";
+import type { SkillGroup } from "../data/skills";
+import { getLocalizedPath } from "../i18n/routes";
+
+type Props = {
+  skill: SkillGroup;
+  labels: Record<string, string>;
+  locale: Locale;
+};
+
+const { skill, labels, locale } = Astro.props;
 ---
 
-<article class="skillBlock">
-  <h3>{title}</h3>
-  <p>{text}</p>
-  {items.length > 0 && (
-    <div class="pillGroup">
-      {items.map((item) => <span>{item}</span>)}
+<article class="skillBlock" id={skill.slug}>
+  <div class="skillBlock__header">
+    <p class="skillBlock__intent">{labels.skillSearchIntent}</p>
+    <h2>{skill.title}</h2>
+  </div>
+
+  <dl class="skillEvidence">
+    <div>
+      <dt>{labels.skillBusinessProblem}</dt>
+      <dd>{skill.businessProblem}</dd>
     </div>
-  )}
+
+    <div>
+      <dt>{labels.skillBusinessValue}</dt>
+      <dd>{skill.businessValue}</dd>
+    </div>
+
+    <div>
+      <dt>{labels.skillApplicationLevel}</dt>
+      <dd>{skill.applicationLevel}</dd>
+    </div>
+  </dl>
+
+  <p class="skillBlock__searchIntent">{skill.searchIntent}</p>
+
+  <section class="skillBlock__section" aria-label={labels.skillTechnologies}>
+    <h3>{labels.skillTechnologies}</h3>
+    <div class="pillGroup">
+      {skill.technologies.map((technology) => <span>{technology}</span>)}
+    </div>
+  </section>
+
+  <section class="skillBlock__section" aria-label={labels.skillUseCases}>
+    <h3>{labels.skillUseCases}</h3>
+    <ul class="skillUseCases">
+      {skill.useCases.map((useCase) => <li>{useCase}</li>)}
+    </ul>
+  </section>
+
+  <section class="skillBlock__section" aria-label={labels.skillRelatedServices}>
+    <h3>{labels.skillRelatedServices}</h3>
+    <div class="skillLinks">
+      {skill.relatedServices.map((routeKey) => (
+        <a href={getLocalizedPath(routeKey, locale)}>{routeKey}</a>
+      ))}
+    </div>
+  </section>
+
+  <section class="skillBlock__section" aria-label={labels.skillRelatedProjects}>
+    <h3>{labels.skillRelatedProjects}</h3>
+    <div class="skillLinks">
+      {skill.relatedProjects.map((projectSlug) => (
+        <a href={`${getLocalizedPath("projects", locale)}#${projectSlug}`}>{projectSlug}</a>
+      ))}
+    </div>
+  </section>
+
+  <p class="skillCaution">
+    <strong>{labels.caution}</strong>
+    {skill.caution}
+  </p>
 </article>

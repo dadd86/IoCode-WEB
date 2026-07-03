@@ -40,26 +40,83 @@ const expectedProjectSlugs = [
   "java-mvc-dao-javafx"
 ];
 
-const forbiddenClaims = [
-  "garantizado",
-  "guaranteed",
-  "garantiert",
-  "100% seguro",
-  "100% secure",
-  "producción certificada",
-  "certified production",
-  "cliente real",
-  "real client",
-  "mejora del",
-  "reduced by",
-  "aumentó",
-  "increased by",
-  "testimonial",
-  "testimonio",
-  "aggregateRating",
-  "AggregateRating",
-  "review",
-  "rating"
+const forbiddenClaimPatterns = [
+  {
+    name: "garantizado",
+    pattern: /\bgarantizado\b/i
+  },
+  {
+    name: "guaranteed",
+    pattern: /\bguaranteed\b/i
+  },
+  {
+    name: "garantiert",
+    pattern: /\bgarantiert\b/i
+  },
+  {
+    name: "100% seguro",
+    pattern: /100%\s*seguro/i
+  },
+  {
+    name: "100% secure",
+    pattern: /100%\s*secure/i
+  },
+  {
+    name: "producción certificada",
+    pattern: /\bproducci[oó]n\s+certificada\b/i
+  },
+  {
+    name: "certified production",
+    pattern: /\bcertified\s+production\b/i
+  },
+  {
+    name: "cliente real",
+    pattern: /\bcliente\s+real\b/i
+  },
+  {
+    name: "real client",
+    pattern: /\breal\s+client\b/i
+  },
+  {
+    name: "mejora porcentual no probada",
+    pattern: /\bmejor(a|ó)\s+del\s+\d+%/i
+  },
+  {
+    name: "reduced by percent",
+    pattern: /\breduced\s+by\s+\d+%/i
+  },
+  {
+    name: "increased by percent",
+    pattern: /\bincreased\s+by\s+\d+%/i
+  },
+  {
+    name: "testimonial",
+    pattern: /\btestimonial\b/i
+  },
+  {
+    name: "testimonio",
+    pattern: /\btestimonio\b/i
+  },
+  {
+    name: "AggregateRating schema",
+    pattern: /\bAggregateRating\b/
+  },
+  {
+    name: "ratingValue schema",
+    pattern: /\bratingValue\b/
+  },
+  {
+    name: "reviewRating schema",
+    pattern: /\breviewRating\b/
+  },
+  {
+    name: "fake review phrase",
+    pattern: /\breview\s+rating\b/i
+  },
+  {
+    name: "aggregate rating phrase",
+    pattern: /\baggregate\s+rating\b/i
+  }
 ];
 
 const sensitivePatterns = [
@@ -194,9 +251,11 @@ if (projects) {
 
       const searchableText = JSON.stringify(project);
 
-      for (const forbiddenClaim of forbiddenClaims) {
-        if (searchableText.toLowerCase().includes(forbiddenClaim.toLowerCase())) {
-          claimsErrors.push(`${locale}/${project.title}: claim prohibido detectado: ${forbiddenClaim}.`);
+      for (const forbiddenClaim of forbiddenClaimPatterns) {
+        if (forbiddenClaim.pattern.test(searchableText)) {
+          claimsErrors.push(
+            `${locale}/${project.title}: claim prohibido detectado: ${forbiddenClaim.name}.`
+          );
         }
       }
 
@@ -276,13 +335,40 @@ if (!pageSource.includes("ItemList") || !pageSource.includes("CreativeWork")) {
   seoErrors.push("La página de proyectos debe incluir structured data prudente ItemList/CreativeWork.");
 }
 
-for (const forbiddenSeo of ["AggregateRating", "Review", "testimonial", "ratingValue"]) {
+const forbiddenSeoPatterns = [
+  {
+    name: "AggregateRating",
+    pattern: /\bAggregateRating\b/
+  },
+  {
+    name: "Review schema",
+    pattern: /"@type"\s*:\s*"Review"/
+  },
+  {
+    name: "testimonial",
+    pattern: /\btestimonial\b/i
+  },
+  {
+    name: "testimonio",
+    pattern: /\btestimonio\b/i
+  },
+  {
+    name: "ratingValue",
+    pattern: /\bratingValue\b/
+  },
+  {
+    name: "reviewRating",
+    pattern: /\breviewRating\b/
+  }
+];
+
+for (const forbiddenSeo of forbiddenSeoPatterns) {
   if (
-    source?.includes(forbiddenSeo) ||
-    pageSource.includes(forbiddenSeo) ||
-    cardSource.includes(forbiddenSeo)
+    forbiddenSeo.pattern.test(source || "") ||
+    forbiddenSeo.pattern.test(pageSource) ||
+    forbiddenSeo.pattern.test(cardSource)
   ) {
-    seoErrors.push(`Structured/content SEO contiene elemento no permitido: ${forbiddenSeo}.`);
+    seoErrors.push(`Structured/content SEO contiene elemento no permitido: ${forbiddenSeo.name}.`);
   }
 }
 

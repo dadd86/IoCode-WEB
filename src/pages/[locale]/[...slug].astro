@@ -52,6 +52,26 @@ const projectStructuredData =
         }))
       }
     : null;
+
+const skillStructuredData =
+  routeKey === "skills"
+    ? {
+        "@context": "https://schema.org",
+        "@type": "DefinedTermSet",
+        "@id": `${siteConfig.url}${getLocalizedPath("skills", locale)}#technical-skills`,
+        name: content.heading,
+        description: content.description,
+        inLanguage: locale,
+        hasDefinedTerm: skillGroups[locale].map((skill) => ({
+          "@type": "DefinedTerm",
+          "@id": `${siteConfig.url}${getLocalizedPath("skills", locale)}#${skill.slug}`,
+          name: skill.title,
+          description: skill.businessProblem,
+          termCode: skill.slug,
+          inDefinedTermSet: `${siteConfig.url}${getLocalizedPath("skills", locale)}#technical-skills`
+        }))
+      }
+    : null;
 ---
 
 <BaseLayout locale={locale} routeKey={routeKey} title={content.title} description={content.description}>
@@ -96,17 +116,31 @@ const projectStructuredData =
       </div>
     </section>
   ) : null}
-  
+
   {projectStructuredData ? (
-    <script type="application/ld+json" set:html={JSON.stringify(projectStructuredData)}></script>
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(projectStructuredData)}
+    ></script>
   ) : null}
 
   {routeKey === "skills" ? (
     <section class="section">
       <div class="container skillMatrix">
-        {skillGroups[locale].map((skill) => <SkillCard title={skill.title} text={skill.text} items={skill.items} />)}
+        {skillGroups[locale].map((skill) => (
+          <SkillCard skill={skill} labels={labels} locale={locale} />
+        ))}
       </div>
     </section>
+  ) : null}
+
+  {skillStructuredData ? (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(skillStructuredData)}
+    ></script>
   ) : null}
 
   {routeKey === "contact" ? (
