@@ -1,8 +1,8 @@
 $ErrorActionPreference = "Stop"
 
 $ProjectName = "IoCode-WEB"
-$Root = Resolve-Path "."
-$ReleaseDir = Join-Path $Root "releases"
+$RootPath = (Resolve-Path ".").Path
+$ReleaseDir = Join-Path $RootPath "releases"
 $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $OutputZip = Join-Path $ReleaseDir "$ProjectName-source-$Timestamp.zip"
 $TempDir = Join-Path $env:TEMP "$ProjectName-source-$Timestamp"
@@ -59,12 +59,34 @@ $ExcludedFilePatterns = @(
   "Prompt.md"
 )
 
+function Convert-ToSafeRelativePath {
+  param (
+    [string] $BasePath,
+    [string] $FullPath
+  )
+
+  $BaseFullPath = [System.IO.Path]::GetFullPath($BasePath)
+  $TargetFullPath = [System.IO.Path]::GetFullPath($FullPath)
+
+  if (-not $BaseFullPath.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+    $BaseFullPath = $BaseFullPath + [System.IO.Path]::DirectorySeparatorChar
+  }
+
+  $BaseUri = New-Object System.Uri($BaseFullPath)
+  $TargetUri = New-Object System.Uri($TargetFullPath)
+
+  $RelativeUri = $BaseUri.MakeRelativeUri($TargetUri)
+  $RelativePath = [System.Uri]::UnescapeDataString($RelativeUri.ToString())
+
+  return $RelativePath.Replace("\", "/")
+}
+
 function Test-IsExcludedPath {
   param (
     [string] $RelativePath
   )
 
-  $NormalizedPath = $RelativePath.Replace("\", "/")
+  $NormalizedPath = $RelativePath.Replace("\", "/").TrimStart("/")
 
   foreach ($Directory in $ExcludedDirectories) {
     if (
@@ -76,8 +98,10 @@ function Test-IsExcludedPath {
     }
   }
 
+  $LeafName = Split-Path $NormalizedPath -Leaf
+
   foreach ($Pattern in $ExcludedFilePatterns) {
-    if ((Split-Path $NormalizedPath -Leaf) -like $Pattern) {
+    if ($LeafName -like $Pattern) {
       if ($NormalizedPath -ne ".env.example" -and $NormalizedPath -ne "Docker/.env.example") {
         return $true
       }
@@ -94,16 +118,13 @@ if (Test-Path $TempDir) {
 New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
 New-Item -ItemType Directory -Force -Path $ReleaseDir | Out-Null
 
-$Files = Get-ChildItem -Path $Root -Recurse -File | Where-Object {
-  $RelativePath = Resolve-Path -Relative $_.FullName
-  $RelativePath = $RelativePath.TrimStart(".", "\", "/")
+$Files = Get-ChildItem -Path $RootPath -Recurse -File -Force | Where-Object {
+  $RelativePath = Convert-ToSafeRelativePath -BasePath $RootPath -FullPath $_.FullName
   -not (Test-IsExcludedPath -RelativePath $RelativePath)
 }
 
 foreach ($File in $Files) {
-  $RelativePath = Resolve-Path -Relative $File.FullName
-  $RelativePath = $RelativePath.TrimStart(".", "\", "/")
-
+  $RelativePath = Convert-ToSafeRelativePath -BasePath $RootPath -FullPath $File.FullName
   $Destination = Join-Path $TempDir $RelativePath
   $DestinationDir = Split-Path $Destination -Parent
 
@@ -159,8 +180,5 @@ if ($Errors.Count -gt 0) {
 
 Remove-Item -Recurse -Force $TempDir
 
-$SizeMb = [Math]::Round((Get-Item $OutputZip).Length / 1MB, 2)
-
-Write-Host "ZIP limpio creado:" -ForegroundColor Green
+Write-Host "ZIP limpio generado correctamente:" -ForegroundColor Green
 Write-Host $OutputZip
-Write-Host "Tamaño: $SizeMb MB"

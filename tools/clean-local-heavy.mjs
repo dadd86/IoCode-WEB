@@ -1,4 +1,4 @@
-import { existsSync, rmSync } from "node:fs";
+import { existsSync, readdirSync, rmSync } from "node:fs";
 
 const removablePaths = [
   "node_modules",
@@ -21,6 +21,7 @@ const removablePaths = [
 const removableExtensions = [
   ".zip",
   ".tar",
+  ".tar.gz",
   ".tgz",
   ".rar",
   ".7z"
@@ -37,7 +38,7 @@ for (const path of removablePaths) {
   }
 }
 
-for (const file of await Array.fromAsync(new Bun.Glob("*").scan("."))) {
+for (const file of readdirSync(".")) {
   if (removableExtensions.some((extension) => file.endsWith(extension))) {
     rmSync(file, {
       force: true
@@ -46,3 +47,5 @@ for (const file of await Array.fromAsync(new Bun.Glob("*").scan("."))) {
     console.log(`Removed ${file}`);
   }
 }
+
+console.log("Local heavy generated files cleaned.");
