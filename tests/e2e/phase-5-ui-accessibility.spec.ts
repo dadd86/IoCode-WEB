@@ -211,28 +211,107 @@ async function expectHeroBehavior(page: Page): Promise<void> {
   expect(heroLinks).toBeGreaterThan(0);
 }
 
-async function captureQaScreenshot(page: Page, path: string): Promise<void> {
-  await page.evaluate(() => {
+async function waitForStableScreenshotState(page: Page): Promise<void> {
+  await page.waitForLoadState("load");
+
+  await page.evaluate(async () => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
     window.scrollTo(0, 0);
+
+    if ("fonts" in document) {
+      await document.fonts.ready;
+    }
   });
 
-  try {
-    await page.screenshot({
-      path,
-      fullPage: true,
-      animations: "disabled",
-      timeout: 15_000
-    });
+  await page.addStyleTag({
+    content: `
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+        caret-color: transparent !important;
+      }
 
-    return;
-  } catch {
-    await page.screenshot({
-      path,
-      fullPage: false,
-      animations: "disabled",
-      timeout: 15_000
-    });
+      html,
+      body {
+        scroll-behavior: auto !important;
+      }
+    `
+  }).catch(() => undefined);
+
+  await page.waitForTimeout(750);
+}
+
+async function captureQaScreenshot(page: Page, path: string): Promise<void> {
+  await waitForStableScreenshotState(page);
+
+  const viewport = page.viewportSize() ?? {
+    width: 1280,
+    height: 720
+  };
+
+  const attempts: Array<() => Promise<Buffer>> = [
+    async () =>
+      page.screenshot({
+        path,
+        fullPage: false,
+        animations: "disabled",
+        scale: "css",
+        timeout: 20_000
+      }),
+
+    async () => {
+      await page.waitForTimeout(1_000);
+
+      return page.screenshot({
+        path,
+        fullPage: false,
+        animations: "disabled",
+        scale: "css",
+        timeout: 20_000
+      });
+    },
+
+    async () => {
+      await page.setViewportSize(viewport);
+      await page.waitForTimeout(1_000);
+
+      return page.screenshot({
+        path,
+        fullPage: false,
+        animations: "disabled",
+        scale: "css",
+        timeout: 20_000
+      });
+    },
+
+    async () => {
+      await page.waitForTimeout(1_000);
+
+      return page.locator("main").screenshot({
+        path,
+        animations: "disabled",
+        scale: "css",
+        timeout: 20_000
+      });
+    }
+  ];
+
+  let lastError: unknown;
+
+  for (const attempt of attempts) {
+    try {
+      await attempt();
+      return;
+    } catch (error) {
+      lastError = error;
+    }
   }
+
+  throw lastError;
 }
 
 test.describe("Fase 5 - UI/UX responsive y accesibilidad", () => {
