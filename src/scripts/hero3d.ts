@@ -18,14 +18,6 @@ type LogoMaterialRuntime = {
   baseOpacity: number;
 };
 
-type RuntimeState = {
-  animationFrameId: number | null;
-  abortController: AbortController;
-  resizeObserver: ResizeObserver | null;
-  renderer: THREE.WebGLRenderer | null;
-  pmremGenerator: THREE.PMREMGenerator | null;
-  environmentTarget: THREE.WebGLRenderTarget | null;
-};
 
 type LogoScene = {
   scene: THREE.Scene;
@@ -48,6 +40,18 @@ type LogoScene = {
   };
   floorMaterial: THREE.MeshStandardMaterial;
   reducedMotion: boolean;
+};
+
+type RuntimeState = {
+  animationFrameId: number | null;
+  abortController: AbortController;
+  resizeObserver: ResizeObserver | null;
+  intersectionObserver: IntersectionObserver | null;
+  renderer: THREE.WebGLRenderer | null;
+  pmremGenerator: THREE.PMREMGenerator | null;
+  environmentTarget: THREE.WebGLRenderTarget | null;
+  isVisible: boolean;
+  isDocumentVisible: boolean;
 };
 
 const BRAND = {
@@ -483,6 +487,32 @@ function projectPanel(runtime: LogoScene, panel: PanelElement): void {
   panel.style.setProperty("--panel-dy", `${(runtime.pointer.y * 7 * parallax).toFixed(2)}px`);
 }
 
+document.addEventListener(
+  "visibilitychange",
+  () => {
+    state.isDocumentVisible = document.visibilityState === "visible";
+    syncAnimationState();
+  },
+  {
+    signal: state.abortController.signal
+  }
+);
+
+state.intersectionObserver = new IntersectionObserver(
+  (entries) => {
+    const entry = entries[0];
+
+    state.isVisible = Boolean(entry?.isIntersecting);
+    syncAnimationState();
+  },
+  {
+    root: null,
+    threshold: 0.05
+  }
+);
+
+state.intersectionObserver.observe(stage);
+
 function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: number): void {
   state.animationFrameId = window.requestAnimationFrame((now) => {
     const elapsed = (now - startTime) / 1000;
@@ -591,11 +621,11 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
 
     runtime.renderer.render(runtime.scene, runtime.camera);
 
-    animateRuntime(runtime, state, startTime);
+    syncAnimationState();
   });
 }
 
-async function initHero(host: HTMLElement): Promise<void> {
+export async function initHero(host: HTMLElement): Promise<void> {
   if (host.dataset.hero3dInitialized === "true") {
     return;
   }
@@ -622,10 +652,66 @@ async function initHero(host: HTMLElement): Promise<void> {
     animationFrameId: null,
     abortController: new AbortController(),
     resizeObserver: null,
+    intersectionObserver: null,
     renderer: null,
     pmremGenerator: null,
-    environmentTarget: null
+    environmentTarget: null,
+    isVisible: true,
+    isDocumentVisible: document.visibilityState === "visible"
   };
+
+  function startAnimation(): void {
+    if (state.animationFrameId !== null) {
+      return;
+    }
+
+    animateRuntime(runtime, state, performance.now());
+  }
+
+  function stopAnimation(): void {
+    if (state.animationFrameId === null) {
+      return;
+    }
+
+    window.cancelAnimationFrame(state.animationFrameId);
+    state.animationFrameId = null;
+  }
+
+  function syncAnimationState(): void {
+    if (runtime.reducedMotion || !state.isVisible || !state.isDocumentVisible) {
+      stopAnimation();
+      runtime.renderer.render(runtime.scene, runtime.camera);
+      return;
+    }
+
+    startAnimation();
+  }
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      state.isDocumentVisible = document.visibilityState === "visible";
+      syncAnimationState();
+    },
+    {
+      signal: state.abortController.signal
+    }
+  );
+
+  state.intersectionObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+
+      state.isVisible = Boolean(entry?.isIntersecting);
+      syncAnimationState();
+    },
+    {
+      root: null,
+      threshold: 0.05
+    }
+  );
+
+  state.intersectionObserver.observe(stage);
 
   try {
     host.classList.add("is-loading");
@@ -800,9 +886,7 @@ async function initHero(host: HTMLElement): Promise<void> {
     host.classList.remove("is-loading");
     host.classList.add("is-three-ready");
 
-    const startTime = performance.now();
-
-    animateRuntime(runtime, state, startTime);
+    syncAnimationState();
 
     window.addEventListener(
       "pagehide",
@@ -813,6 +897,7 @@ async function initHero(host: HTMLElement): Promise<void> {
 
         state.abortController.abort();
         state.resizeObserver?.disconnect();
+        state.intersectionObserver?.disconnect();
 
         disposeObject3D(scene);
 
@@ -836,6 +921,7 @@ async function initHero(host: HTMLElement): Promise<void> {
     state.environmentTarget?.dispose();
     state.pmremGenerator?.dispose();
     state.renderer?.dispose();
+    state.intersectionObserver?.disconnect();
 
     viewer.innerHTML = "";
 
@@ -847,7 +933,3 @@ async function initHero(host: HTMLElement): Promise<void> {
     );
   }
 }
-
-document.querySelectorAll<HTMLElement>("[data-hero3d]").forEach((host) => {
-  void initHero(host);
-});

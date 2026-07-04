@@ -141,6 +141,43 @@ services:
     profiles:
       - qa
 
+  performance-qa:
+    container_name: iocode-solutions-performance-qa
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile.performance
+      args:
+        PLAYWRIGHT_VERSION: "1.60.0"
+    init: true
+    environment:
+      CI: "1"
+      ASTRO_TELEMETRY_DISABLED: "1"
+      PLAYWRIGHT_BASE_URL: "http://web:8080"
+      LIGHTHOUSE_BASE_URL: "http://web:8080"
+      PERFORMANCE_BASE_URL: "http://web:8080"
+
+      PHASE6_MAX_GLB_IDEAL_BYTES: "2000000"
+      PHASE6_MAX_GLB_ACCEPTED_BYTES: "5000000"
+      PHASE6_MAX_GLB_BLOCKER_BYTES: "8000000"
+
+      PHASE6_MAX_IMAGE_BYTES: "2000000"
+      PHASE6_MAX_JS_INITIAL_BYTES: "250000"
+      PHASE6_MAX_JS_TOTAL_BYTES: "700000"
+      PHASE6_MAX_CSS_TOTAL_BYTES: "120000"
+
+      PHASE6_MIN_LIGHTHOUSE_DESKTOP: "0.90"
+      PHASE6_MIN_LIGHTHOUSE_MOBILE: "0.75"
+      PHASE6_MAX_LCP_MS: "2500"
+      PHASE6_MAX_CLS: "0.1"
+      PHASE6_MAX_TBT_MS: "300"
+    depends_on:
+      web:
+        condition: service_healthy
+    volumes:
+      - ./qa-artifacts:/app/qa-artifacts
+    profiles:
+      - qa
+
 volumes:
   iocode_node_modules:
   iocode_astro_cache:

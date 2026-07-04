@@ -1,0 +1,33 @@
+# syntax=docker/dockerfile:1.7
+
+ARG PLAYWRIGHT_VERSION=1.60.0
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
+
+WORKDIR /app
+
+ENV CI=1 \
+    ASTRO_TELEMETRY_DISABLED=1 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
+    PLAYWRIGHT_BASE_URL=http://web:8080 \
+    LIGHTHOUSE_BASE_URL=http://web:8080 \
+    PERFORMANCE_BASE_URL=http://web:8080
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    imagemagick \
+    jq \
+    gzip \
+    brotli \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY package*.json ./
+
+RUN npm ci \
+  && npm install -g @gltf-transform/cli gltf-validator \
+  && npx playwright --version \
+  && gltf-transform --version || true
+
+COPY . .
+
+CMD ["npm", "run", "qa:phase-6"]

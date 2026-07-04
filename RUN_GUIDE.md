@@ -163,3 +163,12 @@ El formulario usa `mailto:`. Depende del cliente de correo del usuario y de que 
 ### HSTS no aparece
 
 Es correcto en local. No actives HSTS hasta tener HTTPS real.
+
+### Ejecutar Fase 6
+
+```powershell
+docker compose --profile prod --profile qa down --remove-orphans
+docker compose --profile prod --profile qa build --no-cache web performance-qa
+docker compose --profile prod --profile qa up -d web
+docker compose --profile prod --profile qa run --rm performance-qa
+docker compose --profile prod --profile qa down
