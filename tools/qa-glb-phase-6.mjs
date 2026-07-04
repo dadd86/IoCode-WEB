@@ -13,6 +13,13 @@ const glbPath = "public/logo/3d/iocode_solutions_logo_extruded_3d.glb";
 const errors = [];
 const warnings = [];
 
+const gltfTransformBin = join(
+  process.cwd(),
+  "node_modules",
+  ".bin",
+  process.platform === "win32" ? "gltf-transform.cmd" : "gltf-transform"
+);
+
 function writeArtifact(name, payload) {
   mkdirSync(artifactRoot, { recursive: true });
   writeFileSync(join(artifactRoot, name), JSON.stringify(payload, null, 2), "utf8");
@@ -62,7 +69,7 @@ if (!existsSync(glbPath)) {
   let inspectOutput = "";
 
   try {
-    inspectOutput = execFileSync("gltf-transform", ["inspect", glbPath], {
+    inspectOutput = execFileSync(gltfTransformBin, ["inspect", glbPath], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"]
     });
@@ -73,7 +80,9 @@ if (!existsSync(glbPath)) {
   let validatorReport = null;
 
   try {
-    const validator = await import("gltf-validator");
+    const validatorModule = await import("gltf-validator");
+    const validator = validatorModule.default ?? validatorModule;
+
     const report = await validator.validateBytes(new Uint8Array(readFileSync(glbPath)), {
       maxIssues: 200
     });

@@ -155,6 +155,7 @@ services:
       PLAYWRIGHT_BASE_URL: "http://web:8080"
       LIGHTHOUSE_BASE_URL: "http://web:8080"
       PERFORMANCE_BASE_URL: "http://web:8080"
+      CHROME_PATH: "/usr/local/bin/chromium"
 
       PHASE6_MAX_GLB_IDEAL_BYTES: "2000000"
       PHASE6_MAX_GLB_ACCEPTED_BYTES: "5000000"

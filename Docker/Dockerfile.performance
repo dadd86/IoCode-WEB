@@ -10,7 +10,8 @@ ENV CI=1 \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     PLAYWRIGHT_BASE_URL=http://web:8080 \
     LIGHTHOUSE_BASE_URL=http://web:8080 \
-    PERFORMANCE_BASE_URL=http://web:8080
+    PERFORMANCE_BASE_URL=http://web:8080 \
+    CHROME_PATH=/usr/local/bin/chromium
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -24,9 +25,15 @@ RUN apt-get update \
 COPY package*.json ./
 
 RUN npm ci \
-  && npm install -g @gltf-transform/cli gltf-validator \
   && npx playwright --version \
-  && gltf-transform --version || true
+  && ./node_modules/.bin/gltf-transform --version \
+  && node -e "import('gltf-validator').then(() => console.log('gltf-validator ok'))" \
+  && node -e "import('chrome-launcher').then(() => console.log('chrome-launcher ok'))" \
+  && CHROME_BIN="$(find /ms-playwright -path '*/chrome-linux*/chrome' -type f | head -n 1)" \
+  && test -n "$CHROME_BIN" \
+  && ln -sf "$CHROME_BIN" /usr/local/bin/chromium \
+  && test -x /usr/local/bin/chromium \
+  && /usr/local/bin/chromium --version
 
 COPY . .
 

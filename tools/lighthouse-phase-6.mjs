@@ -1,4 +1,9 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  writeFileSync
+} from "node:fs";
 import { join } from "node:path";
 import lighthouse from "lighthouse";
 import * as chromeLauncher from "chrome-launcher";
@@ -33,10 +38,12 @@ mkdirSync(lighthouseRoot, {
 });
 
 function slugify(value) {
-  return value
-    .replace(/^\/+|\/+$/g, "")
-    .replaceAll("/", "-")
-    .replace(/[^a-zA-Z0-9-]/g, "-") || "root";
+  return (
+    value
+      .replace(/^\/+|\/+$/g, "")
+      .replaceAll("/", "-")
+      .replace(/[^a-zA-Z0-9-]/g, "-") || "root"
+  );
 }
 
 function getNumericAudit(lhr, auditId) {
@@ -45,6 +52,48 @@ function getNumericAudit(lhr, auditId) {
 
 function getScore(lhr, category) {
   return lhr.categories?.[category]?.score ?? null;
+}
+
+function resolveChromePath() {
+  const directCandidates = [
+    process.env.CHROME_PATH,
+    "/usr/local/bin/chromium",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser"
+  ].filter(Boolean);
+
+  for (const candidate of directCandidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  const playwrightRoot = "/ms-playwright";
+
+  if (existsSync(playwrightRoot)) {
+    for (const entry of readdirSync(playwrightRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) {
+        continue;
+      }
+
+      const candidates = [
+        join(playwrightRoot, entry.name, "chrome-linux", "chrome"),
+        join(playwrightRoot, entry.name, "chrome-linux64", "chrome")
+      ];
+
+      for (const candidate of candidates) {
+        if (existsSync(candidate)) {
+          return candidate;
+        }
+      }
+    }
+  }
+
+  throw new Error(
+    "No se encontró Chrome/Chromium. Define CHROME_PATH o verifica /ms-playwright."
+  );
 }
 
 function createDesktopConfig() {
@@ -121,20 +170,33 @@ function validateResult(result) {
   }
 }
 
-const chrome = await chromeLauncher.launch({
-  chromeFlags: [
-    "--headless=new",
-    "--no-sandbox",
-    "--disable-gpu",
-    "--disable-dev-shm-usage"
-  ]
-});
+let chrome = null;
 
 try {
+  const chromePath = resolveChromePath();
+
+  console.log(`Lighthouse Fase 6 Chrome path: ${chromePath}`);
+
+  chrome = await chromeLauncher.launch({
+    chromePath,
+    chromeFlags: [
+      "--headless=new",
+      "--no-sandbox",
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--disable-background-networking",
+      "--disable-default-apps",
+      "--disable-extensions",
+      "--disable-sync"
+    ]
+  });
+
   for (const route of routes) {
     for (const profile of ["desktop", "mobile"]) {
       const url = new URL(route, baseURL).toString();
       const config = profile === "desktop" ? createDesktopConfig() : createMobileConfig();
+
+      console.log(`Lighthouse Fase 6: ${profile} ${route}`);
 
       const runnerResult = await lighthouse(
         url,
@@ -157,11 +219,8 @@ try {
       const jsonPath = join(lighthouseRoot, `${slug}.json`);
       const htmlPath = join(lighthouseRoot, `${slug}.html`);
 
-      const jsonReport = JSON.stringify(lhr, null, 2);
-      const htmlReport = ReportGenerator.generateReport(lhr, "html");
-
-      writeFileSync(jsonPath, jsonReport, "utf8");
-      writeFileSync(htmlPath, htmlReport, "utf8");
+      writeFileSync(jsonPath, JSON.stringify(lhr, null, 2), "utf8");
+      writeFileSync(htmlPath, ReportGenerator.generateReport(lhr, "html"), "utf8");
 
       const result = {
         route,
@@ -184,8 +243,18 @@ try {
       results.push(result);
     }
   }
+} catch (error) {
+  errors.push(`Lighthouse Fase 6 falló: ${error instanceof Error ? error.message : String(error)}`);
 } finally {
-  await chrome.kill();
+  if (chrome) {
+    chrome.kill();
+  }
+}
+
+if (results.length !== routes.length * 2) {
+  errors.push(
+    `Lighthouse Fase 6 incompleto: se esperaban ${routes.length * 2} mediciones, recibidas ${results.length}.`
+  );
 }
 
 const status = errors.length === 0 ? "passed" : "failed";
@@ -199,6 +268,8 @@ writeFileSync(
       status,
       baseURL,
       thresholds,
+      expectedMeasurements: routes.length * 2,
+      actualMeasurements: results.length,
       results,
       warningCount: warnings.length,
       errorCount: errors.length,

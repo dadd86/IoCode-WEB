@@ -46,14 +46,31 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
-    const firstCta = page.locator(".buttonGroup a").first();
+    const viewport = page.viewportSize();
 
-    await expect(firstCta).toBeVisible();
+    expect(viewport).not.toBeNull();
 
-    const box = await firstCta.boundingBox();
+    const ctas = page.locator(".buttonGroup a");
+    const count = await ctas.count();
 
-    expect(box).not.toBeNull();
-    expect((box?.y ?? -1) >= 0).toBe(true);
+    expect(count).toBeGreaterThanOrEqual(2);
+
+    for (let index = 0; index < count; index += 1) {
+      const cta = ctas.nth(index);
+
+      await expect(cta).toBeVisible();
+
+      const box = await cta.boundingBox();
+
+      expect(box).not.toBeNull();
+
+      const safeBox = box!;
+
+      expect(safeBox.x).toBeGreaterThanOrEqual(0);
+      expect(safeBox.y).toBeGreaterThanOrEqual(0);
+      expect(safeBox.x + safeBox.width).toBeLessThanOrEqual((viewport?.width ?? 0) + 2);
+      expect(safeBox.y + safeBox.height).toBeLessThanOrEqual((viewport?.height ?? 0) + 2);
+    }
   });
 
   test("no hay overflow horizontal causado por hero 3D", async ({ page }) => {

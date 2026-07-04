@@ -487,31 +487,7 @@ function projectPanel(runtime: LogoScene, panel: PanelElement): void {
   panel.style.setProperty("--panel-dy", `${(runtime.pointer.y * 7 * parallax).toFixed(2)}px`);
 }
 
-document.addEventListener(
-  "visibilitychange",
-  () => {
-    state.isDocumentVisible = document.visibilityState === "visible";
-    syncAnimationState();
-  },
-  {
-    signal: state.abortController.signal
-  }
-);
 
-state.intersectionObserver = new IntersectionObserver(
-  (entries) => {
-    const entry = entries[0];
-
-    state.isVisible = Boolean(entry?.isIntersecting);
-    syncAnimationState();
-  },
-  {
-    root: null,
-    threshold: 0.05
-  }
-);
-
-state.intersectionObserver.observe(stage);
 
 function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: number): void {
   state.animationFrameId = window.requestAnimationFrame((now) => {
@@ -621,7 +597,12 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
 
     runtime.renderer.render(runtime.scene, runtime.camera);
 
-    syncAnimationState();
+    if (runtime.reducedMotion || !state.isVisible || !state.isDocumentVisible) {
+      state.animationFrameId = null;
+      return;
+    }
+
+    animateRuntime(runtime, state, startTime);
   });
 }
 
@@ -660,58 +641,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
     isDocumentVisible: document.visibilityState === "visible"
   };
 
-  function startAnimation(): void {
-    if (state.animationFrameId !== null) {
-      return;
-    }
-
-    animateRuntime(runtime, state, performance.now());
-  }
-
-  function stopAnimation(): void {
-    if (state.animationFrameId === null) {
-      return;
-    }
-
-    window.cancelAnimationFrame(state.animationFrameId);
-    state.animationFrameId = null;
-  }
-
-  function syncAnimationState(): void {
-    if (runtime.reducedMotion || !state.isVisible || !state.isDocumentVisible) {
-      stopAnimation();
-      runtime.renderer.render(runtime.scene, runtime.camera);
-      return;
-    }
-
-    startAnimation();
-  }
-
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      state.isDocumentVisible = document.visibilityState === "visible";
-      syncAnimationState();
-    },
-    {
-      signal: state.abortController.signal
-    }
-  );
-
-  state.intersectionObserver = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-
-      state.isVisible = Boolean(entry?.isIntersecting);
-      syncAnimationState();
-    },
-    {
-      root: null,
-      threshold: 0.05
-    }
-  );
-
-  state.intersectionObserver.observe(stage);
 
   try {
     host.classList.add("is-loading");
@@ -864,6 +793,63 @@ export async function initHero(host: HTMLElement): Promise<void> {
       reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches
     };
 
+    function startAnimation(): void {
+      if (state.animationFrameId !== null) {
+        return;
+      }
+
+      animateRuntime(runtime, state, performance.now());
+    }
+
+    function stopAnimation(): void {
+      if (state.animationFrameId === null) {
+        return;
+      }
+
+      window.cancelAnimationFrame(state.animationFrameId);
+      state.animationFrameId = null;
+    }
+
+    function syncAnimationState(): void {
+      if (runtime.reducedMotion || !state.isVisible || !state.isDocumentVisible) {
+        stopAnimation();
+        runtime.renderer.render(runtime.scene, runtime.camera);
+        return;
+      }
+
+      startAnimation();
+    }
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        state.isDocumentVisible = document.visibilityState === "visible";
+        syncAnimationState();
+      },
+      {
+        signal: state.abortController.signal
+      }
+    );
+
+    state.intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        state.isVisible = Boolean(entry?.isIntersecting);
+        syncAnimationState();
+      },
+      {
+        root: null,
+        threshold: 0.05
+      }
+    );
+
+    state.intersectionObserver.observe(stage);
+
+    syncAnimationState();
+    host.classList.remove("is-loading");
+    host.classList.add("is-three-ready");
+
     const colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handleThemeChange = () => applyTheme(runtime, host);
@@ -931,5 +917,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
         ? error.message
         : "Error inesperado en el hero 3D."
     );
+  
   }
+
 }
