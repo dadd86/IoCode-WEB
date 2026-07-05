@@ -1,0 +1,44 @@
+---
+import { siteConfig } from "../data/site";
+
+type Loading = "eager" | "lazy";
+type FetchPriority = "high" | "low" | "auto";
+
+type Props = {
+  imgClass?: string;
+  alt?: string;
+  loading?: Loading;
+  fetchPriority?: FetchPriority;
+  sizes?: string;
+  width?: number;
+  height?: number;
+};
+
+const {
+  imgClass,
+  alt = siteConfig.name,
+  loading = "lazy",
+  fetchPriority = "auto",
+  sizes = "(max-width: 720px) 96px, 160px",
+  width = 512,
+  height = 512
+} = Astro.props as Props;
+---
+
+<picture>
+  <source
+    type="image/webp"
+    srcset={`${siteConfig.logoSmallWebpPath} 256w, ${siteConfig.logoWebpPath} 512w`}
+    sizes={sizes}
+  />
+  <img
+    class={imgClass}
+    src={siteConfig.logoPath}
+    width={width}
+    height={height}
+    alt={alt}
+    loading={loading}
+    decoding="async"
+    fetchpriority={fetchPriority}
+  />
+</picture>

@@ -54,6 +54,22 @@ function getScore(lhr, category) {
   return lhr.categories?.[category]?.score ?? null;
 }
 
+function getLcpElement(lhr) {
+  const audit = lhr.audits?.["largest-contentful-paint-element"];
+  const item = audit?.details?.items?.[0];
+
+  if (!item) {
+    return null;
+  }
+
+  return {
+    nodeLabel: item.node?.nodeLabel ?? null,
+    selector: item.node?.selector ?? null,
+    snippet: item.node?.snippet ?? null,
+    boundingRect: item.node?.boundingRect ?? null
+  };
+}
+
 function resolveChromePath() {
   const directCandidates = [
     process.env.CHROME_PATH,
@@ -137,7 +153,8 @@ function validateResult(result) {
     performance,
     largestContentfulPaint,
     cumulativeLayoutShift,
-    totalBlockingTime
+    totalBlockingTime,
+    lcpElement
   } = result;
 
   const minPerformance =
@@ -153,7 +170,7 @@ function validateResult(result) {
 
   if (largestContentfulPaint !== null && largestContentfulPaint > thresholds.maxLcpMs) {
     errors.push(
-      `${profile} ${route}: LCP ${largestContentfulPaint}ms supera ${thresholds.maxLcpMs}ms.`
+      `${profile} ${route}: LCP ${largestContentfulPaint}ms supera ${thresholds.maxLcpMs}ms. Elemento LCP: ${JSON.stringify(lcpElement)}`
     );
   }
 
@@ -235,6 +252,7 @@ try {
         cumulativeLayoutShift: getNumericAudit(lhr, "cumulative-layout-shift"),
         totalBlockingTime: getNumericAudit(lhr, "total-blocking-time"),
         speedIndex: getNumericAudit(lhr, "speed-index"),
+        lcpElement: getLcpElement(lhr),
         reportJson: jsonPath.replaceAll("\\", "/"),
         reportHtml: htmlPath.replaceAll("\\", "/")
       };

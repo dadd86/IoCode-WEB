@@ -1,7 +1,7 @@
 ---
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
-
+import LogoImage from "./LogoImage.astro";
 type Props = { locale: Locale };
 const { locale } = Astro.props;
 
@@ -21,7 +21,13 @@ const footerLabel: Record<Locale, string> = {
 <footer class="siteFooter" aria-label={footerLabel[locale]}>
   <div class="container footerContent">
     <a href={`/${locale}/`} aria-label={siteConfig.name}>
-      <img class="footerLogo" src={siteConfig.logoPath} alt={siteConfig.name} />
+      <LogoImage
+        imgClass="footerLogo"
+        alt={siteConfig.name}
+        loading="lazy"
+        fetchPriority="low"
+        sizes="96px"
+      />
     </a>
     <p>© {new Date().getFullYear()} {siteConfig.name}. {text[locale]}</p>
   </div>

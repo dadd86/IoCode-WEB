@@ -3,7 +3,7 @@ import { getHeroPanels } from "../data/heroPanels";
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import { getLocalizedPath } from "../i18n/routes";
-
+import LogoImage from "./LogoImage.astro";
 type Props = {
   locale: Locale;
 };
@@ -104,7 +104,12 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
 
     <div class="hero3d__fallback" data-hero-fallback>
       <div>
-        <img src={siteConfig.logoPath} alt="IoCode SOLUTIONS" loading="lazy" />
+        <LogoImage
+          alt="IoCode SOLUTIONS"
+          loading="lazy"
+          fetchPriority="low"
+          sizes="(max-width: 720px) 72vw, 34rem"
+        />
         <p>{fallbackMessage[locale]}</p>
       </div>
     </div>

@@ -4,7 +4,7 @@ import LanguageSwitcher from "./LanguageSwitcher.astro";
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
-
+import LogoImage from "./LogoImage.astro";
 type Props = { locale: Locale; activeKey: RouteKey };
 const { locale, activeKey } = Astro.props;
 
@@ -24,7 +24,13 @@ const brandLabel: Record<Locale, string> = {
 <header class="siteHeader">
   <nav class="navbar container" aria-label={navLabel[locale]}>
     <a class="brand" href={`/${locale}/`} aria-label={brandLabel[locale]}>
-      <img class="brand__logo" src={siteConfig.logoPath} alt={siteConfig.name} />
+      <LogoImage
+        imgClass="brand__logo"
+        alt={siteConfig.name}
+        loading="eager"
+        fetchPriority="high"
+        sizes="96px"
+      />
     </a>
     <Navigation locale={locale} activeKey={activeKey} />
     <LanguageSwitcher locale={locale} activeKey={activeKey} />

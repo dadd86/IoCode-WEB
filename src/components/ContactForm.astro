@@ -7,7 +7,7 @@ import {
 } from "../data/contact";
 import type { Locale } from "../i18n/config";
 import { ui } from "../i18n/ui";
-
+import LogoImage from "./LogoImage.astro";
 type Props = {
   locale: Locale;
 };
@@ -25,7 +25,13 @@ const copyStatusId = `copy-status-${locale}`;
 
 <div class="contactGrid" data-phase="4-contact">
   <aside class="contactPanel">
-    <img class="contactPanel__logo" src={siteConfig.logoPath} alt={siteConfig.name} />
+    <LogoImage
+      imgClass="contactPanel__logo"
+      alt={siteConfig.name}
+      loading="lazy"
+      fetchPriority="low"
+      sizes="160px"
+    />
 
     <div class="contactPanel__section">
       <p class="eyebrow">{labels.contact}</p>

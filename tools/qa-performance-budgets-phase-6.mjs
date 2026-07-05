@@ -20,7 +20,9 @@ const budgets = {
   maxImageBytes: Number(process.env.PHASE6_MAX_IMAGE_BYTES || "2000000"),
   maxJsInitialBytes: Number(process.env.PHASE6_MAX_JS_INITIAL_BYTES || "250000"),
   maxJsTotalBytes: Number(process.env.PHASE6_MAX_JS_TOTAL_BYTES || "700000"),
-  maxCssTotalBytes: Number(process.env.PHASE6_MAX_CSS_TOTAL_BYTES || "120000")
+  maxCssTotalBytes: Number(process.env.PHASE6_MAX_CSS_TOTAL_BYTES || "120000"),
+  maxCriticalLogoBytes: Number(process.env.PHASE6_MAX_CRITICAL_LOGO_BYTES || "180000"),
+  maxSmallLogoBytes: Number(process.env.PHASE6_MAX_SMALL_LOGO_BYTES || "90000")
 };
 
 function writeArtifact(name, payload) {
@@ -62,6 +64,39 @@ const glbFiles = files.filter((file) => file.extension === ".glb");
 const imageFiles = files.filter((file) =>
   [".png", ".jpg", ".jpeg", ".webp", ".avif", ".svg"].includes(file.extension)
 );
+const requiredRasterAssets = [
+  {
+    path: "public/logo/iocode-logo.png",
+    maxBytes: budgets.maxImageBytes
+  },
+  {
+    path: "public/logo/iocode-logo-512.webp",
+    maxBytes: budgets.maxCriticalLogoBytes
+  },
+  {
+    path: "public/logo/iocode-logo-256.webp",
+    maxBytes: budgets.maxSmallLogoBytes
+  }
+];
+
+for (const asset of requiredRasterAssets) {
+  const match = files.find((file) => file.path === asset.path);
+
+  if (!match) {
+    errors.push(`${asset.path}: asset raster optimizado requerido no existe.`);
+    continue;
+  }
+
+  if (match.size > asset.maxBytes) {
+    errors.push(
+      `${asset.path}: ${match.size} bytes supera presupuesto ${asset.maxBytes}.`
+    );
+  }
+}
+
+if (files.some((file) => file.path.endsWith(".original.glb"))) {
+  errors.push("El proyecto contiene un GLB original pesado .original.glb. Debe estar fuera del ZIP/repo.");
+}
 
 const totals = {
   jsBytes: jsFiles.reduce((total, file) => total + file.size, 0),
