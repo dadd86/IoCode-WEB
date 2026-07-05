@@ -68,7 +68,7 @@
     "qa:assets:6": "node tools/qa-glb-phase-6.mjs",
     "qa:bundle:6": "node tools/qa-bundle-phase-6.mjs",
     "qa:headers:6": "node tools/qa-headers-phase-6.mjs",
-    "qa:hero3d-runtime:6": "playwright test tests/e2e/phase-6-hero-performance.spec.ts --project=chromium-desktop",
+    "qa:hero3d-runtime:6": "node tools/run-phase-6-hero-runtime.mjs",
     "qa:lighthouse:6": "node tools/lighthouse-phase-6.mjs",
     "summary:performance:6": "node tools/create-phase-6-summary.mjs",
     "optimize:raster:6": "node tools/optimize-raster-assets-phase-6.mjs",

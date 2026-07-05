@@ -4,6 +4,7 @@ import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import { getLocalizedPath } from "../i18n/routes";
 import LogoImage from "./LogoImage.astro";
+
 type Props = {
   locale: Locale;
 };
@@ -45,6 +46,7 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
 <div
   class="hero3d__scene"
   data-hero3d
+  data-hero3d-state="deferred"
   data-language={locale}
   data-model-url={siteConfig.logo3dPath}
   data-fallback-logo-url={siteConfig.logoPath}
@@ -52,6 +54,15 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
 >
   <div class="hero3d__stage" data-hero-stage>
     <div class="hero3d__viewer" data-hero-viewer aria-hidden="true"></div>
+
+    <div class="hero3d__placeholder" data-hero-placeholder aria-hidden="true">
+      <LogoImage
+        alt=""
+        loading="eager"
+        fetchPriority="low"
+        sizes="(max-width: 720px) 70vw, 32rem"
+      />
+    </div>
 
     <nav
       class="hero3d__panels"
@@ -77,6 +88,7 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
           data-depth={String(panel.motion.depth)}
           data-lift={String(panel.motion.lift)}
           data-parallax={String(panel.motion.parallax)}
+          style={`--panel-x:${panel.screenFallback.x}%; --panel-y:${panel.screenFallback.y}%;`}
         >
           <strong class="hero3d__panel-title">{panel.copy.title}</strong>
           <span class="hero3d__panel-text">{panel.copy.text}</span>

@@ -46,6 +46,7 @@ const bundle = readJson("bundle-report.json");
 const headers = readJson("headers-report.json");
 const lighthouse = readJson("lighthouse-summary.json");
 const raster = readJson("raster-assets-report.json");
+const runtime = readJson("3d-fallback-runtime-report.json");
 if (lighthouse?.results?.length !== 10) {
   errors.push(
     `lighthouse-summary.json: se esperaban 10 mediciones, recibidas ${lighthouse?.results?.length ?? 0}.`
@@ -64,6 +65,7 @@ for (const result of lighthouse?.results ?? []) {
 
 assertPassed(budgets, "performance-budgets.json");
 assertPassed(raster, "raster-assets-report.json");
+assertPassed(runtime, "3d-fallback-runtime-report.json");
 assertPassed(glb, "glb-report.json");
 assertPassed(validator, "gltf-validator-report.json");
 assertPassed(bundle, "bundle-report.json");
@@ -106,6 +108,7 @@ const summary = {
     headers: "qa-artifacts/performance/phase-6/headers-report.json",
     lighthouse: "qa-artifacts/performance/phase-6/lighthouse-summary.json",
     raster: "qa-artifacts/performance/phase-6/raster-assets-report.json",
+    runtime: "qa-artifacts/performance/phase-6/3d-fallback-runtime-report.json",
     playwright: "qa-artifacts/playwright-results.json"
   },
   warningCount: 0,

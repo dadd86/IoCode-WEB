@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
 
 type PanelElement = HTMLAnchorElement & {
   dataset: DOMStringMap;
@@ -104,7 +106,9 @@ function hasWebGL(): boolean {
 function showFallback(host: HTMLElement, message: string): void {
   console.warn(message);
   host.dataset.fallback = "true";
-  host.classList.remove("is-loading");
+  host.dataset.hero3dState = "fallback";
+  host.dataset.hero3dFallbackReason = message;
+  host.classList.remove("is-loading", "is-three-ready");
   host.classList.add("is-fallback");
 }
 
@@ -675,6 +679,8 @@ export async function initHero(host: HTMLElement): Promise<void> {
     const lights = createLights(scene);
 
     const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+
     const gltf = await loader.loadAsync(modelUrl);
 
     const logo = gltf.scene;
@@ -846,10 +852,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     state.intersectionObserver.observe(stage);
 
-    syncAnimationState();
-    host.classList.remove("is-loading");
-    host.classList.add("is-three-ready");
-
     const colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handleThemeChange = () => applyTheme(runtime, host);
@@ -869,7 +871,10 @@ export async function initHero(host: HTMLElement): Promise<void> {
     state.resizeObserver = new ResizeObserver(() => resizeRuntime(runtime));
     state.resizeObserver.observe(stage);
 
-    host.classList.remove("is-loading");
+    host.dataset.fallback = "false";
+    host.dataset.hero3dState = "ready";
+    delete host.dataset.hero3dFallbackReason;
+    host.classList.remove("is-loading", "is-fallback");
     host.classList.add("is-three-ready");
 
     syncAnimationState();

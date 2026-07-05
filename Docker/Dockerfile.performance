@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
-ARG PLAYWRIGHT_VERSION=1.60.0
-FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
+ARG PLAYWRIGHT_IMAGE=mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+FROM ${PLAYWRIGHT_IMAGE}
 
 WORKDIR /app
 

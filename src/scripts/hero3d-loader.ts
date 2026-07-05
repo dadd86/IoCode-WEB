@@ -2,90 +2,103 @@ type HeroModule = {
   initHero: (host: HTMLElement) => Promise<void>;
 };
 
-type IdleDeadlineLike = {
-  didTimeout: boolean;
-  timeRemaining: () => number;
-};
-
-type WindowWithIdleCallback = Window &
-  typeof globalThis & {
-    requestIdleCallback?: (
-      callback: (deadline: IdleDeadlineLike) => void,
-      options?: { timeout?: number }
-    ) => number;
-  };
-
 const hosts = [...document.querySelectorAll<HTMLElement>("[data-hero3d]")];
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-const HERO_MIN_DELAY_AFTER_LOAD_MS = 1200;
-const HERO_IDLE_TIMEOUT_MS = 3500;
+function browserHasWebGL(): boolean {
+  try {
+    if (!window.WebGLRenderingContext) {
+      return false;
+    }
+
+    const canvas = document.createElement("canvas");
+    const context =
+      canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+    return Boolean(context);
+  } catch {
+    return false;
+  }
+}
+
+function activateFallback(host: HTMLElement, reason = "fallback"): void {
+  host.dataset.fallback = "true";
+  host.dataset.hero3dState = "fallback";
+  host.dataset.hero3dFallbackReason = reason;
+  host.classList.remove("is-loading", "is-three-ready");
+  host.classList.add("is-fallback");
+}
 
 async function loadHero(host: HTMLElement): Promise<void> {
-  if (host.dataset.hero3dRequested === "true") {
+  if (host.dataset.hero3dRequested === "true" || host.dataset.fallback === "true") {
     return;
   }
 
   host.dataset.hero3dRequested = "true";
+  host.dataset.hero3dState = "loading";
+  host.classList.add("is-loading");
 
-  const module = (await import("./hero3d")) as HeroModule;
-  await module.initHero(host);
-}
+  try {
+    const module = (await import("./hero3d")) as HeroModule;
+    await module.initHero(host);
 
-function activateFallback(host: HTMLElement): void {
-  host.dataset.fallback = "true";
-  host.classList.remove("is-loading");
-  host.classList.add("is-fallback");
-}
+    if (host.dataset.fallback === "true" || host.classList.contains("is-fallback")) {
+      host.dataset.hero3dState = "fallback";
+      return;
+    }
 
-function runWhenIdle(callback: () => void): void {
-  const idleWindow = window as WindowWithIdleCallback;
-
-  if (typeof idleWindow.requestIdleCallback === "function") {
-    idleWindow.requestIdleCallback(
-      () => {
-        callback();
-      },
-      {
-        timeout: HERO_IDLE_TIMEOUT_MS
-      }
+    host.dataset.hero3dState = "ready";
+  } catch (error) {
+    activateFallback(
+      host,
+      error instanceof Error ? error.message : "hero3d-loader-error"
     );
-
-    return;
   }
-
-  window.setTimeout(callback, HERO_MIN_DELAY_AFTER_LOAD_MS);
 }
 
-function scheduleDeferredHeroLoad(host: HTMLElement): void {
-  if (host.dataset.hero3dQueued === "true") {
+function armUserIntentLoading(host: HTMLElement): void {
+  if (host.dataset.hero3dArmed === "true" || host.dataset.fallback === "true") {
     return;
   }
 
-  host.dataset.hero3dQueued = "true";
+  host.dataset.hero3dArmed = "true";
+  host.dataset.hero3dState = "deferred";
 
-  const schedule = () => {
-    window.setTimeout(() => {
-      runWhenIdle(() => {
-        void loadHero(host);
-      });
-    }, HERO_MIN_DELAY_AFTER_LOAD_MS);
+  const controller = new AbortController();
+
+  const requestLoad = () => {
+    controller.abort();
+    void loadHero(host);
   };
 
-  if (document.readyState === "complete") {
-    schedule();
-    return;
-  }
+  host.addEventListener("pointerenter", requestLoad, {
+    once: true,
+    passive: true,
+    signal: controller.signal
+  });
 
-  window.addEventListener("load", schedule, {
-    once: true
+  host.addEventListener("pointerdown", requestLoad, {
+    once: true,
+    passive: true,
+    signal: controller.signal
+  });
+
+  host.addEventListener("touchstart", requestLoad, {
+    once: true,
+    passive: true,
+    signal: controller.signal
+  });
+
+  host.addEventListener("focusin", requestLoad, {
+    once: true,
+    signal: controller.signal
   });
 }
 
 if (reducedMotionQuery.matches) {
-  hosts.forEach((host) => {
-    activateFallback(host);
-  });
+  hosts.forEach((host) => activateFallback(host, "prefers-reduced-motion"));
+} else if (!browserHasWebGL()) {
+  hosts.forEach((host) => activateFallback(host, "webgl-unavailable"));
 } else if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(
     (entries) => {
@@ -96,7 +109,7 @@ if (reducedMotionQuery.matches) {
 
         const host = entry.target as HTMLElement;
         observer.unobserve(host);
-        scheduleDeferredHeroLoad(host);
+        armUserIntentLoading(host);
       }
     },
     {
@@ -108,7 +121,5 @@ if (reducedMotionQuery.matches) {
 
   hosts.forEach((host) => observer.observe(host));
 } else {
-  hosts.forEach((host) => {
-    scheduleDeferredHeroLoad(host);
-  });
+  hosts.forEach((host) => armUserIntentLoading(host));
 }

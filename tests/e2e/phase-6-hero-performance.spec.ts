@@ -4,7 +4,8 @@ test.describe("Fase 6 - Performance Hero3D", () => {
   test("fallback y contenido aparecen aunque WebGL no esté disponible", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, "WebGLRenderingContext", {
-        value: undefined
+        value: undefined,
+        configurable: true
       });
     });
 
@@ -12,10 +13,15 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
+    const hero = page.locator("[data-hero3d]");
+
     await expect(page.locator("main")).toBeVisible();
-    await expect(page.locator("[data-hero3d]")).toHaveAttribute("data-fallback", "true");
+    await expect(hero).toHaveAttribute("data-fallback", "true");
+    await expect(hero).toHaveAttribute("data-hero3d-state", "fallback");
+    await expect(hero).toHaveAttribute("data-hero3d-fallback-reason", "webgl-unavailable");
     await expect(page.locator("[data-hero-fallback]")).toBeVisible();
     await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator("[data-hero-viewer] canvas")).toHaveCount(0);
   });
 
   test("reduced motion no carga escena pesada y mantiene contenido usable", async ({ page }) => {
@@ -27,13 +33,41 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
+    const hero = page.locator("[data-hero3d]");
+
     await expect(page.locator("main")).toBeVisible();
-    await expect(page.locator("[data-hero3d]")).toBeVisible();
+    await expect(hero).toBeVisible();
+    await expect(hero).toHaveAttribute("data-fallback", "true");
+    await expect(hero).toHaveAttribute("data-hero3d-state", "fallback");
+    await expect(hero).toHaveAttribute("data-hero3d-fallback-reason", "prefers-reduced-motion");
     await expect(page.locator("h1")).toBeVisible();
 
-    const webglCanvasCount = await page.locator("[data-hero-viewer] canvas").count();
+    expect(await page.locator("[data-hero-viewer] canvas").count()).toBe(0);
+  });
 
-    expect(webglCanvasCount).toBe(0);
+  test("fallback se activa si el GLB no se puede descargar", async ({ page }) => {
+    await page.route("**/*.glb", async (route) => {
+      await route.abort("failed");
+    });
+
+    await page.goto("/es/", {
+      waitUntil: "domcontentloaded"
+    });
+
+    const hero = page.locator("[data-hero3d]");
+
+    await expect(hero).toBeVisible();
+    await expect(hero).toHaveAttribute("data-hero3d-state", "deferred");
+
+    await hero.hover();
+
+    await expect(hero).toHaveAttribute("data-fallback", "true", {
+      timeout: 15_000
+    });
+
+    await expect(hero).toHaveAttribute("data-hero3d-state", "fallback");
+    await expect(page.locator("[data-hero-fallback]")).toBeVisible();
+    await expect(page.locator("h1")).toBeVisible();
   });
 
   test("CTA del hero no queda cortado visualmente", async ({ page }) => {
@@ -92,5 +126,45 @@ test.describe("Fase 6 - Performance Hero3D", () => {
 
       expect(hasOverflow).toBe(false);
     }
+  });
+
+  test("el 3D no se carga antes de interacción y carga al interactuar con el hero", async ({ page }) => {
+    const glbRequests: string[] = [];
+
+    page.on("request", (request) => {
+      if (request.url().endsWith(".glb")) {
+        glbRequests.push(request.url());
+      }
+    });
+
+    await page.goto("/es/", {
+      waitUntil: "domcontentloaded"
+    });
+
+    const hero = page.locator("[data-hero3d]");
+    const placeholder = page.locator("[data-hero-placeholder]");
+
+    await expect(hero).toBeVisible();
+    await expect(placeholder).toBeVisible();
+    await expect(hero).toHaveAttribute("data-hero3d-state", "deferred");
+
+    await page.waitForTimeout(1500);
+
+    expect(glbRequests).toHaveLength(0);
+    expect(await page.locator("[data-hero-viewer] canvas").count()).toBe(0);
+
+    await hero.hover();
+
+    await expect(page.locator("[data-hero-viewer] canvas")).toHaveCount(1, {
+      timeout: 15_000
+    });
+
+    await expect(hero).toHaveClass(/is-three-ready/, {
+      timeout: 15_000
+    });
+
+    await expect(hero).toHaveAttribute("data-fallback", "false");
+    await expect(hero).toHaveAttribute("data-hero3d-state", "ready");
+    expect(glbRequests.length).toBeGreaterThanOrEqual(1);
   });
 });

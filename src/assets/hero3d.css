@@ -105,6 +105,35 @@
   width: 100%;
   height: 100%;
 }
+.hero3d__placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 220ms ease;
+}
+
+.hero3d__placeholder img {
+  width: min(32rem, 70vw);
+  height: auto;
+  filter: drop-shadow(0 24px 36px var(--hero-shadow));
+}
+
+.hero3d__scene.is-three-ready .hero3d__placeholder {
+  opacity: 0;
+}
+
+.hero3d__scene:not(.is-three-ready) .hero3d__viewer {
+  opacity: 0;
+}
+
+.hero3d__scene:not(.is-three-ready) .hero3d__panel {
+  transition: none;
+}
 
 .hero3d__panels {
   position: absolute;
@@ -294,6 +323,13 @@
 
 .hero3d__scene[data-fallback="true"] .hero3d__viewer,
 .hero3d__scene.is-fallback .hero3d__viewer {
+  opacity: 0;
+}
+
+.hero3d__scene[data-fallback="true"] .hero3d__viewer,
+.hero3d__scene.is-fallback .hero3d__viewer,
+.hero3d__scene[data-fallback="true"] .hero3d__placeholder,
+.hero3d__scene.is-fallback .hero3d__placeholder {
   opacity: 0;
 }
 
