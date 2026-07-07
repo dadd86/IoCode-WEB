@@ -1,16 +1,11 @@
-# Performance — Fase 6
+## Fase 6 — Performance, Core Web Vitals y 3D avanzado
 
-## Objetivo
+La Fase 6 no se considera cerrada por build exitoso ni por validaciones parciales.
 
-Validar que Three.js, el GLB, imágenes, JS y entrega estática no perjudiquen UX, SEO, accesibilidad ni mantenibilidad.
+El cierre requiere ejecutar el pipeline completo dentro de Docker:
 
-## Comando Docker oficial
-
-```powershell
-docker compose --profile prod --profile qa down --remove-orphans
-docker image rm iocode-solutions-performance-qa:latest -f
-docker image rm iocode-solutions-web:latest -f
+```sh
 docker compose --profile prod --profile qa build --no-cache web performance-qa
 docker compose --profile prod --profile qa up -d web
 docker compose --profile prod --profile qa run --rm performance-qa
-docker compose --profile prod --profile qa down
+docker compose --profile prod --profile qa down --remove-orphans

@@ -167,6 +167,9 @@ services:
       PHASE6_MAX_JS_INITIAL_BYTES: "250000"
       PHASE6_MAX_JS_TOTAL_BYTES: "700000"
       PHASE6_MAX_CSS_TOTAL_BYTES: "120000"
+      PHASE6_MAX_HERO_LOADER_INITIAL_BYTES: "12000"
+      PHASE6_MAX_HERO_LOADER_INITIAL_GZIP_BYTES: "5000"
+      PHASE6_MAX_THREE_RUNTIME_GZIP_BYTES: "190000"
 
       PHASE6_MIN_LIGHTHOUSE_DESKTOP: "0.90"
       PHASE6_MIN_LIGHTHOUSE_MOBILE: "0.75"
@@ -181,6 +184,24 @@ services:
     profiles:
       - qa
 
+  release-tools:
+    container_name: iocode-solutions-release-tools
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile.dev
+    init: true
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      ASTRO_TELEMETRY_DISABLED: "1"
+    volumes:
+      - .:/app
+    entrypoint:
+      - sh
+      - -lc
+    command: "node --version && npm --version && git --version && unzip -v | head -1"
+    profiles:
+      - release
 volumes:
   iocode_node_modules:
   iocode_astro_cache:

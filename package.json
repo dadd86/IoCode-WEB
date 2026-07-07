@@ -62,6 +62,7 @@
     "summary:ui:5": "node tools/create-phase-5-summary.mjs",
     "qa:phase-5": "npm run check && npm run build && npm run audit:prod && npm run typecheck:tests && npm run clean:ui:5 && npm run qa:ui:5 && npm run qa:ui-screenshots:5 && npm run summary:ui:5",
     "typecheck:src": "tsc -p tsconfig.json --noEmit",
+    "inspect:release-zip": "node tools/inspect-release-zip.mjs",
     "clean:performance:6": "node tools/clean-phase-6.mjs",
     "qa:raster:6": "node tools/qa-raster-assets-phase-6.mjs",
     "qa:budgets:6": "node tools/qa-performance-budgets-phase-6.mjs",
