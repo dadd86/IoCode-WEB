@@ -66,6 +66,17 @@ for (const result of lighthouse?.results ?? []) {
 assertPassed(budgets, "performance-budgets.json");
 assertPassed(raster, "raster-assets-report.json");
 assertPassed(runtime, "3d-fallback-runtime-report.json");
+if ((runtime?.expectedTestCount ?? 0) < 8) {
+  errors.push(
+    `3d-fallback-runtime-report.json: expectedTestCount ${runtime?.expectedTestCount ?? 0}; se esperaban al menos 8 tests runtime para Fase 6.`
+  );
+}
+
+if ((runtime?.actualSpecCount ?? 0) < 8) {
+  errors.push(
+    `3d-fallback-runtime-report.json: actualSpecCount ${runtime?.actualSpecCount ?? 0}; se esperaban al menos 8 tests runtime ejecutados.`
+  );
+}
 assertPassed(glb, "glb-report.json");
 assertPassed(validator, "gltf-validator-report.json");
 assertPassed(bundle, "bundle-report.json");

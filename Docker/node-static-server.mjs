@@ -6,6 +6,7 @@ import {
   statSync
 } from "node:fs";
 import { createHash } from "node:crypto";
+import { createBrotliCompress, createGzip } from "node:zlib";
 import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
 
 const port = Number(process.env.PORT || 8080);
@@ -154,6 +155,50 @@ function isAssetPath(pathname) {
 
 function isXmlPath(pathname) {
   return /\.xml$/i.test(pathname);
+}
+
+function acceptsEncoding(request, encoding) {
+  const header = request.headers["accept-encoding"];
+
+  if (typeof header !== "string") {
+    return false;
+  }
+
+  return header
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .some((value) => value === encoding || value.startsWith(`${encoding};`));
+}
+
+function shouldCompressContent(contentType, statusCode) {
+  if (statusCode !== 200) {
+    return false;
+  }
+
+  return (
+    contentType.startsWith("text/html") ||
+    contentType.startsWith("text/css") ||
+    contentType.startsWith("application/javascript") ||
+    contentType.startsWith("application/json") ||
+    contentType.startsWith("application/xml") ||
+    contentType.startsWith("text/plain")
+  );
+}
+
+function chooseCompression(request, contentType, statusCode) {
+  if (!shouldCompressContent(contentType, statusCode)) {
+    return null;
+  }
+
+  if (acceptsEncoding(request, "br")) {
+    return "br";
+  }
+
+  if (acceptsEncoding(request, "gzip")) {
+    return "gzip";
+  }
+
+  return null;
 }
 
 function getCacheControl(pathname, statusCode) {
@@ -339,6 +384,7 @@ const server = createServer((request, response) => {
   const extension = extname(filePath);
   const contentType = mimeTypes[extension] || "application/octet-stream";
   const stats = statSync(filePath);
+  const compression = chooseCompression(request, contentType, statusCode);
   const etag = buildWeakEtag(stats);
   const lastModified = stats.mtime.toUTCString();
   const pathname = new URL(request.url, `http://localhost:${port}`).pathname;
@@ -355,6 +401,7 @@ const server = createServer((request, response) => {
   setSecurityHeaders(response, html);
 
   response.setHeader("Cache-Control", getCacheControl(pathname, statusCode));
+  response.setHeader("Vary", "Accept-Encoding");
   response.setHeader("ETag", etag);
   response.setHeader("Last-Modified", lastModified);
 
@@ -364,10 +411,17 @@ const server = createServer((request, response) => {
     return;
   }
 
-  response.writeHead(statusCode, {
-    "Content-Type": contentType,
-    "Content-Length": htmlBuffer ? htmlBuffer.length : stats.size
-  });
+  const responseHeaders = {
+    "Content-Type": contentType
+  };
+
+  if (compression) {
+    responseHeaders["Content-Encoding"] = compression;
+  } else {
+    responseHeaders["Content-Length"] = htmlBuffer ? htmlBuffer.length : stats.size;
+  }
+
+  response.writeHead(statusCode, responseHeaders);
 
   if (request.method === "HEAD") {
     response.end();
@@ -375,6 +429,61 @@ const server = createServer((request, response) => {
   }
 
   if (htmlBuffer) {
+    if (compression === "br") {
+      createBrotliCompress().end(htmlBuffer).pipe(response);
+      return;
+    }
+
+    if (compression === "gzip") {
+      createGzip().end(htmlBuffer).pipe(response);
+      return;
+    }
+
+    response.end(htmlBuffer);
+    return;
+  }
+
+  const stream = createReadStream(filePath).on("error", () => {
+    if (!response.headersSent) {
+      sendPlainText(response, 500, "Internal server error");
+      return;
+    }
+
+    response.destroy();
+  });
+
+  if (compression === "br") {
+    stream.pipe(createBrotliCompress()).pipe(response);
+    return;
+  }
+
+  if (compression === "gzip") {
+    stream.pipe(createGzip()).pipe(response);
+    return;
+  }
+
+  stream.pipe(response);
+
+  if (request.method === "HEAD") {
+    response.end();
+    return;
+  }
+
+  if (htmlBuffer) {
+    if (compression === "br") {
+      const compressor = createBrotliCompress();
+      compressor.end(htmlBuffer);
+      compressor.pipe(response);
+      return;
+    }
+
+    if (compression === "gzip") {
+      const compressor = createGzip();
+      compressor.end(htmlBuffer);
+      compressor.pipe(response);
+      return;
+    }
+
     response.end(htmlBuffer);
     return;
   }

@@ -7,25 +7,45 @@ export type CardContent = {
   items?: string[];
 };
 
+export type HeroHeadingContent = {
+  lead: string;
+  highlight: string;
+  tail: string;
+};
+
 export type PageContent = {
   title: string;
   description: string;
   eyebrow: string;
   heading: string;
   intro: string;
+  heroHeading?: HeroHeadingContent;
+  proofPoints?: string[];
   cards?: CardContent[];
 };
 
 export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
   es: {
     home: {
-      title: "IoCode SOLUTIONS | Automatización PLC, robótica e Industria 4.0",
+      title: "IoCode SOLUTIONS | PLC, robótica, datos y software industrial",
       description:
-        "Empresa técnica en Aachen especializada en automatización industrial, PLC, robótica, software industrial, datos, ERP e Industria 4.0.",
-      eyebrow: "IoCode SOLUTIONS",
-      heading: "Automatización industrial, robótica y software para conectar máquinas, datos y procesos.",
+        "Empresa técnica especializada en automatización industrial, PLC, robótica, software industrial, datos, ERP e integración IT/OT.",
+      eyebrow: "Automatización industrial + software",
+      heading: "Máquinas conectadas, datos útiles y producción estable.",
+      heroHeading: {
+        lead: "Máquinas conectadas.",
+        highlight: "Datos útiles.",
+        tail: "Producción estable."
+      },
       intro:
-        "IoCode SOLUTIONS desarrolla soluciones técnicas para unir planta industrial, PLCs, robots, bases de datos, ERP y aplicaciones. El foco es mejorar diagnóstico, trazabilidad, estabilidad y visibilidad operativa.",
+        "De la señal de planta a la aplicación: diagnóstico, HMI, robótica, bases de datos, ERP e integración IT/OT para reducir paradas, mejorar trazabilidad y dar visibilidad operativa.",
+      proofPoints: [
+        "PLC / HMI",
+        "Robótica",
+        "OPC UA / EtherCAT",
+        "Software industrial",
+        "Datos + ERP"
+      ],
       cards: [
         {
           title: "Experiencia industrial real",
@@ -191,13 +211,25 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
 
   en: {
     home: {
-      title: "IoCode SOLUTIONS | PLC Automation, Robotics and Industry 4.0",
+      title: "IoCode SOLUTIONS | PLC, robotics, data and industrial software",
       description:
-        "Technical company in Aachen for industrial automation, PLC programming, robotics, industrial software, data integration, ERP and Industry 4.0.",
-      eyebrow: "IoCode SOLUTIONS",
-      heading: "Industrial automation, robotics and software to connect machines, data and processes.",
+        "Technical company specialized in industrial automation, PLC programming, robotics, industrial software, data, ERP and IT/OT integration.",
+      eyebrow: "Industrial automation + software",
+      heading: "Connected machines, useful data and stable production.",
+      heroHeading: {
+        lead: "Connected machines.",
+        highlight: "Useful data.",
+        tail: "Stable production."
+      },
       intro:
-        "IoCode SOLUTIONS builds technical solutions that connect shop-floor systems, PLCs, robots, databases, ERP platforms and applications. The focus is clearer diagnostics, traceability, process stability and operational visibility.",
+        "From shop-floor signals to usable applications: diagnostics, HMI, robotics, databases, ERP and IT/OT integration to reduce downtime, improve traceability and increase operational visibility.",
+      proofPoints: [
+        "PLC / HMI",
+        "Robotics",
+        "OPC UA / EtherCAT",
+        "Industrial software",
+        "Data + ERP"
+      ],
       cards: [
         {
           title: "Real industrial experience",
@@ -327,13 +359,25 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
 
   de: {
     home: {
-      title: "IoCode SOLUTIONS | SPS, Automatisierung, Robotik und Industrie 4.0",
+      title: "IoCode SOLUTIONS | SPS, Robotik, Daten und Industriesoftware",
       description:
-        "Technisches Unternehmen in Aachen für SPS-Programmierung, industrielle Automatisierung, Robotik, Industriesoftware, Daten, ERP und Industrie 4.0.",
-      eyebrow: "IoCode SOLUTIONS",
-      heading: "Industrielle Automatisierung, Robotik und Software zur Verbindung von Maschinen, Daten und Prozessen.",
+        "Technisches Unternehmen für SPS-Programmierung, industrielle Automatisierung, Robotik, Industriesoftware, Daten, ERP und IT/OT-Integration.",
+      eyebrow: "Automatisierung + Software",
+      heading: "Vernetzte Maschinen, nutzbare Daten und stabile Produktion.",
+      heroHeading: {
+        lead: "Vernetzte Maschinen.",
+        highlight: "Nutzbare Daten.",
+        tail: "Stabile Produktion."
+      },
       intro:
-        "IoCode SOLUTIONS entwickelt technische Lösungen, die Produktionsanlagen, SPS, Roboter, Datenbanken, ERP-Systeme und Anwendungen verbinden. Im Fokus stehen klare Diagnose, Traceability, Prozessstabilität und operative Transparenz.",
+        "Von der SPS-Signalebene bis zur Anwendung: Diagnose, HMI, Robotik, Datenbanken, ERP und IT/OT-Integration für weniger Stillstände, mehr Traceability und klare operative Transparenz.",
+      proofPoints: [
+        "SPS / HMI",
+        "Robotik",
+        "OPC UA / EtherCAT",
+        "Industriesoftware",
+        "Daten + ERP"
+      ],
       cards: [
         {
           title: "Reale Industrieerfahrung",

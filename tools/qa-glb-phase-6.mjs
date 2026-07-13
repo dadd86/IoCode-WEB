@@ -52,75 +52,164 @@ function readGlbJson(path) {
   return JSON.parse(buffer.toString("utf8", 20, 20 + jsonChunkLength));
 }
 
+function getExtensions(gltf) {
+  return {
+    used: gltf.extensionsUsed ?? [],
+    required: gltf.extensionsRequired ?? []
+  };
+}
+
+function extensionIsUsedOrRequired(gltf, extensionName) {
+  const extensions = getExtensions(gltf);
+
+  return (
+    extensions.used.includes(extensionName) ||
+    extensions.required.includes(extensionName)
+  );
+}
+
+let gltf = null;
+let stats = null;
+let inspectOutput = "";
+let validatorReport = null;
+
 if (!existsSync(glbPath)) {
   errors.push(`${glbPath}: no existe.`);
 } else {
-  const stats = statSync(glbPath);
-  const gltf = readGlbJson(glbPath);
-
-  if ((gltf.cameras?.length ?? 0) > 0) {
-    warnings.push("El GLB contiene cámaras. No es bloqueante, pero se recomienda eliminar cámaras no usadas.");
-  }
-
-  if ((gltf.images?.length ?? 0) > 0) {
-    warnings.push("El GLB contiene imágenes embebidas. Revisar compresión de textura.");
-  }
-
-  let inspectOutput = "";
-
   try {
-    inspectOutput = execFileSync(gltfTransformBin, ["inspect", glbPath], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"]
-    });
-  } catch (error) {
-    errors.push(`gltf-transform inspect falló: ${error.message}`);
-  }
+    stats = statSync(glbPath);
+    gltf = readGlbJson(glbPath);
 
-  let validatorReport = null;
+    const extensions = getExtensions(gltf);
 
-  try {
-    const validatorModule = await import("gltf-validator");
-    const validator = validatorModule.default ?? validatorModule;
-
-    const report = await validator.validateBytes(new Uint8Array(readFileSync(glbPath)), {
-      maxIssues: 200
-    });
-
-    validatorReport = report;
-
-    const issueCount =
-      (report.issues?.numErrors ?? 0) +
-      (report.issues?.numWarnings ?? 0);
-
-    if ((report.issues?.numErrors ?? 0) > 0) {
-      errors.push(`glTF Validator reporta ${report.issues.numErrors} errores.`);
+    if (extensionIsUsedOrRequired(gltf, "EXT_meshopt_compression")) {
+      errors.push(
+        "El GLB contiene EXT_meshopt_compression. Este proyecto no debe requerir Meshopt en runtime porque el GLB está bajo presupuesto y ya falló con Malformed buffer data."
+      );
     }
 
-    if (issueCount > 0 && (report.issues?.numErrors ?? 0) === 0) {
-      warnings.push(`glTF Validator reporta ${issueCount} issues no bloqueantes.`);
+    if (extensionIsUsedOrRequired(gltf, "KHR_draco_mesh_compression")) {
+      errors.push(
+        "El GLB contiene KHR_draco_mesh_compression, pero el runtime no configura DRACOLoader."
+      );
     }
-  } catch (error) {
-    errors.push(`No se pudo ejecutar gltf-validator desde Node: ${error.message}`);
-  }
 
+    if ((gltf.cameras?.length ?? 0) > 0) {
+      warnings.push(
+        "El GLB contiene cámaras. No es bloqueante para runtime, pero se recomienda eliminarlas en la siguiente optimización del asset."
+      );
+    }
+
+    if ((gltf.images?.length ?? 0) > 0) {
+      warnings.push(
+        "El GLB contiene imágenes embebidas. Revisar compresión de textura y dimensiones."
+      );
+    }
+
+    if ((gltf.meshes?.length ?? 0) === 0) {
+      errors.push("El GLB no contiene meshes.");
+    }
+
+    if ((gltf.scenes?.length ?? 0) === 0) {
+      errors.push("El GLB no contiene scenes.");
+    }
+
+    if ((stats?.size ?? 0) > Number(process.env.PHASE6_MAX_GLB_ACCEPTED_BYTES || "5000000")) {
+      errors.push(
+        `${glbPath}: ${stats.size} bytes supera presupuesto aceptable de GLB.`
+      );
+    }
+
+    try {
+      inspectOutput = execFileSync(gltfTransformBin, ["inspect", glbPath], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+    } catch (error) {
+      errors.push(
+        `gltf-transform inspect falló: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+
+    try {
+      const validatorModule = await import("gltf-validator");
+      const validator = validatorModule.default ?? validatorModule;
+
+      validatorReport = await validator.validateBytes(new Uint8Array(readFileSync(glbPath)), {
+        maxIssues: 200
+      });
+
+      if ((validatorReport.issues?.numErrors ?? 0) > 0) {
+        errors.push(`glTF Validator reporta ${validatorReport.issues.numErrors} errores.`);
+      }
+
+      if ((validatorReport.issues?.numWarnings ?? 0) > 0) {
+        warnings.push(
+          `glTF Validator reporta ${validatorReport.issues.numWarnings} warnings.`
+        );
+      }
+
+      if ((validatorReport.issues?.numInfos ?? 0) > 0) {
+        warnings.push(
+          `glTF Validator reporta ${validatorReport.issues.numInfos} infos.`
+        );
+      }
+    } catch (error) {
+      errors.push(
+        `No se pudo ejecutar gltf-validator desde Node: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+
+    writeArtifact("glb-report.json", {
+      phase: "6",
+      check: "glb-inspection",
+      status: errors.length === 0 ? "passed" : "failed",
+      file: glbPath,
+      sizeBytes: stats?.size ?? null,
+      asset: gltf.asset ?? null,
+      extensions,
+      runtimeCompatibility: {
+        meshoptRequired: extensionIsUsedOrRequired(gltf, "EXT_meshopt_compression"),
+        dracoRequired: extensionIsUsedOrRequired(gltf, "KHR_draco_mesh_compression"),
+        expectedRuntime: "Three.js GLTFLoader without external mesh compression decoders"
+      },
+      counts: {
+        scenes: gltf.scenes?.length ?? 0,
+        nodes: gltf.nodes?.length ?? 0,
+        meshes: gltf.meshes?.length ?? 0,
+        materials: gltf.materials?.length ?? 0,
+        images: gltf.images?.length ?? 0,
+        textures: gltf.textures?.length ?? 0,
+        cameras: gltf.cameras?.length ?? 0
+      },
+      inspectOutput,
+      warningCount: warnings.length,
+      errorCount: errors.length,
+      warnings,
+      errors,
+      generatedAt: new Date().toISOString()
+    });
+
+    writeArtifact("gltf-validator-report.json", {
+      phase: "6",
+      check: "gltf-validator",
+      status: validatorReport && errors.length === 0 ? "passed" : "failed",
+      report: validatorReport,
+      generatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    errors.push(error instanceof Error ? error.message : String(error));
+  }
+}
+
+if (!existsSync(join(artifactRoot, "glb-report.json"))) {
   writeArtifact("glb-report.json", {
     phase: "6",
     check: "glb-inspection",
-    status: errors.length === 0 ? "passed" : "failed",
+    status: "failed",
     file: glbPath,
-    sizeBytes: stats.size,
-    asset: gltf.asset,
-    counts: {
-      scenes: gltf.scenes?.length ?? 0,
-      nodes: gltf.nodes?.length ?? 0,
-      meshes: gltf.meshes?.length ?? 0,
-      materials: gltf.materials?.length ?? 0,
-      images: gltf.images?.length ?? 0,
-      textures: gltf.textures?.length ?? 0,
-      cameras: gltf.cameras?.length ?? 0
-    },
-    inspectOutput,
     warningCount: warnings.length,
     errorCount: errors.length,
     warnings,
@@ -131,7 +220,7 @@ if (!existsSync(glbPath)) {
   writeArtifact("gltf-validator-report.json", {
     phase: "6",
     check: "gltf-validator",
-    status: validatorReport && errors.length === 0 ? "passed" : "failed",
+    status: "failed",
     report: validatorReport,
     generatedAt: new Date().toISOString()
   });

@@ -47,7 +47,9 @@ if (!existsSync(playwrightResultsPath)) {
     "fallback se activa si el GLB no se puede descargar",
     "CTA del hero no queda cortado visualmente",
     "no hay overflow horizontal causado por hero 3D",
-    "el 3D no se carga antes de interacción y carga al interactuar con el hero"
+    "el 3D carga al estar visible sin bloquear contenido ni navegación",
+    "mobile dock usa nombres accesibles que contienen el texto visible",
+    "desktop mantiene paneles alrededor del logo sin cubrir el centro"
   ];
 
   for (const expectedName of expectedNames) {

@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 
@@ -31,7 +30,6 @@ type LogoScene = {
   logoFittedBox: THREE.Box3;
   stage: HTMLElement;
   panels: PanelElement[];
-  panelAnchors: Map<PanelElement, THREE.Vector3>;
   pointer: PointerState;
   getActivePanel: () => PanelElement | null;
   materials: LogoMaterialRuntime[];
@@ -41,7 +39,6 @@ type LogoScene = {
     cyan: THREE.PointLight;
     blue: THREE.PointLight;
   };
-  floorMaterial: THREE.MeshStandardMaterial;
   reducedMotion: boolean;
 };
 
@@ -56,12 +53,6 @@ type RuntimeState = {
   isVisible: boolean;
   isDocumentVisible: boolean;
 };
-
-const BRAND = {
-  navy: 0x0c375e,
-  cyan: 0x1f91a7,
-  lightEdge: 0xdfe8ee
-} as const;
 
 const LOGO_ROTATION_LIMIT = {
   x: THREE.MathUtils.degToRad(6),
@@ -316,12 +307,11 @@ function fitCameraToBox(
   const distanceByWidth = (size.x / 2) / Math.tan(horizontalFov / 2);
 
   const margin =
-    viewportWidth < 420 ? 2.08 :
-    viewportWidth < 640 ? 1.92 :
-    viewportWidth < 960 ? 1.72 :
-    viewportWidth < 1280 ? 1.58 :
-    1.48;
-
+    viewportWidth < 420 ? 2.2 :
+    viewportWidth < 640 ? 2.08 :
+    viewportWidth < 960 ? 1.92 :
+    viewportWidth < 1280 ? 1.82 :
+    1.78;
   return Math.max(distanceByHeight, distanceByWidth) * margin;
 }
 
@@ -428,7 +418,7 @@ function createLights(scene: THREE.Scene): LogoScene["lights"] {
 
 function applyTheme(runtime: LogoScene, host: HTMLElement): void {
   const dark = isDarkMode(host);
-  const { scene, renderer, lights, floorMaterial } = runtime;
+  const { scene, renderer, lights } = runtime;
 
   scene.fog = new THREE.FogExp2(dark ? 0x030816 : 0xf6fbff, dark ? 0.028 : 0.01);
 
@@ -438,9 +428,6 @@ function applyTheme(runtime: LogoScene, host: HTMLElement): void {
   lights.blue.intensity = dark ? 1.8 : 0.95;
 
   renderer.toneMappingExposure = dark ? 1.1 : 1.04;
-
-  floorMaterial.color.set(dark ? BRAND.navy : 0xe8f6fb);
-  floorMaterial.opacity = dark ? 0.13 : 0.17;
 
   host.dataset.theme = dark ? "dark" : "light";
 }
@@ -461,38 +448,73 @@ function resizeRuntime(runtime: LogoScene): void {
     width
   );
 
-  runtime.camera.position.y = width < 640 ? 0.55 : 0.36;
+  runtime.camera.position.y = width < 640 ? 0.36 : width < 960 ? 0.22 : 0.14;
   runtime.camera.position.x = 0;
   runtime.camera.lookAt(0, 0, 0);
   runtime.camera.updateProjectionMatrix();
 }
 
-function projectPanel(runtime: LogoScene, panel: PanelElement): void {
-  const anchor = runtime.panelAnchors.get(panel);
+function getPanelFloatSeed(panel: PanelElement): number {
+  const id = panel.dataset.panelId || "panel";
 
-  if (!anchor) {
-    return;
-  }
-
-  const world = anchor.clone().applyMatrix4(runtime.logo.matrixWorld);
-  const projected = world.project(runtime.camera);
-
-  const fallbackX = Number(panel.dataset.fallbackX || 50);
-  const fallbackY = Number(panel.dataset.fallbackY || 50);
-  const visible = projected.z > -1 && projected.z < 1;
-
-  const rawX = visible ? (projected.x * 0.5 + 0.5) * 100 : fallbackX;
-  const rawY = visible ? (-projected.y * 0.5 + 0.5) * 100 : fallbackY;
-
-  const parallax = Number(panel.dataset.parallax || 1);
-
-  panel.style.setProperty("--panel-x", `${clamp(rawX, 11, 89).toFixed(2)}%`);
-  panel.style.setProperty("--panel-y", `${clamp(rawY, 12, 86).toFixed(2)}%`);
-  panel.style.setProperty("--panel-dx", `${(runtime.pointer.x * 11 * parallax).toFixed(2)}px`);
-  panel.style.setProperty("--panel-dy", `${(runtime.pointer.y * 7 * parallax).toFixed(2)}px`);
+  return [...id].reduce((total, character) => {
+    return total + character.charCodeAt(0);
+  }, 0);
 }
 
+function projectPanel(runtime: LogoScene, panel: PanelElement, elapsed: number): void {
+  const fallbackX = Number(panel.dataset.fallbackX || 50);
+  const fallbackY = Number(panel.dataset.fallbackY || 50);
+  const parallax = Number(panel.dataset.parallax || 1);
+  const seed = getPanelFloatSeed(panel);
 
+  const sideDirection = fallbackX < 50 ? -1 : fallbackX > 50 ? 1 : 0;
+  const verticalDirection = fallbackY < 50 ? -1 : fallbackY > 50 ? 1 : 0;
+
+  const orbitalX =
+    Math.sin(elapsed * 0.52 + seed * 0.017) * 0.9 * parallax;
+
+  const orbitalY =
+    Math.cos(elapsed * 0.46 + seed * 0.013) * 0.74 * parallax;
+
+  const edgeBreathingX =
+    Math.sin(elapsed * 0.3 + seed * 0.01) * 0.3 * sideDirection;
+
+  const edgeBreathingY =
+    Math.cos(elapsed * 0.26 + seed * 0.01) * 0.22 * verticalDirection;
+
+  const pointerX = runtime.pointer.x * 0.78 * parallax;
+  const pointerY = runtime.pointer.y * 0.52 * parallax;
+
+  const nextX = clamp(
+    fallbackX + orbitalX + edgeBreathingX + pointerX,
+    16,
+    84
+  );
+
+  const nextY = clamp(
+    fallbackY + orbitalY + edgeBreathingY + pointerY,
+    16,
+    84
+  );
+
+  const translateX =
+    Math.sin(elapsed * 0.78 + seed * 0.019) * 5.5 * parallax +
+    runtime.pointer.x * 9 * parallax;
+
+  const translateY =
+    Math.cos(elapsed * 0.66 + seed * 0.015) * 4.5 * parallax +
+    runtime.pointer.y * 6 * parallax;
+
+  const lift =
+    Math.sin(elapsed * 0.58 + seed * 0.021) * 3.8 * parallax;
+
+  panel.style.setProperty("--panel-x", `${nextX.toFixed(2)}%`);
+  panel.style.setProperty("--panel-y", `${nextY.toFixed(2)}%`);
+  panel.style.setProperty("--panel-dx", `${translateX.toFixed(2)}px`);
+  panel.style.setProperty("--panel-dy", `${translateY.toFixed(2)}px`);
+  panel.style.setProperty("--panel-lift", `${lift.toFixed(2)}px`);
+}
 
 function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: number): void {
   state.animationFrameId = window.requestAnimationFrame((now) => {
@@ -515,32 +537,42 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
 
     runtime.logo.scale.setScalar(runtime.logoBaseScale * (0.9 + 0.1 * intro));
 
-    runtime.logo.position.z = THREE.MathUtils.lerp(runtime.logo.position.z, 0, 0.08);
+    const idleFloatY = Math.sin(elapsed * 0.85) * 0.045 * motionFactor;
+    const idleFloatZ = Math.cos(elapsed * 0.72) * 0.028 * motionFactor;
 
     runtime.logo.position.y = THREE.MathUtils.lerp(
       runtime.logo.position.y,
-      -0.02 + Math.sin(elapsed) * 0.01 * motionFactor,
-      0.045
+      idleFloatY,
+      0.05
+    );
+
+    runtime.logo.position.z = THREE.MathUtils.lerp(
+      runtime.logo.position.z,
+      idleFloatZ,
+      0.05
     );
 
     const targetRotationX = clamp(
-      -0.02 + runtime.pointer.y * 0.018 * motionFactor,
+      -0.018 +
+        Math.sin(elapsed * 0.42) * 0.018 * motionFactor +
+        runtime.pointer.y * 0.024 * motionFactor,
       -LOGO_ROTATION_LIMIT.x,
       LOGO_ROTATION_LIMIT.x
     );
 
     const targetRotationY = clamp(
       hasActivePanel
-        ? -0.035
+        ? -0.032
         : -0.055 +
-            Math.sin(elapsed * 0.32) * 0.035 * motionFactor +
-            runtime.pointer.x * 0.02 * motionFactor,
+            Math.sin(elapsed * 0.5) * 0.072 * motionFactor +
+            runtime.pointer.x * 0.035 * motionFactor,
       -LOGO_ROTATION_LIMIT.y,
       LOGO_ROTATION_LIMIT.y
     );
 
     const targetRotationZ = clamp(
-      runtime.pointer.x * -0.004 * motionFactor,
+      Math.sin(elapsed * 0.36) * 0.012 * motionFactor +
+        runtime.pointer.x * -0.006 * motionFactor,
       -LOGO_ROTATION_LIMIT.z,
       LOGO_ROTATION_LIMIT.z
     );
@@ -563,15 +595,17 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
       0.045
     );
 
+    const targetCameraX = runtime.pointer.x * 0.105 * motionFactor;
+
     runtime.camera.position.x = THREE.MathUtils.lerp(
       runtime.camera.position.x,
-      runtime.pointer.x * 0.105 * motionFactor,
+      targetCameraX,
       0.04
     );
 
     runtime.camera.position.y = THREE.MathUtils.lerp(
       runtime.camera.position.y,
-      0.36 - runtime.pointer.y * 0.06 * motionFactor,
+      0.14 - runtime.pointer.y * 0.04 * motionFactor,
       0.04
     );
 
@@ -598,7 +632,7 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
 
     runtime.logo.updateMatrixWorld(true);
 
-    runtime.panels.forEach((panel) => projectPanel(runtime, panel));
+    runtime.panels.forEach((panel) => projectPanel(runtime, panel, elapsed));
 
     runtime.renderer.render(runtime.scene, runtime.camera);
 
@@ -680,7 +714,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
     const lights = createLights(scene);
 
     const loader = new GLTFLoader();
-    loader.setMeshoptDecoder(MeshoptDecoder);
 
     const gltf = await loader.loadAsync(modelUrl);
 
@@ -690,42 +723,13 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     const materials = prepareLogoMaterials(logo);
 
-    const logoBaseScale = normalizeLogoByWidth(logo, 5.95);
+    const logoBaseScale = normalizeLogoByWidth(logo, 4.58);
 
-    logo.position.y = -0.02;
+    logo.position.y = 0;
     logo.rotation.set(-0.02, -0.055, 0);
     logo.updateMatrixWorld(true);
 
     const logoFittedBox = getObjectBox(logo);
-
-    const floorMaterial = new THREE.MeshStandardMaterial({
-      color: BRAND.navy,
-      roughness: 0.74,
-      metalness: 0.03,
-      transparent: true,
-      opacity: 0.11
-    });
-
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(4.8, 96), floorMaterial);
-
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.9;
-    floor.receiveShadow = true;
-
-    scene.add(floor);
-
-    const panelAnchors = new Map<PanelElement, THREE.Vector3>();
-
-    panels.forEach((panel) => {
-      panelAnchors.set(
-        panel,
-        new THREE.Vector3(
-          Number(panel.dataset.anchorX || 0),
-          Number(panel.dataset.anchorY || 0),
-          Number(panel.dataset.anchorZ || 0)
-        )
-      );
-    });
 
     const pointer: PointerState = {
       x: 0,
@@ -791,12 +795,10 @@ export async function initHero(host: HTMLElement): Promise<void> {
       logoFittedBox,
       stage,
       panels,
-      panelAnchors,
       pointer,
       getActivePanel,
       materials,
       lights,
-      floorMaterial,
       reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches
     };
 

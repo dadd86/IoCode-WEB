@@ -1,13 +1,10 @@
 {
   "name": "IoCode WEB Dev Container",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "dockerComposeFile": "../compose.yml",
+  "service": "dev",
   "workspaceFolder": "/app",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
-  "postCreateCommand": "npm ci",
-  "remoteUser": "root",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
   "customizations": {
     "vscode": {
       "extensions": [
@@ -17,8 +14,8 @@
         "esbenp.prettier-vscode"
       ],
       "settings": {
-        "js/ts.tsdk.path": "node_modules/typescript/lib",
-        "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
         "astro.typescript.tsdk": "node_modules/typescript/lib",
         "editor.formatOnSave": true,
         "files.eol": "\n"

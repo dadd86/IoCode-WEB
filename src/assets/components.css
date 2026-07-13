@@ -272,7 +272,10 @@
 }
 
 .footerLogo {
-  width: clamp(7rem, 12vw, 10rem);
+  display: block;
+  width: clamp(5.5rem, 8vw, 7.25rem);
+  height: auto;
+  object-fit: contain;
 }
 
 .contactGrid {

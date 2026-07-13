@@ -7,7 +7,7 @@ import {
   writeFileSync
 } from "node:fs";
 import { brotliCompressSync, gzipSync } from "node:zlib";
-import { dirname, extname, join, relative } from "node:path";
+import { extname, join, relative } from "node:path";
 
 const artifactRoot = "qa-artifacts/performance/phase-6";
 const distRoot = "dist";

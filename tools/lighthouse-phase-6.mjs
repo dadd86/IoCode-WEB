@@ -54,6 +54,10 @@ function getScore(lhr, category) {
   return lhr.categories?.[category]?.score ?? null;
 }
 
+function getAuditScore(lhr, auditId) {
+  return lhr.audits?.[auditId]?.score ?? null;
+}
+
 function getLcpElement(lhr) {
   const audit = lhr.audits?.["largest-contentful-paint-element"];
   const item = audit?.details?.items?.[0];
@@ -185,6 +189,44 @@ function validateResult(result) {
       `${profile} ${route}: TBT ${totalBlockingTime}ms supera ${thresholds.maxTbtMs}ms.`
     );
   }
+  const requiredAuditScores = [
+    {
+      id: "errors-in-console",
+      label: "Browser console errors"
+    },
+    {
+      id: "inspector-issues",
+      label: "Chrome DevTools issues"
+    },
+    {
+      id: "uses-text-compression",
+      label: "Text compression"
+    },
+    {
+      id: "label-content-name-mismatch",
+      label: "Accessible name contiene el texto visible"
+    }
+  ];
+
+  for (const audit of requiredAuditScores) {
+    const score = result.auditScores?.[audit.id];
+
+    if (score !== 1) {
+      errors.push(
+        `${route} ${profile}: ${audit.label} no pasó. Audit ${audit.id} score=${score}.`
+      );
+    }
+  }
+
+  for (const audit of requiredAuditScores) {
+    const score = result.auditScores?.[audit.id];
+
+    if (score !== 1) {
+      errors.push(
+        `${route} ${profile}: ${audit.label} no pasó. Audit ${audit.id} score=${score}.`
+      );
+    }
+  }
 }
 
 let chrome = null;
@@ -254,7 +296,13 @@ try {
         speedIndex: getNumericAudit(lhr, "speed-index"),
         lcpElement: getLcpElement(lhr),
         reportJson: jsonPath.replaceAll("\\", "/"),
-        reportHtml: htmlPath.replaceAll("\\", "/")
+        reportHtml: htmlPath.replaceAll("\\", "/"),
+        auditScores: {
+          "errors-in-console": getAuditScore(lhr, "errors-in-console"),
+          "inspector-issues": getAuditScore(lhr, "inspector-issues"),
+          "uses-text-compression": getAuditScore(lhr, "uses-text-compression"),
+          "label-content-name-mismatch": getAuditScore(lhr, "label-content-name-mismatch")
+        }
       };
 
       validateResult(result);

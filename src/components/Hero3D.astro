@@ -41,8 +41,15 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
   en: "IoCode SOLUTIONS secondary technical areas",
   de: "Sekundäre technische Bereiche von IoCode SOLUTIONS"
 };
----
 
+const panelFallbackCss = panels
+  .map(
+    (panel) =>
+      `.hero3d__panel[data-panel-id="${panel.id}"]{--panel-x:${panel.screenFallback.x}%;--panel-y:${panel.screenFallback.y}%;}`
+  )
+  .join("\n");
+---
+<style is:inline set:html={panelFallbackCss}></style>
 <div
   class="hero3d__scene"
   data-hero3d
@@ -73,22 +80,16 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
         <a
           class="hero3d__panel"
           href={panel.href}
-          aria-label={panel.copy.ariaLabel}
+          aria-label={`${panel.copy.title} — ${panel.copy.text}. ${panel.copy.description}`}
           lang={locale}
           data-panel-id={panel.id}
           data-priority={panel.priority}
           data-desktop-visible={String(panel.desktopVisible)}
           data-tablet-visible={String(panel.tabletVisible)}
           data-mobile-visible={String(panel.mobileVisible)}
-          data-anchor-x={String(panel.anchor.x)}
-          data-anchor-y={String(panel.anchor.y)}
-          data-anchor-z={String(panel.anchor.z)}
           data-fallback-x={String(panel.screenFallback.x)}
           data-fallback-y={String(panel.screenFallback.y)}
-          data-depth={String(panel.motion.depth)}
-          data-lift={String(panel.motion.lift)}
           data-parallax={String(panel.motion.parallax)}
-          style={`--panel-x:${panel.screenFallback.x}%; --panel-y:${panel.screenFallback.y}%;`}
         >
           <strong class="hero3d__panel-title">{panel.copy.title}</strong>
           <span class="hero3d__panel-text">{panel.copy.text}</span>
@@ -104,7 +105,7 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
       {secondaryPanels.map((panel) => (
         <a
           href={panel.href}
-          aria-label={panel.copy.ariaLabel}
+          aria-label={`${panel.copy.title} — ${panel.copy.text}. ${panel.copy.description}`}
           lang={locale}
           data-mobile-dock-panel={panel.id}
         >
@@ -118,11 +119,11 @@ const secondaryPanelsAriaLabel: Record<Locale, string> = {
       <div>
         <LogoImage
           alt="IoCode SOLUTIONS"
-          loading="lazy"
+          loading="eager"
           fetchPriority="low"
-          sizes="(max-width: 720px) 72vw, 34rem"
+          sizes="(max-width: 720px) 58vw, 29rem"
         />
-        <p>{fallbackMessage[locale]}</p>
+        <p data-hero-fallback-message>{fallbackMessage[locale]}</p>
       </div>
     </div>
 

@@ -10,7 +10,7 @@ services:
     environment:
       NODE_ENV: development
       ASTRO_TELEMETRY_DISABLED: "1"
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     ports:
       - "${ASTRO_DEV_PORT:-4321}:4321"
     volumes:
@@ -29,7 +29,7 @@ services:
     environment:
       NODE_ENV: development
       ASTRO_TELEMETRY_DISABLED: "1"
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     volumes:
       - .:/app
       - iocode_node_modules:/app/node_modules
@@ -202,6 +202,30 @@ services:
     command: "node --version && npm --version && git --version && unzip -v | head -1"
     profiles:
       - release
+
+  assets:
+    container_name: iocode-solutions-assets
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile.performance
+      args:
+        PLAYWRIGHT_IMAGE: "mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948"
+    init: true
+    working_dir: /app
+    environment:
+      CI: "1"
+      ASTRO_TELEMETRY_DISABLED: "1"
+      CHROME_PATH: "/usr/local/bin/chromium"
+    volumes:
+      - .:/app
+      - iocode_performance_node_modules:/app/node_modules
+    entrypoint:
+      - sh
+      - -lc
+    command: "node --version && npm --version && ./node_modules/.bin/gltf-transform --version"
+    profiles:
+      - assets
 volumes:
   iocode_node_modules:
   iocode_astro_cache:
+  iocode_performance_node_modules:

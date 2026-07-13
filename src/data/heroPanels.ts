@@ -23,21 +23,13 @@ export type HeroPanelCopy = {
   ariaLabel: string;
 };
 
-export type HeroPanelAnchor = {
-  x: number;
-  y: number;
-  z: number;
+export type HeroPanelMotion = {
+  parallax: number;
 };
 
 export type HeroPanelScreenFallback = {
   x: number;
   y: number;
-};
-
-export type HeroPanelMotion = {
-  depth: number;
-  lift: number;
-  parallax: number;
 };
 
 export type HeroPanel = {
@@ -71,12 +63,10 @@ export const heroPanels = [
       z: 0.72
     },
     screenFallback: {
-      x: 20,
-      y: 21
+      x: 24,
+      y: 25
     },
     motion: {
-      depth: 1,
-      lift: 36,
       parallax: 1
     },
     copy: {
@@ -116,13 +106,11 @@ export const heroPanels = [
       z: 0.86
     },
     screenFallback: {
-      x: 50,
-      y: 15
+      x: 24,
+      y: 50
     },
     motion: {
-      depth: 0.72,
-      lift: 28,
-      parallax: 0.72
+      parallax: 0.82
     },
     copy: {
       es: {
@@ -161,12 +149,10 @@ export const heroPanels = [
       z: 0.7
     },
     screenFallback: {
-      x: 80,
-      y: 22
+      x: 76,
+      y: 25
     },
     motion: {
-      depth: 0.92,
-      lift: 30,
       parallax: 0.92
     },
     copy: {
@@ -206,13 +192,11 @@ export const heroPanels = [
       z: 0.95
     },
     screenFallback: {
-      x: 82,
-      y: 51
+      x: 76,
+      y: 50
     },
     motion: {
-      depth: 1.12,
-      lift: 38,
-      parallax: 1.12
+      parallax: 1.05
     },
     copy: {
       es: {
@@ -251,13 +235,11 @@ export const heroPanels = [
       z: 0.76
     },
     screenFallback: {
-      x: 22,
-      y: 80
+      x: 24,
+      y: 75
     },
     motion: {
-      depth: 0.86,
-      lift: 32,
-      parallax: 0.86
+      parallax: 0.88
     },
     copy: {
       es: {
@@ -296,13 +278,11 @@ export const heroPanels = [
       z: 0.68
     },
     screenFallback: {
-      x: 74,
-      y: 80
+      x: 76,
+      y: 75
     },
     motion: {
-      depth: 0.8,
-      lift: 28,
-      parallax: 0.8
+      parallax: 0.84
     },
     copy: {
       es: {

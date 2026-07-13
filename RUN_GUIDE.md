@@ -174,3 +174,134 @@ docker compose --profile prod --profile qa build --no-cache web performance-qa
 docker compose --profile prod --profile qa up -d web
 docker compose --profile prod --profile qa run --rm performance-qa
 docker compose --profile prod --profile qa down
+
+## TypeScript y VS Code
+
+Este proyecto se valida en Docker. No se debe ejecutar `npm install`, `npm run build`, `npm run check` ni Playwright directamente en Windows host.
+
+Si VS Code muestra errores como:
+
+- `Cannot find name HTMLElement`
+- `Cannot find module three`
+- `Cannot find type definition file for node`
+- `File node_modules/typescript/lib/lib.es2025.full.d.ts not found`
+
+significa que el editor está usando el TypeScript del host o que `node_modules` fue eliminado del host.
+
+Corrección:
+
+1. Abrir el proyecto con `Dev Containers: Reopen in Container`.
+2. Validar con comandos Docker:
+   ```sh
+   docker compose run --rm --no-deps dev sh -lc "npm run check"
+   docker compose --profile prod --profile qa run --rm performance-qa
+
+
+
+   docker compose --profile prod --profile qa up -d web
+
+   ## Docker Compose — Modos de ejecución
+
+Este proyecto está completamente dockerizado. No se debe ejecutar `npm install`, `npm run dev`, `npm run build` ni Playwright directamente en Windows host.
+
+### Desarrollo local
+
+Arranca solo el contenedor de desarrollo:
+
+```sh
+docker compose up -d
+
+Logs:
+
+docker compose logs -f dev
+
+URL:
+
+http://localhost:4321/
+
+Parar:
+
+docker compose down
+Producción local
+
+Arranca el servidor estático productivo:
+
+docker compose --profile prod up -d web
+
+URL:
+
+http://localhost:8080/
+
+Logs:
+
+docker compose --profile prod logs -f web
+
+Parar:
+
+docker compose --profile prod down --remove-orphans
+
+## Puertos locales
+
+### Desarrollo Astro
+iocode-solutions-dev -> 4321
+iocode-solutions-web -> 8080
+
+Para diseño en vivo:
+
+docker compose --profile prod down --remove-orphans
+docker compose up -d dev
+
+Abres:
+
+http://localhost:4321/es/
+
+Para producción local:
+
+docker compose down --remove-orphans
+docker compose --profile prod up -d web
+
+Abres:
+
+http://localhost:8080/es/
+
+Así evitas confusión de puertos.
+
+## Importante: reconstruir QA después de cambios
+
+Después de modificar código, CSS, scripts, tests o configuración de Fase 6, no basta con ejecutar:
+
+```sh
+docker compose --profile prod --profile qa run --rm performance-qa
+
+Primero hay que reconstruir las imágenes:
+
+docker compose --profile prod --profile qa build --no-cache web performance-qa
+docker compose --profile prod --profile qa up -d web
+docker compose --profile prod --profile qa run --rm performance-qa
+docker compose --profile prod --profile qa down --remove-orphans
+
+Si no se reconstruye, Docker puede ejecutar una imagen antigua y mostrar resultados que no corresponden al código actual.
+
+Para revisar la web en desarrollo después de apagar QA:
+
+docker compose up -d dev
+docker compose logs -f dev
+
+URL de desarrollo:
+
+http://localhost:4321/es/
+
+URL de producción local:
+
+http://localhost:8080/es/
+
+---
+
+# 11. Validación obligatoria final
+
+Después de aplicar las correcciones:
+
+```powershell
+docker compose up -d dev
+docker compose exec dev npm run check
+docker compose exec dev npm run build

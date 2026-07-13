@@ -4,6 +4,7 @@ import Button from "./Button.astro";
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
 import { getLocalizedPath } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 
 type HeroAction = {
   label: string;
@@ -11,10 +12,18 @@ type HeroAction = {
   variant?: "primary" | "secondary" | "ghost";
 };
 
+type HeroHeadingContent = {
+  lead: string;
+  highlight: string;
+  tail: string;
+};
+
 type HomeHeroContent = {
   eyebrow?: string;
   heading: string;
   intro: string;
+  heroHeading?: HeroHeadingContent;
+  proofPoints?: string[];
   primaryAction?: string;
   secondaryAction?: string;
 };
@@ -25,48 +34,93 @@ type Props = {
 };
 
 const { locale, content } = Astro.props as Props;
+const labels = ui[locale];
 
-const actions: HeroAction[] = [];
+const actionGroupLabel: Record<Locale, string> = {
+  es: "Acciones principales",
+  en: "Main actions",
+  de: "Hauptaktionen"
+};
 
-if (content.primaryAction) {
-  actions.push({
-    label: content.primaryAction,
+const proofPointsLabel: Record<Locale, string> = {
+  es: "Capacidades técnicas principales",
+  en: "Main technical capabilities",
+  de: "Wichtigste technische Schwerpunkte"
+};
+
+const headingParts = content.heroHeading;
+const headingAccessibleText = headingParts
+  ? `${headingParts.lead} ${headingParts.highlight} ${headingParts.tail}`
+  : content.heading;
+
+const primaryActionLabel = content.primaryAction ?? labels.requestProposal;
+const secondaryActionLabel = content.secondaryAction ?? labels.viewProjects;
+
+const actions: HeroAction[] = [
+  {
+    label: primaryActionLabel,
     href: getLocalizedPath("contact" as RouteKey, locale),
     variant: "primary"
-  });
-}
-
-if (content.secondaryAction) {
-  actions.push({
-    label: content.secondaryAction,
+  },
+  {
+    label: secondaryActionLabel,
     href: getLocalizedPath("projects" as RouteKey, locale),
     variant: "secondary"
-  });
-}
+  }
+];
 ---
 
-<section class="hero3d" aria-labelledby="homeHeroTitle">
-  <div class="hero3d__grid">
-    <div class="hero3d__content">
-      {content.eyebrow && <p class="eyebrow">{content.eyebrow}</p>}
-
-      <h1 id="homeHeroTitle">{content.heading}</h1>
-
-      <p class="hero3d__text">{content.intro}</p>
-
-      {actions.length > 0 && (
-        <div class="buttonGroup" aria-label="Acciones principales">
-          {actions.map((action) => (
-            <Button
-              href={action.href}
-              label={action.label}
-              variant={action.variant ?? "primary"}
-            />
-          ))}
-        </div>
+<section class="hero3d hero3d--home" aria-labelledby="homeHeroTitle">
+  <div class="container hero3d__grid">
+    <header class="hero3d__content">
+      {content.eyebrow && (
+        <p class="eyebrow hero3d__eyebrow">{content.eyebrow}</p>
       )}
-    </div>
 
-    <Hero3D locale={locale} />
+      <h1
+        id="homeHeroTitle"
+        class="hero3d__headline"
+        aria-label={headingAccessibleText}
+      >
+        {headingParts ? (
+          <>
+            <span>{headingParts.lead}</span>
+            <span class="hero3d__headlineAccent">{headingParts.highlight}</span>
+            <span>{headingParts.tail}</span>
+          </>
+        ) : (
+          content.heading
+        )}
+      </h1>
+    </header>
+
+    <div class="hero3d__visualStack">
+      <Hero3D locale={locale} />
+
+      <div class="hero3d__summary" aria-label={proofPointsLabel[locale]}>
+        <p class="hero3d__summaryKicker">IT/OT · Diagnóstico · Trazabilidad</p>
+        <p class="hero3d__text">{content.intro}</p>
+
+        {content.proofPoints && content.proofPoints.length > 0 && (
+          <ul class="hero3d__proofList">
+            {content.proofPoints.map((proofPoint) => (
+              <li class="hero3d__proofItem">{proofPoint}</li>
+            ))}
+          </ul>
+        )}
+
+        {actions.length > 0 && (
+          <div class="buttonGroup hero3d__actions" aria-label={actionGroupLabel[locale]}>
+            {actions.map((action) => (
+              <Button
+                href={action.href}
+                label={action.label}
+                variant={action.variant ?? "primary"}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   </div>
 </section>

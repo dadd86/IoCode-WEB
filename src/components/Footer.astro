@@ -24,9 +24,11 @@ const footerLabel: Record<Locale, string> = {
       <LogoImage
         imgClass="footerLogo"
         alt={siteConfig.name}
-        loading="lazy"
+        loading="eager"
         fetchPriority="low"
-        sizes="96px"
+        sizes="112px"
+        width={128}
+        height={128}
       />
     </a>
     <p>© {new Date().getFullYear()} {siteConfig.name}. {text[locale]}</p>
