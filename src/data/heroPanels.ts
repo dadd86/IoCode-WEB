@@ -39,7 +39,6 @@ export type HeroPanel = {
   desktopVisible: boolean;
   tabletVisible: boolean;
   mobileVisible: boolean;
-  anchor: HeroPanelAnchor;
   screenFallback: HeroPanelScreenFallback;
   motion: HeroPanelMotion;
   copy: Record<Locale, HeroPanelCopy>;
@@ -57,13 +56,8 @@ export const heroPanels = [
     desktopVisible: true,
     tabletVisible: true,
     mobileVisible: true,
-    anchor: {
-      x: -2.55,
-      y: 1.32,
-      z: 0.72
-    },
     screenFallback: {
-      x: 24,
+      x: 15,
       y: 25
     },
     motion: {
@@ -99,18 +93,13 @@ export const heroPanels = [
     priority: "secondary",
     desktopVisible: true,
     tabletVisible: true,
-    mobileVisible: false,
-    anchor: {
-      x: 0,
-      y: 1.78,
-      z: 0.86
-    },
+    mobileVisible: false,    
     screenFallback: {
-      x: 24,
+      x: 15,
       y: 50
     },
     motion: {
-      parallax: 0.82
+      parallax: 0.9
     },
     copy: {
       es: {
@@ -143,17 +132,12 @@ export const heroPanels = [
     desktopVisible: true,
     tabletVisible: true,
     mobileVisible: false,
-    anchor: {
-      x: 2.45,
-      y: 1.34,
-      z: 0.7
-    },
     screenFallback: {
-      x: 76,
+      x: 90,
       y: 25
     },
     motion: {
-      parallax: 0.92
+      parallax: 0.96
     },
     copy: {
       es: {
@@ -186,13 +170,8 @@ export const heroPanels = [
     desktopVisible: true,
     tabletVisible: true,
     mobileVisible: true,
-    anchor: {
-      x: 2.72,
-      y: 0.05,
-      z: 0.95
-    },
     screenFallback: {
-      x: 76,
+      x: 90,
       y: 50
     },
     motion: {
@@ -229,17 +208,12 @@ export const heroPanels = [
     desktopVisible: true,
     tabletVisible: true,
     mobileVisible: true,
-    anchor: {
-      x: -2.25,
-      y: -1.42,
-      z: 0.76
-    },
     screenFallback: {
-      x: 24,
+      x: 15,
       y: 75
     },
     motion: {
-      parallax: 0.88
+      parallax: 0.92
     },
     copy: {
       es: {
@@ -272,17 +246,12 @@ export const heroPanels = [
     desktopVisible: true,
     tabletVisible: false,
     mobileVisible: false,
-    anchor: {
-      x: 2.02,
-      y: -1.38,
-      z: 0.68
-    },
     screenFallback: {
-      x: 76,
+      x: 90,
       y: 75
     },
     motion: {
-      parallax: 0.84
+      parallax: 0.92
     },
     copy: {
       es: {

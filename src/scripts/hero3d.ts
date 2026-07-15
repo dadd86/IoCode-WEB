@@ -472,10 +472,10 @@ function projectPanel(runtime: LogoScene, panel: PanelElement, elapsed: number):
   const verticalDirection = fallbackY < 50 ? -1 : fallbackY > 50 ? 1 : 0;
 
   const orbitalX =
-    Math.sin(elapsed * 0.52 + seed * 0.017) * 0.9 * parallax;
+    Math.sin(elapsed * 0.6 + seed * 0.017) * 1.55 * parallax;
 
   const orbitalY =
-    Math.cos(elapsed * 0.46 + seed * 0.013) * 0.74 * parallax;
+    Math.cos(elapsed * 0.52 + seed * 0.013) * 1.22 * parallax;
 
   const edgeBreathingX =
     Math.sin(elapsed * 0.3 + seed * 0.01) * 0.3 * sideDirection;
@@ -499,15 +499,15 @@ function projectPanel(runtime: LogoScene, panel: PanelElement, elapsed: number):
   );
 
   const translateX =
-    Math.sin(elapsed * 0.78 + seed * 0.019) * 5.5 * parallax +
-    runtime.pointer.x * 9 * parallax;
+    Math.sin(elapsed * 0.84 + seed * 0.019) * 10 * parallax +
+    runtime.pointer.x * 12 * parallax;
 
   const translateY =
-    Math.cos(elapsed * 0.66 + seed * 0.015) * 4.5 * parallax +
-    runtime.pointer.y * 6 * parallax;
+    Math.cos(elapsed * 0.72 + seed * 0.015) * 8 * parallax +
+    runtime.pointer.y * 9 * parallax;
 
   const lift =
-    Math.sin(elapsed * 0.58 + seed * 0.021) * 3.8 * parallax;
+    Math.sin(elapsed * 0.66 + seed * 0.021) * 6.5 * parallax;
 
   panel.style.setProperty("--panel-x", `${nextX.toFixed(2)}%`);
   panel.style.setProperty("--panel-y", `${nextY.toFixed(2)}%`);
@@ -537,25 +537,25 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
 
     runtime.logo.scale.setScalar(runtime.logoBaseScale * (0.9 + 0.1 * intro));
 
-    const idleFloatY = Math.sin(elapsed * 0.85) * 0.045 * motionFactor;
-    const idleFloatZ = Math.cos(elapsed * 0.72) * 0.028 * motionFactor;
+    const idleFloatY = Math.sin(elapsed * 0.92) * 0.095 * motionFactor;
+    const idleFloatZ = Math.cos(elapsed * 0.76) * 0.058 * motionFactor;
 
     runtime.logo.position.y = THREE.MathUtils.lerp(
       runtime.logo.position.y,
       idleFloatY,
-      0.05
+      0.06
     );
 
     runtime.logo.position.z = THREE.MathUtils.lerp(
       runtime.logo.position.z,
       idleFloatZ,
-      0.05
+      0.06
     );
 
     const targetRotationX = clamp(
       -0.018 +
-        Math.sin(elapsed * 0.42) * 0.018 * motionFactor +
-        runtime.pointer.y * 0.024 * motionFactor,
+        Math.sin(elapsed * 0.5) * 0.042 * motionFactor +
+        runtime.pointer.y * 0.03 * motionFactor,
       -LOGO_ROTATION_LIMIT.x,
       LOGO_ROTATION_LIMIT.x
     );
@@ -564,15 +564,15 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
       hasActivePanel
         ? -0.032
         : -0.055 +
-            Math.sin(elapsed * 0.5) * 0.072 * motionFactor +
-            runtime.pointer.x * 0.035 * motionFactor,
+            Math.sin(elapsed * 0.56) * 0.13 * motionFactor +
+            runtime.pointer.x * 0.045 * motionFactor,
       -LOGO_ROTATION_LIMIT.y,
       LOGO_ROTATION_LIMIT.y
     );
 
     const targetRotationZ = clamp(
-      Math.sin(elapsed * 0.36) * 0.012 * motionFactor +
-        runtime.pointer.x * -0.006 * motionFactor,
+      Math.sin(elapsed * 0.44) * 0.024 * motionFactor +
+        runtime.pointer.x * -0.008 * motionFactor,
       -LOGO_ROTATION_LIMIT.z,
       LOGO_ROTATION_LIMIT.z
     );

@@ -4,13 +4,8 @@ export type HeroPanelDataset = DOMStringMap & {
   desktopVisible?: string;
   tabletVisible?: string;
   mobileVisible?: string;
-  anchorX?: string;
-  anchorY?: string;
-  anchorZ?: string;
   fallbackX?: string;
   fallbackY?: string;
-  depth?: string;
-  lift?: string;
   parallax?: string;
 };
 

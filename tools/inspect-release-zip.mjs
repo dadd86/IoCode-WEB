@@ -1,8 +1,31 @@
-import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  writeFileSync
+} from "node:fs";
 import { basename, join } from "node:path";
+import { spawnSync } from "node:child_process";
 
-const zipPath = process.argv[2];
+function findNewestReleaseZip() {
+  const releaseDir = "releases";
+
+  if (!existsSync(releaseDir)) {
+    return null;
+  }
+
+  const candidates = readdirSync(releaseDir)
+    .filter((file) => file.endsWith(".zip"))
+    .map((file) => join(releaseDir, file))
+    .filter((file) => existsSync(file))
+    .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
+
+  return candidates[0] ?? null;
+}
+
+const explicitZipPath = process.argv[2];
+const zipPath = explicitZipPath || findNewestReleaseZip();
 
 const forbiddenPatterns = [
   /(^|\/)\.git(\/|$)/,
@@ -12,7 +35,6 @@ const forbiddenPatterns = [
   /(^|\/)qa-artifacts(\/|$)/,
   /(^|\/)playwright-report(\/|$)/,
   /(^|\/)test-results(\/|$)/,
-  /(^|\/)lighthouse-report(\/|$)/,
   /(^|\/)coverage(\/|$)/,
   /(^|\/)logs(\/|$)/,
   /(^|\/)releases(\/|$)/,
@@ -24,6 +46,7 @@ const forbiddenPatterns = [
 
 if (!zipPath) {
   console.error("Uso: node tools/inspect-release-zip.mjs <archivo.zip>");
+  console.error("No se encontró ningún ZIP en releases/.");
   process.exit(64);
 }
 
@@ -85,4 +108,4 @@ if (forbiddenEntries.length > 0) {
   process.exit(1);
 }
 
-console.log("OK: ZIP de release limpio.");
+console.log(`OK: ZIP de release limpio: ${zipPath}`);

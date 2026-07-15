@@ -146,14 +146,14 @@ function scheduleWhenIdle(callback: () => void): ScheduledLoad {
     return {
       type: "idle",
       id: idleWindow.requestIdleCallback(() => callback(), {
-        timeout: 450
+        timeout: 120
       })
     };
   }
 
   return {
     type: "timeout",
-    id: globalThis.setTimeout(callback, 180)
+    id: globalThis.setTimeout(callback, 50)
   };
 }
 
@@ -240,8 +240,8 @@ if (reducedMotionQuery.matches) {
     },
     {
       root: null,
-      rootMargin: "320px 0px",
-      threshold: 0.01
+      rootMargin: "520px 0px",
+      threshold: 0.001
     }
   );
 

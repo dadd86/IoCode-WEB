@@ -164,16 +164,18 @@ El formulario usa `mailto:`. Depende del cliente de correo del usuario y de que 
 
 Es correcto en local. No actives HSTS hasta tener HTTPS real.
 
-### Ejecutar Fase 6
+## Fase 6 — Performance, Core Web Vitals y 3D avanzado
+
+Todo se ejecuta dentro de Docker. No ejecutar Node, Playwright, Lighthouse ni herramientas GLB directamente en Windows host.
+
+### Validación completa
 
 ```powershell
 docker compose --profile prod --profile qa down --remove-orphans
-docker image rm iocode-solutions-performance-qa:latest -f
-docker image rm iocode-solutions-web:latest -f
 docker compose --profile prod --profile qa build --no-cache web performance-qa
 docker compose --profile prod --profile qa up -d web
 docker compose --profile prod --profile qa run --rm performance-qa
-docker compose --profile prod --profile qa down
+docker compose --profile prod --profile qa down --remove-orphans
 
 ## TypeScript y VS Code
 

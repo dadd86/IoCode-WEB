@@ -34,13 +34,13 @@
 }
 
 .hero3d__headline {
-  max-width: 18ch;
+  max-width: 20ch;
   margin: 0;
   overflow-wrap: normal;
   color: var(--color-heading);
-  font-size: clamp(2.15rem, 3vw, 3.45rem);
-  line-height: 1.02;
-  letter-spacing: -0.044em;
+  font-size: clamp(2.15rem, 2.56vw, 3.12rem);
+  line-height: 1.05;
+  letter-spacing: -0.038em;
   text-wrap: balance;
 }
 
@@ -136,15 +136,15 @@
 
 @media (min-width: 1024px) {
   .hero3d__grid {
-    grid-template-columns: minmax(25rem, 0.82fr) minmax(0, 1.18fr);
+    grid-template-columns: minmax(30rem, 0.96fr) minmax(0, 1.04fr);
     grid-template-areas: "content visual";
-    gap: clamp(1.2rem, 2vw, 2.2rem);
+    gap: clamp(1.5rem, 2.5vw, 3rem);
     align-items: start;
   }
 
   .hero3d__content {
     grid-area: content;
-    padding-top: clamp(0.75rem, 1.8vw, 1.6rem);
+    padding-top: clamp(0.8rem, 1.8vw, 1.5rem);
   }
 
   .hero3d__visualStack {
@@ -158,9 +158,10 @@
 
 @media (min-width: 1440px) {
   .hero3d__headline {
-    font-size: clamp(2.35rem, 2.85vw, 3.65rem);
+    font-size: clamp(2.35rem, 2.42vw, 3.24rem);
   }
 }
+
 
 @media (max-width: 1023px) {
   .hero3d {
@@ -269,9 +270,9 @@
 .hero3d__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.82 / 1;
-  min-height: clamp(22rem, 30vw, 28.5rem);
-  max-height: min(34rem, calc(100svh - 6rem));
+  aspect-ratio: 1.78 / 1;
+  min-height: clamp(21rem, 28vw, 27rem);
+  max-height: min(32rem, calc(100svh - 6rem));
   overflow: hidden;
   border: 1px solid var(--hero-stage-border);
   border-radius: clamp(1.5rem, 3vw, 2.5rem);
@@ -328,11 +329,11 @@
 }
 
 .hero3d__placeholder img {
-  width: min(22rem, 38vw);
-  max-height: calc(100% - 6rem);
+  width: min(17rem, 27vw);
+  max-height: calc(100% - 7.5rem);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 20px 30px var(--hero-shadow));
+  filter: drop-shadow(0 16px 24px var(--hero-shadow));
 }
 
 .hero3d__scene.is-three-ready .hero3d__placeholder {
@@ -371,9 +372,9 @@
   left: var(--panel-x);
   top: var(--panel-y);
   z-index: 5;
-  width: clamp(9.4rem, 12.1vw, 12.9rem);
-  min-height: 4.15rem;
-  padding: 0.78rem 0.9rem;
+  width: clamp(10.2rem, 12.8vw, 13.6rem);
+  min-height: 4.35rem;
+  padding: 0.84rem 0.98rem;
   border: 1px solid var(--hero-panel-border);
   border-radius: clamp(1rem, 1.7vw, 1.35rem);
   background: var(--hero-panel-bg);
@@ -389,12 +390,11 @@
     rotateY(var(--tilt-y))
     scale(var(--panel-scale));
   transition:
-    opacity 220ms ease,
-    transform 220ms ease,
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    background 220ms ease;
-  will-change: transform, left, top, opacity;
+    opacity 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+  will-change: transform, opacity;
 }
 
 .hero3d__panel::before {
@@ -436,7 +436,7 @@
   display: block;
   margin-bottom: 0.34rem;
   color: var(--hero-brand-cyan-bright);
-  font-size: clamp(0.68rem, 0.76vw, 0.78rem);
+  font-size: clamp(0.7rem, 0.82vw, 0.82rem);
   font-weight: 900;
   letter-spacing: 0.15em;
   line-height: 1;
@@ -446,7 +446,7 @@
 .hero3d__panel-text {
   display: block;
   color: var(--hero-text);
-  font-size: clamp(0.82rem, 0.95vw, 0.96rem);
+  font-size: clamp(0.88rem, 1vw, 1.02rem);
   font-weight: 850;
   line-height: 1.22;
 }
@@ -567,11 +567,11 @@
 /* Escritorio muy ancho: aprovecha mejor el logo panorámico. */
 @media (min-width: 1600px) {
   .hero3d__stage {
-    min-height: clamp(24rem, 30vw, 33rem);
+    min-height: clamp(22rem, 27vw, 31rem);
   }
 
   .hero3d__panel {
-    width: clamp(8.2rem, 9.8vw, 11.2rem);
+    width: clamp(10.4rem, 11.2vw, 13.6rem);
   }
 }
 

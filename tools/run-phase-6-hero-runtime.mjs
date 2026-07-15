@@ -1,4 +1,16 @@
+import { rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+
+const stalePaths = [
+  "qa-artifacts/playwright-results.json",
+  "qa-artifacts/performance/phase-6/3d-fallback-runtime-report.json"
+];
+
+for (const path of stalePaths) {
+  rmSync(path, {
+    force: true
+  });
+}
 
 function run(command, args) {
   return spawnSync(command, args, {

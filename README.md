@@ -190,3 +190,20 @@ Antes de publicar, confirma que el correo configurado en `src/data/site.ts` exis
 - No ejecutar `npm audit fix --force` sin revisar impacto.
 - No publicar ZIPs con `.git`, `node_modules`, `.astro` o `dist`.
 - No afirmar producción real sin validar dominio, HTTPS, Search Console, Lighthouse y correo.
+
+
+## Desarrollo local
+docker compose up -d dev
+docker compose logs -f dev
+
+URL:
+
+http://localhost:4321/es/
+
+## Producción local
+docker compose --profile prod up -d web
+docker compose --profile prod logs -f web
+
+URL:
+
+http://localhost:8080/es/
