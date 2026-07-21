@@ -23,7 +23,9 @@ const expectedNames = [
   "la pérdida de contexto WebGL activa fallback y libera el canvas",
   "mobile dock usa nombres accesibles que contienen el texto visible",
   "logo 3D no se renderiza fragmentado ni como rectángulo roto",
-  "desktop mantiene paneles alrededor del logo sin cubrir el centro"
+  "desktop mantiene paneles alrededor del logo sin cubrir el centro",
+  "desktop abre la descripcion del panel al pasar el mouse",
+  "desktop mantiene el logo 3D con tamaño visual suficiente"
 ];
 
 function collectSpecs(suites, collected = []) {

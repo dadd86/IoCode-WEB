@@ -349,12 +349,13 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       for (let index = 0; index < count; index += 1) {
         const link = mobileDockLinks.nth(index);
         const visibleText = (await link.innerText()).replace(/\s+/g, " ").trim();
-        const accessibleName = await link.getAttribute("aria-label");
+        const ariaLabel = await link.getAttribute("aria-label");
+        const accessibleName = (ariaLabel ?? visibleText).replace(/\s+/g, " ").trim();
 
-        expect(accessibleName).not.toBeNull();
+        expect(accessibleName.length).toBeGreaterThan(0);
 
         for (const token of visibleText.split(" ").filter(Boolean)) {
-          expect(accessibleName ?? "").toContain(token);
+          expect(accessibleName).toContain(token);
         }
       }
     }

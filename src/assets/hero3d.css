@@ -136,7 +136,7 @@
 
 @media (min-width: 1024px) {
   .hero3d__grid {
-    grid-template-columns: minmax(30rem, 0.96fr) minmax(0, 1.04fr);
+    grid-template-columns: minmax(28rem, 0.92fr) minmax(0, 1.08fr);
     grid-template-areas: "content visual";
     gap: clamp(1.5rem, 2.5vw, 3rem);
     align-items: start;

@@ -57,8 +57,8 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: true,
     screenFallback: {
-      x: 24,
-      y: 27
+      x: 20,
+      y: 15
     },
     motion: {
       parallax: 0.78
@@ -95,7 +95,7 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: false,    
     screenFallback: {
-      x: 24,
+      x: 20,
       y: 50
     },
     motion: {
@@ -133,8 +133,8 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: false,
     screenFallback: {
-      x: 76,
-      y: 27
+      x: 80,
+      y: 15
     },
     motion: {
       parallax: 0.78
@@ -171,7 +171,7 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: true,
     screenFallback: {
-      x: 76,
+      x: 80,
       y: 50
     },
     motion: {
@@ -209,8 +209,8 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: true,
     screenFallback: {
-      x: 24,
-      y: 73
+      x: 20,
+      y: 75
     },
     motion: {
       parallax: 0.74
@@ -247,8 +247,8 @@ export const heroPanels = [
     tabletVisible: false,
     mobileVisible: false,
     screenFallback: {
-      x: 76,
-      y: 73
+      x: 80,
+      y: 75
     },
     motion: {
       parallax: 0.74

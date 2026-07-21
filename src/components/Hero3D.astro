@@ -80,7 +80,6 @@ const panelFallbackCss = panels
         <a
           class="hero3d__panel"
           href={panel.href}
-          aria-label={`${panel.copy.title} — ${panel.copy.text}. ${panel.copy.description}`}
           lang={locale}
           data-panel-id={panel.id}
           data-priority={panel.priority}
@@ -105,8 +104,8 @@ const panelFallbackCss = panels
       {secondaryPanels.map((panel) => (
         <a
           href={panel.href}
-          aria-label={`${panel.copy.title} — ${panel.copy.text}. ${panel.copy.description}`}
           lang={locale}
+          aria-label={`${panel.copy.title} ${panel.copy.text}`}
           data-mobile-dock-panel={panel.id}
         >
           <strong>{panel.copy.title}</strong>

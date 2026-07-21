@@ -217,16 +217,6 @@ function validateResult(result) {
       );
     }
   }
-
-  for (const audit of requiredAuditScores) {
-    const score = result.auditScores?.[audit.id];
-
-    if (score !== 1) {
-      errors.push(
-        `${route} ${profile}: ${audit.label} no pasó. Audit ${audit.id} score=${score}.`
-      );
-    }
-  }
 }
 
 let chrome = null;

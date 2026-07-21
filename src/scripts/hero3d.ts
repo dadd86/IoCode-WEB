@@ -65,10 +65,6 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
-function easeOutCubic(value: number): number {
-  return 1 - Math.pow(1 - value, 3);
-}
-
 function isDarkMode(host: HTMLElement): boolean {
   const forcedTheme =
     host.dataset.theme ||
@@ -324,11 +320,11 @@ function fitCameraToBox(
     No aumenta el peso del GLB ni rompe Fase 6; solo corrige encuadre.
   */
   const margin =
-    viewportWidth < 420 ? 2.18 :
-    viewportWidth < 640 ? 2.08 :
-    viewportWidth < 960 ? 1.98 :
-    viewportWidth < 1280 ? 1.9 :
-    1.82;
+    viewportWidth < 420 ? 2.08 :
+    viewportWidth < 640 ? 1.98 :
+    viewportWidth < 960 ? 1.86 :
+    viewportWidth < 1280 ? 1.76 :
+    1.62;
 
   return Math.max(distanceByHeight, distanceByWidth) * margin;
 }
@@ -537,7 +533,6 @@ function projectPanel(runtime: LogoScene, panel: PanelElement, elapsed: number):
 function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: number): void {
   state.animationFrameId = window.requestAnimationFrame((now) => {
     const elapsed = (now - startTime) / 1000;
-    const intro = easeOutCubic(clamp(elapsed / 1.35, 0, 1));
     const motionFactor = runtime.reducedMotion ? 0 : 1;
 
     runtime.pointer.x += (runtime.pointer.targetX - runtime.pointer.x) * 0.045;
