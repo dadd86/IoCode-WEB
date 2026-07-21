@@ -1,5 +1,6 @@
 .git
 .gitignore
+.agents
 
 node_modules
 dist

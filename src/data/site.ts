@@ -26,7 +26,7 @@ export const siteConfig = {
   logoPath: "/logo/iocode-logo.png",
   logoWebpPath: "/logo/iocode-logo-512.webp",
   logoSmallWebpPath: "/logo/iocode-logo-256.webp",
-  logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb",
+  logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb?v=572076acb6cb",
   location: {
     city: "Aachen",
     region: "North Rhine-Westphalia",

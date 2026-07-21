@@ -29,6 +29,7 @@ const zipPath = explicitZipPath || findNewestReleaseZip();
 
 const forbiddenPatterns = [
   /(^|\/)\.git(\/|$)/,
+  /(^|\/)\.agents(\/|$)/,
   /(^|\/)node_modules(\/|$)/,
   /(^|\/)dist(\/|$)/,
   /(^|\/)\.astro(\/|$)/,

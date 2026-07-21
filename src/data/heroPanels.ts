@@ -57,11 +57,11 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: true,
     screenFallback: {
-      x: 15,
-      y: 25
+      x: 24,
+      y: 27
     },
     motion: {
-      parallax: 1
+      parallax: 0.78
     },
     copy: {
       es: {
@@ -95,11 +95,11 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: false,    
     screenFallback: {
-      x: 15,
+      x: 24,
       y: 50
     },
     motion: {
-      parallax: 0.9
+      parallax: 0.72
     },
     copy: {
       es: {
@@ -133,11 +133,11 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: false,
     screenFallback: {
-      x: 90,
-      y: 25
+      x: 76,
+      y: 27
     },
     motion: {
-      parallax: 0.96
+      parallax: 0.78
     },
     copy: {
       es: {
@@ -171,11 +171,11 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: true,
     screenFallback: {
-      x: 90,
+      x: 76,
       y: 50
     },
     motion: {
-      parallax: 1.05
+      parallax: 0.78
     },
     copy: {
       es: {
@@ -209,11 +209,11 @@ export const heroPanels = [
     tabletVisible: true,
     mobileVisible: true,
     screenFallback: {
-      x: 15,
-      y: 75
+      x: 24,
+      y: 73
     },
     motion: {
-      parallax: 0.92
+      parallax: 0.74
     },
     copy: {
       es: {
@@ -247,11 +247,11 @@ export const heroPanels = [
     tabletVisible: false,
     mobileVisible: false,
     screenFallback: {
-      x: 90,
-      y: 75
+      x: 76,
+      y: 73
     },
     motion: {
-      parallax: 0.92
+      parallax: 0.74
     },
     copy: {
       es: {

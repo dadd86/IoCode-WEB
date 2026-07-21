@@ -20,7 +20,9 @@ const expectedNames = [
   "CTA del hero no queda cortado visualmente",
   "no hay overflow horizontal causado por hero 3D",
   "el 3D carga al estar visible sin bloquear contenido ni navegación",
+  "la pérdida de contexto WebGL activa fallback y libera el canvas",
   "mobile dock usa nombres accesibles que contienen el texto visible",
+  "logo 3D no se renderiza fragmentado ni como rectángulo roto",
   "desktop mantiene paneles alrededor del logo sin cubrir el centro"
 ];
 

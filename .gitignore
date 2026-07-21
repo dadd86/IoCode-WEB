@@ -96,6 +96,7 @@ public/Logo/
 
 # Phase 1.1C QA artifacts
 qa-artifacts/
+.agents/
 playwright-report/
 test-results/
 

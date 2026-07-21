@@ -14,8 +14,14 @@ if [ ! -f "$phase6_summary" ]; then
   echo "ERROR: No existe evidencia de Fase 6:"
   echo "$phase6_summary"
   echo
-  echo "Ejecuta primero:"
+  echo "Ejecuta primero el flujo completo de Fase 6:"
+  echo "docker compose --profile prod --profile qa --profile assets --profile release down --remove-orphans"
+  echo "docker compose --profile assets build --no-cache assets"
+  echo "docker compose --profile assets run --rm assets \"npm run prepare:assets:6\""
+  echo "docker compose --profile prod --profile qa build --no-cache web performance-qa"
+  echo "docker compose --profile prod --profile qa up -d web"
   echo "docker compose --profile prod --profile qa run --rm performance-qa"
+  echo "docker compose --profile prod --profile qa down --remove-orphans"
   exit 1
 fi
 
@@ -32,6 +38,10 @@ if (summary.status !== 'passed') {
 
 if ((summary.errorCount ?? 0) !== 0) {
   errors.push(\`summary.errorCount=\${summary.errorCount}; se esperaba 0\`);
+}
+
+if ((summary.warningCount ?? 0) !== 0) {
+  errors.push(\`summary.warningCount=\${summary.warningCount}; se esperaba 0\`);
 }
 
 if ((summary.blockers?.S0 ?? 0) !== 0) {
@@ -78,7 +88,7 @@ echo
 bad_paths="$(
   unzip -l "$output" \
     | awk '{print $4}' \
-    | grep -E '(^|/)(\.git|dist|node_modules|\.astro|qa-artifacts|playwright-report|test-results|coverage|logs|releases|artifacts|exports)(/|$)|\.(log|zip|tar|tgz|rar|7z)$' \
+    | grep -E '(^|/)(\.git|\.agents|dist|node_modules|\.astro|qa-artifacts|playwright-report|test-results|coverage|logs|releases|artifacts|exports)(/|$)|\.(log|zip|tar|tgz|rar|7z)$' \
     || true
 )"
 

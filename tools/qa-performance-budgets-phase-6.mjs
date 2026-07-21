@@ -52,16 +52,21 @@ function walk(directory) {
   return files;
 }
 
-const files = [...walk(publicRoot), ...walk(distRoot)].map((filePath) => ({
-  path: relative(process.cwd(), filePath).replaceAll("\\", "/"),
-  extension: extname(filePath).toLowerCase(),
-  size: statSync(filePath).size
-}));
+function describeFiles(directory) {
+  return walk(directory).map((filePath) => ({
+    path: relative(process.cwd(), filePath).replaceAll("\\", "/"),
+    extension: extname(filePath).toLowerCase(),
+    size: statSync(filePath).size
+  }));
+}
 
-const jsFiles = files.filter((file) => file.extension === ".js");
-const cssFiles = files.filter((file) => file.extension === ".css");
-const glbFiles = files.filter((file) => file.extension === ".glb");
-const imageFiles = files.filter((file) =>
+const sourceFiles = describeFiles(publicRoot);
+const deployedFiles = describeFiles(distRoot);
+
+const jsFiles = deployedFiles.filter((file) => file.extension === ".js");
+const cssFiles = deployedFiles.filter((file) => file.extension === ".css");
+const glbFiles = deployedFiles.filter((file) => file.extension === ".glb");
+const imageFiles = deployedFiles.filter((file) =>
   [".png", ".jpg", ".jpeg", ".webp", ".avif", ".svg"].includes(file.extension)
 );
 const requiredRasterAssets = [
@@ -80,7 +85,7 @@ const requiredRasterAssets = [
 ];
 
 for (const asset of requiredRasterAssets) {
-  const match = files.find((file) => file.path === asset.path);
+  const match = sourceFiles.find((file) => file.path === asset.path);
 
   if (!match) {
     errors.push(`${asset.path}: asset raster optimizado requerido no existe.`);
@@ -94,7 +99,11 @@ for (const asset of requiredRasterAssets) {
   }
 }
 
-if (files.some((file) => file.path.endsWith(".original.glb"))) {
+if (
+  [...sourceFiles, ...deployedFiles].some((file) =>
+    file.path.endsWith(".original.glb")
+  )
+) {
   errors.push("El proyecto contiene un GLB original pesado .original.glb. Debe estar fuera del ZIP/repo.");
 }
 
@@ -129,7 +138,19 @@ if (totals.cssBytes > budgets.maxCssTotalBytes) {
   errors.push(`CSS total ${totals.cssBytes} bytes supera presupuesto ${budgets.maxCssTotalBytes}.`);
 }
 
-const largestFiles = [...files].sort((a, b) => b.size - a.size).slice(0, 25);
+const largestFiles = [...deployedFiles]
+  .sort((a, b) => b.size - a.size)
+  .slice(0, 25);
+const requiredSourceAssets = requiredRasterAssets.map((asset) => {
+  const file = sourceFiles.find((candidate) => candidate.path === asset.path);
+
+  return {
+    path: asset.path,
+    size: file?.size ?? null,
+    maxBytes: asset.maxBytes,
+    passed: Boolean(file && file.size <= asset.maxBytes)
+  };
+});
 const status = errors.length === 0 ? "passed" : "failed";
 
 writeArtifact("performance-budgets.json", {
@@ -138,6 +159,8 @@ writeArtifact("performance-budgets.json", {
   status,
   budgets,
   totals,
+  measurementScope: "dist/ desplegable; public/ se usa solo para validar fuentes requeridas",
+  requiredSourceAssets,
   largestFiles,
   warningCount: warnings.length,
   errorCount: errors.length,

@@ -52,6 +52,7 @@ type RuntimeState = {
   environmentTarget: THREE.WebGLRenderTarget | null;
   isVisible: boolean;
   isDocumentVisible: boolean;
+  disposed: boolean;
 };
 
 const LOGO_ROTATION_LIMIT = {
@@ -95,11 +96,15 @@ function hasWebGL(): boolean {
   }
 }
 
-function showFallback(host: HTMLElement, message: string): void {
+function showFallback(
+  host: HTMLElement,
+  reason: string,
+  message = reason
+): void {
   console.warn(message);
   host.dataset.fallback = "true";
   host.dataset.hero3dState = "fallback";
-  host.dataset.hero3dFallbackReason = message;
+  host.dataset.hero3dFallbackReason = reason;
   host.classList.remove("is-loading", "is-three-ready");
   host.classList.add("is-fallback");
 }
@@ -216,7 +221,7 @@ function prepareLogoMaterials(logo: THREE.Object3D): LogoMaterialRuntime[] {
       THREE.Material | THREE.Material[]
     >;
 
-    mesh.castShadow = true;
+    mesh.castShadow = false;
     mesh.receiveShadow = false;
     mesh.frustumCulled = false;
 
@@ -235,18 +240,25 @@ function prepareLogoMaterials(logo: THREE.Object3D): LogoMaterialRuntime[] {
 
       if (hasTexture) {
         logoMaterial.transparent = true;
-        logoMaterial.alphaTest = Math.max(logoMaterial.alphaTest || 0, 0.05);
-        logoMaterial.depthWrite = true;
-        logoMaterial.side = THREE.DoubleSide;
+        logoMaterial.alphaTest = 0.02;
+        logoMaterial.depthWrite = false;
+        logoMaterial.depthTest = true;
+        logoMaterial.side = THREE.FrontSide;
 
         if ("toneMapped" in logoMaterial) {
           logoMaterial.toneMapped = false;
         }
+
+        mesh.renderOrder = 10;
       } else {
-        logoMaterial.transparent = true;
+        logoMaterial.transparent = false;
+        logoMaterial.depthWrite = true;
+        logoMaterial.depthTest = true;
+        logoMaterial.side = THREE.FrontSide;
+        mesh.renderOrder = 1;
       }
 
-      logoMaterial.opacity = 0;
+      logoMaterial.opacity = baseOpacity;
       logoMaterial.needsUpdate = true;
 
       materialRuntimes.push({
@@ -306,12 +318,18 @@ function fitCameraToBox(
   const distanceByHeight = (size.y / 2) / Math.tan(verticalFov / 2);
   const distanceByWidth = (size.x / 2) / Math.tan(horizontalFov / 2);
 
+  /*
+    Este margen controla el tamaño visual real del logo.
+    Antes estaba demasiado alto y alejaba la cámara.
+    No aumenta el peso del GLB ni rompe Fase 6; solo corrige encuadre.
+  */
   const margin =
-    viewportWidth < 420 ? 2.2 :
+    viewportWidth < 420 ? 2.18 :
     viewportWidth < 640 ? 2.08 :
-    viewportWidth < 960 ? 1.92 :
-    viewportWidth < 1280 ? 1.82 :
-    1.78;
+    viewportWidth < 960 ? 1.98 :
+    viewportWidth < 1280 ? 1.9 :
+    1.82;
+
   return Math.max(distanceByHeight, distanceByWidth) * margin;
 }
 
@@ -472,42 +490,42 @@ function projectPanel(runtime: LogoScene, panel: PanelElement, elapsed: number):
   const verticalDirection = fallbackY < 50 ? -1 : fallbackY > 50 ? 1 : 0;
 
   const orbitalX =
-    Math.sin(elapsed * 0.6 + seed * 0.017) * 1.55 * parallax;
+    Math.sin(elapsed * 0.52 + seed * 0.017) * 0.9 * parallax;
 
   const orbitalY =
-    Math.cos(elapsed * 0.52 + seed * 0.013) * 1.22 * parallax;
+    Math.cos(elapsed * 0.48 + seed * 0.013) * 0.72 * parallax;
 
   const edgeBreathingX =
-    Math.sin(elapsed * 0.3 + seed * 0.01) * 0.3 * sideDirection;
+    Math.sin(elapsed * 0.28 + seed * 0.01) * 0.18 * sideDirection;
 
   const edgeBreathingY =
-    Math.cos(elapsed * 0.26 + seed * 0.01) * 0.22 * verticalDirection;
+    Math.cos(elapsed * 0.24 + seed * 0.01) * 0.14 * verticalDirection;
 
-  const pointerX = runtime.pointer.x * 0.78 * parallax;
-  const pointerY = runtime.pointer.y * 0.52 * parallax;
+  const pointerX = runtime.pointer.x * 0.34 * parallax;
+  const pointerY = runtime.pointer.y * 0.26 * parallax;
 
   const nextX = clamp(
     fallbackX + orbitalX + edgeBreathingX + pointerX,
-    16,
-    84
+    18,
+    82
   );
 
   const nextY = clamp(
     fallbackY + orbitalY + edgeBreathingY + pointerY,
-    16,
-    84
+    18,
+    82
   );
 
   const translateX =
-    Math.sin(elapsed * 0.84 + seed * 0.019) * 10 * parallax +
-    runtime.pointer.x * 12 * parallax;
+    Math.sin(elapsed * 0.72 + seed * 0.019) * 6.4 * parallax +
+    runtime.pointer.x * 5.8 * parallax;
 
   const translateY =
-    Math.cos(elapsed * 0.72 + seed * 0.015) * 8 * parallax +
-    runtime.pointer.y * 9 * parallax;
+    Math.cos(elapsed * 0.64 + seed * 0.015) * 5.2 * parallax +
+    runtime.pointer.y * 5.2 * parallax;
 
   const lift =
-    Math.sin(elapsed * 0.66 + seed * 0.021) * 6.5 * parallax;
+    Math.sin(elapsed * 0.58 + seed * 0.021) * 4.2 * parallax;
 
   panel.style.setProperty("--panel-x", `${nextX.toFixed(2)}%`);
   panel.style.setProperty("--panel-y", `${nextY.toFixed(2)}%`);
@@ -520,9 +538,7 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
   state.animationFrameId = window.requestAnimationFrame((now) => {
     const elapsed = (now - startTime) / 1000;
     const intro = easeOutCubic(clamp(elapsed / 1.35, 0, 1));
-    const activePanel = runtime.getActivePanel();
-    const hasActivePanel = Boolean(activePanel);
-    const motionFactor = runtime.reducedMotion ? 0 : hasActivePanel ? 0.18 : 1;
+    const motionFactor = runtime.reducedMotion ? 0 : 1;
 
     runtime.pointer.x += (runtime.pointer.targetX - runtime.pointer.x) * 0.045;
     runtime.pointer.y += (runtime.pointer.targetY - runtime.pointer.y) * 0.045;
@@ -531,14 +547,17 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
       const logoMaterial = material as THREE.Material & { opacity?: number };
 
       if (typeof logoMaterial.opacity === "number") {
-        logoMaterial.opacity = baseOpacity * intro;
+        logoMaterial.opacity = baseOpacity;
       }
     });
 
-    runtime.logo.scale.setScalar(runtime.logoBaseScale * (0.9 + 0.1 * intro));
+    const breathingScale =
+      1 + Math.sin(elapsed * 0.72) * 0.018 * motionFactor;
 
-    const idleFloatY = Math.sin(elapsed * 0.92) * 0.095 * motionFactor;
-    const idleFloatZ = Math.cos(elapsed * 0.76) * 0.058 * motionFactor;
+    runtime.logo.scale.setScalar(runtime.logoBaseScale * breathingScale);
+
+    const idleFloatY = Math.sin(elapsed * 0.92) * 0.13 * motionFactor;
+    const idleFloatZ = Math.cos(elapsed * 0.76) * 0.075 * motionFactor;
 
     runtime.logo.position.y = THREE.MathUtils.lerp(
       runtime.logo.position.y,
@@ -560,12 +579,10 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
       LOGO_ROTATION_LIMIT.x
     );
 
-    const targetRotationY = clamp(
-      hasActivePanel
-        ? -0.032
-        : -0.055 +
-            Math.sin(elapsed * 0.56) * 0.13 * motionFactor +
-            runtime.pointer.x * 0.045 * motionFactor,
+   const targetRotationY = clamp(
+      -0.045 +
+        Math.sin(elapsed * 0.56) * 0.15 * motionFactor +
+        runtime.pointer.x * 0.04 * motionFactor,
       -LOGO_ROTATION_LIMIT.y,
       LOGO_ROTATION_LIMIT.y
     );
@@ -659,12 +676,20 @@ export async function initHero(host: HTMLElement): Promise<void> {
   const modelUrl = host.dataset.modelUrl;
 
   if (!stage || !viewer || !panelsWrapper || panels.length === 0 || !modelUrl) {
-    showFallback(host, "Faltan elementos obligatorios para inicializar el hero 3D.");
+    showFallback(
+      host,
+      "missing-elements",
+      "Faltan elementos obligatorios para inicializar el hero 3D."
+    );
     return;
   }
 
   if (!hasWebGL()) {
-    showFallback(host, "WebGL no está disponible. Se activa fallback visual y enlaces HTML.");
+    showFallback(
+      host,
+      "webgl-unavailable",
+      "WebGL no está disponible. Se activa fallback visual y enlaces HTML."
+    );
     return;
   }
 
@@ -677,14 +702,17 @@ export async function initHero(host: HTMLElement): Promise<void> {
     pmremGenerator: null,
     environmentTarget: null,
     isVisible: true,
-    isDocumentVisible: document.visibilityState === "visible"
+    isDocumentVisible: document.visibilityState === "visible",
+    disposed: false
   };
 
+  let sceneToDispose: THREE.Scene | null = null;
 
   try {
     host.classList.add("is-loading");
 
     const scene = new THREE.Scene();
+    sceneToDispose = scene;
     const camera = new THREE.PerspectiveCamera(31, 1, 0.1, 120);
 
     const renderer = new THREE.WebGLRenderer({
@@ -699,6 +727,8 @@ export async function initHero(host: HTMLElement): Promise<void> {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.setClearColor(0x000000, 0);
+    renderer.sortObjects = true;
 
     viewer.innerHTML = "";
     viewer.appendChild(renderer.domElement);
@@ -708,6 +738,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     state.pmremGenerator = pmremGenerator;
     state.environmentTarget = pmremGenerator.fromScene(roomEnvironment, 0.035);
+    disposeObject3D(roomEnvironment);
 
     scene.environment = state.environmentTarget.texture;
 
@@ -723,7 +754,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     const materials = prepareLogoMaterials(logo);
 
-    const logoBaseScale = normalizeLogoByWidth(logo, 4.58);
+    const logoBaseScale = normalizeLogoByWidth(logo, 4.8);
 
     logo.position.y = 0;
     logo.rotation.set(-0.02, -0.055, 0);
@@ -786,6 +817,8 @@ export async function initHero(host: HTMLElement): Promise<void> {
       state.abortController
     );
 
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     const runtime: LogoScene = {
       scene,
       camera,
@@ -799,10 +832,16 @@ export async function initHero(host: HTMLElement): Promise<void> {
       getActivePanel,
       materials,
       lights,
-      reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      reducedMotion: reducedMotionQuery.matches
     };
 
     function startAnimation(): void {
+      if (state.disposed) {
+        return;
+      }
+
+      host.dataset.hero3dAnimationState = "running";
+
       if (state.animationFrameId !== null) {
         return;
       }
@@ -810,23 +849,60 @@ export async function initHero(host: HTMLElement): Promise<void> {
       animateRuntime(runtime, state, performance.now());
     }
 
-    function stopAnimation(): void {
-      if (state.animationFrameId === null) {
-        return;
+    function stopAnimation(animationState: string): void {
+      if (state.animationFrameId !== null) {
+        window.cancelAnimationFrame(state.animationFrameId);
+        state.animationFrameId = null;
       }
 
-      window.cancelAnimationFrame(state.animationFrameId);
-      state.animationFrameId = null;
+      host.dataset.hero3dAnimationState = animationState;
     }
 
     function syncAnimationState(): void {
-      if (runtime.reducedMotion || !state.isVisible || !state.isDocumentVisible) {
-        stopAnimation();
+      if (state.disposed) {
+        return;
+      }
+
+      if (runtime.reducedMotion) {
+        stopAnimation("paused-reduced-motion");
+        runtime.renderer.render(runtime.scene, runtime.camera);
+        return;
+      }
+
+      if (!state.isDocumentVisible) {
+        stopAnimation("paused-document-hidden");
+        runtime.renderer.render(runtime.scene, runtime.camera);
+        return;
+      }
+
+      if (!state.isVisible) {
+        stopAnimation("paused-offscreen");
         runtime.renderer.render(runtime.scene, runtime.camera);
         return;
       }
 
       startAnimation();
+    }
+
+    function disposeRuntime(reason: string): void {
+      if (state.disposed) {
+        return;
+      }
+
+      state.disposed = true;
+      stopAnimation("disposed");
+      host.dataset.hero3dDisposeReason = reason;
+
+      state.abortController.abort();
+      state.resizeObserver?.disconnect();
+      state.intersectionObserver?.disconnect();
+
+      disposeObject3D(scene);
+      state.environmentTarget?.dispose();
+      state.pmremGenerator?.dispose();
+      state.renderer?.dispose();
+
+      viewer?.replaceChildren();
     }
 
     document.addEventListener(
@@ -855,6 +931,17 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     state.intersectionObserver.observe(stage);
 
+    reducedMotionQuery.addEventListener(
+      "change",
+      (event: MediaQueryListEvent) => {
+        runtime.reducedMotion = event.matches;
+        syncAnimationState();
+      },
+      {
+        signal: state.abortController.signal
+      }
+    );
+
     const colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handleThemeChange = () => applyTheme(runtime, host);
@@ -874,6 +961,22 @@ export async function initHero(host: HTMLElement): Promise<void> {
     state.resizeObserver = new ResizeObserver(() => resizeRuntime(runtime));
     state.resizeObserver.observe(stage);
 
+    renderer.domElement.addEventListener(
+      "webglcontextlost",
+      (event: Event) => {
+        event.preventDefault();
+        disposeRuntime("webgl-context-lost");
+        showFallback(
+          host,
+          "webgl-context-lost",
+          "El contexto WebGL se perdió. Se activa el fallback visual."
+        );
+      },
+      {
+        signal: state.abortController.signal
+      }
+    );
+
     host.dataset.fallback = "false";
     host.dataset.hero3dState = "ready";
     delete host.dataset.hero3dFallbackReason;
@@ -885,24 +988,11 @@ export async function initHero(host: HTMLElement): Promise<void> {
     window.addEventListener(
       "pagehide",
       () => {
-        if (state.animationFrameId !== null) {
-          window.cancelAnimationFrame(state.animationFrameId);
-        }
-
-        state.abortController.abort();
-        state.resizeObserver?.disconnect();
-        state.intersectionObserver?.disconnect();
-
-        disposeObject3D(scene);
-
-        state.environmentTarget?.dispose();
-        state.pmremGenerator?.dispose();
-        state.renderer?.dispose();
-
-        viewer.innerHTML = "";
+        disposeRuntime("pagehide");
       },
       {
-        once: true
+        once: true,
+        signal: state.abortController.signal
       }
     );
   } catch (error) {
@@ -912,18 +1002,24 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     state.abortController.abort();
     state.resizeObserver?.disconnect();
+    state.intersectionObserver?.disconnect();
+    state.disposed = true;
+
+    if (sceneToDispose) {
+      disposeObject3D(sceneToDispose);
+    }
+
     state.environmentTarget?.dispose();
     state.pmremGenerator?.dispose();
     state.renderer?.dispose();
-    state.intersectionObserver?.disconnect();
 
-    viewer.innerHTML = "";
+    viewer.replaceChildren();
+    host.dataset.hero3dAnimationState = "disposed";
 
     showFallback(
       host,
-      error instanceof Error
-        ? error.message
-        : "Error inesperado en el hero 3D."
+      "runtime-error",
+      error instanceof Error ? error.message : "Error inesperado en el hero 3D."
     );
   
   }

@@ -14,7 +14,7 @@ RUN apk add --no-cache gcompat git unzip \
   && git --version \
   && unzip -v | head -1
 
-COPY package*.json ./
+COPY package*.json .npmrc ./
 
 RUN test -f package.json || { echo "ERROR: package.json no existe en la raiz del proyecto." >&2; exit 64; }
 

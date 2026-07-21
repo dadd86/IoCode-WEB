@@ -70,10 +70,14 @@
     "qa:assets:6": "node tools/qa-glb-phase-6.mjs",
     "qa:bundle:6": "node tools/qa-bundle-phase-6.mjs",
     "qa:headers:6": "node tools/qa-headers-phase-6.mjs",
+    "qa:hero3d-review:6": "node tools/qa-hero3d-runtime-review-phase-6.mjs",
     "qa:hero3d-runtime:6": "node tools/run-phase-6-hero-runtime.mjs",
     "qa:lighthouse:6": "node tools/lighthouse-phase-6.mjs",
     "summary:performance:6": "node tools/create-phase-6-summary.mjs",
-    "qa:phase-6": "npm run check && npm run typecheck:src && npm run build && npm run audit:prod && npm run typecheck:tests && npm run clean:performance:6 && npm run qa:budgets:6 && npm run qa:raster:6 && npm run qa:assets:6 && npm run qa:bundle:6 && npm run qa:headers:6 && npm run qa:hero3d-runtime:6 && npm run qa:lighthouse:6 && npm run summary:performance:6",
+    "update:logo3d-version:6": "node tools/update-logo3d-cache-version-phase-6.mjs",
+    "qa:logo3d-version:6": "node tools/qa-logo3d-cache-version-phase-6.mjs",
+    "prepare:assets:6": "npm run repair:glb:6 && npm run update:logo3d-version:6 && npm run qa:assets:6 && npm run qa:logo3d-version:6",
+    "qa:phase-6": "npm run check && npm run typecheck:src && npm run build && npm run audit:prod && npm run typecheck:tests && npm run clean:performance:6 && npm run qa:budgets:6 && npm run qa:raster:6 && npm run qa:assets:6 && npm run qa:logo3d-version:6 && npm run qa:bundle:6 && npm run qa:headers:6 && npm run qa:hero3d-review:6 && npm run qa:hero3d-runtime:6 && npm run qa:lighthouse:6 && npm run summary:performance:6",
     "clean:local-heavy": "node tools/clean-local-heavy.mjs",
     "size:project": "node tools/project-size-report.mjs",
     "docker:check": "npm run check",
@@ -82,17 +86,21 @@
     "docker:validate": "npm run check && npm run build && npm run audit:prod"
   },
   "dependencies": {
-    "astro": "^6.4.8",
+    "astro": "7.1.3",
     "three": "0.184.0"
   },
   "overrides": {
     "esbuild": "0.28.1",
     "yaml": "2.8.3",
-    "cookie": "0.7.0"
+    "js-yaml": "4.3.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "fsevents": false,
+    "sharp@0.34.5": true
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
-    "@gltf-transform/cli": "^4.4.1",
     "@playwright/test": "1.60.0",
     "@types/node": "^26.0.0",
     "@types/three": "^0.184.1",

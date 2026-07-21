@@ -12,7 +12,7 @@ RUN apk add --no-cache gcompat \
   && node --version \
   && npm --version
 
-COPY package*.json ./
+COPY package*.json .npmrc ./
 
 RUN test -f package.json || { echo "ERROR: package.json no existe en la raiz del proyecto." >&2; exit 64; }
 

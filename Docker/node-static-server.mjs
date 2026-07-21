@@ -27,6 +27,7 @@ const mimeTypes = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".webp": "image/webp",
+  ".avif": "image/avif",
   ".ico": "image/x-icon",
   ".glb": "model/gltf-binary",
   ".xml": "application/xml; charset=utf-8",
@@ -150,7 +151,7 @@ function safeStat(filePath) {
 }
 
 function isAssetPath(pathname) {
-  return /\.(css|js|mjs|json|svg|png|jpg|jpeg|webp|ico|glb|txt)$/i.test(pathname);
+  return /\.(css|js|mjs|json|svg|png|jpg|jpeg|webp|avif|ico|glb|txt)$/i.test(pathname);
 }
 
 function isXmlPath(pathname) {
@@ -463,41 +464,6 @@ const server = createServer((request, response) => {
   }
 
   stream.pipe(response);
-
-  if (request.method === "HEAD") {
-    response.end();
-    return;
-  }
-
-  if (htmlBuffer) {
-    if (compression === "br") {
-      const compressor = createBrotliCompress();
-      compressor.end(htmlBuffer);
-      compressor.pipe(response);
-      return;
-    }
-
-    if (compression === "gzip") {
-      const compressor = createGzip();
-      compressor.end(htmlBuffer);
-      compressor.pipe(response);
-      return;
-    }
-
-    response.end(htmlBuffer);
-    return;
-  }
-
-  createReadStream(filePath)
-    .on("error", () => {
-      if (!response.headersSent) {
-        sendPlainText(response, 500, "Internal server error");
-        return;
-      }
-
-      response.destroy();
-    })
-    .pipe(response);
 });
 
 server.listen(port, "0.0.0.0", () => {

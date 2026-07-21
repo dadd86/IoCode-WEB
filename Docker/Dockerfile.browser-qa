@@ -3,7 +3,12 @@
 ARG PLAYWRIGHT_VERSION=1.60.0
 FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
 
+ARG NPM_VERSION=11.16.0
+
 WORKDIR /app
+
+RUN npm install --global "npm@${NPM_VERSION}" \
+  && npm --version
 
 ENV CI=1 \
     ASTRO_TELEMETRY_DISABLED=1 \
@@ -11,7 +16,7 @@ ENV CI=1 \
     PLAYWRIGHT_BASE_URL=http://web:8080 \
     LIGHTHOUSE_BASE_URL=http://web:8080
 
-COPY package*.json ./
+COPY package*.json .npmrc ./
 
 RUN npm ci \
   && npx playwright --version

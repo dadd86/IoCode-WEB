@@ -16,6 +16,9 @@ const errors = [];
 const warnings = [];
 
 const budgets = {
+  maxJsInitialBytes: Number(
+    process.env.PHASE6_MAX_JS_INITIAL_BYTES || "250000"
+  ),
   maxInitialHeroLoaderBytes: Number(
     process.env.PHASE6_MAX_HERO_LOADER_INITIAL_BYTES || "12000"
   ),
@@ -189,6 +192,31 @@ for (const reference of missingInitialScripts) {
   );
 }
 
+const routeInitialJs = htmlFiles.map((htmlFile) => {
+  const references = initialScriptReferences.filter(
+    (reference) => reference.html === htmlFile.path && reference.found
+  );
+  const uniqueDistPaths = [...new Set(references.map((reference) => reference.distPath))];
+  const bytes = uniqueDistPaths.reduce((total, distPath) => {
+    return total + (jsFiles.find((file) => file.path === distPath)?.bytes ?? 0);
+  }, 0);
+
+  return {
+    html: htmlFile.path,
+    scripts: uniqueDistPaths,
+    bytes,
+    passed: bytes <= budgets.maxJsInitialBytes
+  };
+});
+
+for (const route of routeInitialJs) {
+  if (!route.passed) {
+    errors.push(
+      `${route.html}: JS inicial ${route.bytes} bytes supera presupuesto ${budgets.maxJsInitialBytes}.`
+    );
+  }
+}
+
 const initialHeavyThreeReferences = initialScriptReferences.filter(
   (reference) =>
     reference.found &&
@@ -268,6 +296,7 @@ writeArtifact("bundle-report.json", {
   cssTotalBytes,
   threeRuntimeChunks: threeRuntimeChunks.map(({ content, ...file }) => file),
   initialScriptReferences,
+  routeInitialJs,
   initialHeroLoaderReferences,
   initialHeavyThreeReferences,
   warningCount: warnings.length,
