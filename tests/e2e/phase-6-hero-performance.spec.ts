@@ -2,6 +2,31 @@ import { expect, test } from "@playwright/test";
 import sharp from "sharp";
 
 test.describe("Fase 6 - Performance Hero3D", () => {
+  test("aplaza el runtime 3D hasta una interacción intencional", async ({ page }) => {
+    test.setTimeout(90_000);
+
+    await page.emulateMedia({
+      reducedMotion: "no-preference"
+    });
+
+    await page.goto("/es/", {
+      waitUntil: "domcontentloaded"
+    });
+
+    const hero = page.locator("[data-hero3d]");
+
+    await expect(hero).toBeVisible();
+    await page.waitForTimeout(750);
+    await expect(hero).toHaveAttribute("data-hero3d-state", "deferred");
+    await expect(page.locator("[data-hero-viewer] canvas")).toHaveCount(0);
+
+    await hero.hover();
+    await expect(hero).toHaveAttribute("data-hero3d-state", "ready", {
+      timeout: 30_000
+    });
+    await expect(page.locator("[data-hero-viewer] canvas")).toHaveCount(1);
+  });
+
   test("fallback y contenido aparecen aunque WebGL no esté disponible", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, "WebGLRenderingContext", {
