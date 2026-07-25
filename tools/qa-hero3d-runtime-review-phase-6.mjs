@@ -27,6 +27,19 @@ const checks = [
       loader.includes("armVisibleLoading(host)")
   },
   {
+    id: "interaction-before-heavy-runtime",
+    requirement:
+      "El runtime pesado espera pointer, touch o foco y no se programa automáticamente durante el primer render.",
+    evidence: loaderPath,
+    passed:
+      loader.includes('"pointerenter"') &&
+      loader.includes('"pointerdown"') &&
+      loader.includes('"touchstart"') &&
+      loader.includes('"focusin"') &&
+      !loader.includes("requestIdleCallback") &&
+      !loader.includes("scheduleWhenIdle")
+  },
+  {
     id: "reduced-motion-before-load",
     requirement: "prefers-reduced-motion evita cargar la escena pesada.",
     evidence: loaderPath,

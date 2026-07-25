@@ -159,6 +159,11 @@ function flattenGraph(jsonLdBlocks) {
   });
 }
 
+function hasSchemaType(item, expectedType) {
+  const itemTypes = Array.isArray(item?.["@type"]) ? item["@type"] : [item?.["@type"]];
+  return itemTypes.includes(expectedType);
+}
+
 function getCanonical(html) {
   const matches = Array.from(html.matchAll(/<link\s+rel="canonical"\s+href="([^"]+)"/g)).map(
     (match) => match[1]
@@ -221,13 +226,28 @@ function assertStructuredData(file, html, expectedPath) {
   const jsonLdBlocks = parseJsonLd(file, html);
   const graph = flattenGraph(jsonLdBlocks);
 
-  for (const type of ["Organization", "ProfessionalService", "WebSite", "BreadcrumbList", "WebPage"]) {
-    if (!graph.some((item) => item["@type"] === type)) {
+  for (const type of ["Organization", "ProfessionalService", "WebSite"]) {
+    if (!graph.some((item) => hasSchemaType(item, type))) {
       fail(`${file}: falta schema ${type}`);
     }
   }
 
-  const breadcrumb = graph.find((item) => item["@type"] === "BreadcrumbList");
+  const pageTypes = ["WebPage", "AboutPage", "CollectionPage", "ContactPage"];
+
+  if (!graph.some((item) => pageTypes.some((type) => hasSchemaType(item, type)))) {
+    fail(`${file}: falta una entidad de página compatible`);
+  }
+
+  const breadcrumb = graph.find((item) => hasSchemaType(item, "BreadcrumbList"));
+  const isLocalizedHome = /^\/(es|en|de)\/$/.test(expectedPath);
+
+  if (isLocalizedHome && breadcrumb) {
+    fail(`${file}: la portada no debe declarar BreadcrumbList redundante`);
+  }
+
+  if (!isLocalizedHome && !breadcrumb) {
+    fail(`${file}: falta schema BreadcrumbList`);
+  }
 
   if (breadcrumb) {
     const items = breadcrumb.itemListElement;
@@ -296,7 +316,7 @@ function assertHtmlRoute(group, locale, html, file) {
   const imageTags = html.match(/<img\b[^>]*>/g) || [];
 
   for (const imageTag of imageTags) {
-    if (!/\salt="[^"]*"/.test(imageTag)) {
+    if (!/\salt(?:="[^"]*")?(?=\s|>)/.test(imageTag)) {
       fail(`${file}: imagen sin alt -> ${imageTag}`);
     }
   }

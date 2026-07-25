@@ -126,6 +126,17 @@ test.describe("Fase 1.1C - estructura, responsive y accesibilidad bÃ¡sica", ()
       const navCurrentCount = await page.locator('nav a[aria-current="page"]').count();
       expect(navCurrentCount, `${route.path} debe marcar la pÃ¡gina activa en navegaciÃ³n`).toBeGreaterThanOrEqual(1);
 
+      const breadcrumb = page.locator("nav[data-breadcrumb]");
+      const isLocalizedHome = /^\/(es|en|de)\/$/.test(route.path);
+
+      if (isLocalizedHome) {
+        await expect(breadcrumb).toHaveCount(0);
+      } else {
+        await expect(breadcrumb).toBeVisible();
+        await expect(breadcrumb.locator('li[aria-current="page"]')).toHaveCount(1);
+        await expect(breadcrumb.locator('a[href$="/"]')).toHaveCount(1);
+      }
+
       if (route.type !== "contact") {
         const bodyText = await page.locator("body").innerText();
 
@@ -155,15 +166,15 @@ test.describe("Fase 1.1C - estructura, responsive y accesibilidad bÃ¡sica", ()
     await expect(page.locator("form#contactForm")).toBeVisible();
     await expect(page.locator("form#contactForm")).toHaveAttribute("aria-describedby", /contact-note-/);
 
-    await expect(page.locator('label[for="nombre"]')).toBeVisible();
-    await expect(page.locator('label[for="correo"]')).toBeVisible();
-    await expect(page.locator('label[for="tipoProyecto"]')).toBeVisible();
-    await expect(page.locator('label[for="mensaje"]')).toBeVisible();
+    await expect(page.locator('label[for="nombre-es"]')).toBeVisible();
+    await expect(page.locator('label[for="correo-es"]')).toBeVisible();
+    await expect(page.locator('label[for="tipoProyecto-es"]')).toBeVisible();
+    await expect(page.locator('label[for="mensaje-es"]')).toBeVisible();
 
-    await expect(page.locator("#nombre")).toHaveAttribute("required", "");
-    await expect(page.locator("#correo")).toHaveAttribute("required", "");
-    await expect(page.locator("#tipoProyecto")).toHaveAttribute("required", "");
-    await expect(page.locator("#mensaje")).toHaveAttribute("required", "");
+    await expect(page.locator("#nombre-es")).toHaveAttribute("required", "");
+    await expect(page.locator("#correo-es")).toHaveAttribute("required", "");
+    await expect(page.locator("#tipoProyecto-es")).toHaveAttribute("required", "");
+    await expect(page.locator("#mensaje-es")).toHaveAttribute("required", "");
 
     await expect(page.locator('a[href*="linkedin.com/in/diegoarmandodiaz"]')).toBeVisible();
     await expect(page.locator('a[href*="github.com/dadd86"]')).toBeVisible();

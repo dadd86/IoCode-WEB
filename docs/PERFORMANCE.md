@@ -60,7 +60,8 @@ Los límites viven en `compose.yml` y los scripts fallan si se superan. `perform
 ## Decisiones del Hero3D
 
 - El HTML, el H1, los CTA, los enlaces y el fallback existen antes del runtime 3D.
-- El loader ligero usa `IntersectionObserver`; Three.js y `GLTFLoader` permanecen en un chunk dinámico.
+- El loader ligero usa `IntersectionObserver` y solo activa el runtime pesado tras `pointerenter`, `pointerdown`, `touchstart` o `focusin`.
+- Three.js y `GLTFLoader` permanecen en un chunk dinámico y no compiten con el primer render sin una interacción intencional.
 - Con `prefers-reduced-motion: reduce` o sin WebGL no se solicita el runtime pesado.
 - El render se pausa con reduced motion, pestaña oculta o hero fuera de viewport.
 - El DPR se limita a 2.

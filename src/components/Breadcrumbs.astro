@@ -1,0 +1,66 @@
+---
+import { routeAlternates, getLocalizedPath } from "../i18n/routes";
+import type { Locale } from "../i18n/config";
+import type { RouteKey } from "../i18n/routes";
+
+type Props = {
+  locale: Locale;
+  routeKey: RouteKey;
+};
+
+const { locale, routeKey } = Astro.props;
+
+const ariaLabel: Record<Locale, string> = {
+  es: "Ruta de navegación",
+  en: "Breadcrumb",
+  de: "Brotkrümelnavigation"
+};
+---
+
+<nav class="breadcrumbs" aria-label={ariaLabel[locale]} data-breadcrumb>
+  <div class="container">
+    <ol>
+      <li>
+        <a href={getLocalizedPath("home", locale)}>
+          {routeAlternates.home.label[locale]}
+        </a>
+      </li>
+      <li aria-current="page">{routeAlternates[routeKey].label[locale]}</li>
+    </ol>
+  </div>
+</nav>
+
+<style>
+  .breadcrumbs {
+    border-block-end: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    min-block-size: 2.75rem;
+    margin: 0;
+    padding: 0.55rem 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    margin-inline-end: 0.45rem;
+    color: var(--color-text-muted);
+    content: "/";
+  }
+
+  .breadcrumbs a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .breadcrumbs [aria-current="page"] {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+</style>

@@ -7,28 +7,8 @@ type KnownFallbackReason = "prefers-reduced-motion" | "webgl-unavailable" | "fal
 
 type FallbackMessages = Record<LanguageKey, Record<KnownFallbackReason, string>>;
 
-type IdleWindow = Window &
-  typeof globalThis & {
-    requestIdleCallback?: (
-      callback: IdleRequestCallback,
-      options?: IdleRequestOptions
-    ) => number;
-    cancelIdleCallback?: (handle: number) => void;
-  };
-
-type ScheduledLoad =
-  | {
-      type: "idle";
-      id: number;
-    }
-  | {
-      type: "timeout";
-      id: ReturnType<typeof globalThis.setTimeout>;
-    };
-
 const hosts = [...document.querySelectorAll<HTMLElement>("[data-hero3d]")];
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-const idleWindow = window as IdleWindow;
 
 const fallbackMessages: FallbackMessages = {
   es: {
@@ -141,36 +121,6 @@ async function loadHero(host: HTMLElement): Promise<void> {
   }
 }
 
-function scheduleWhenIdle(callback: () => void): ScheduledLoad {
-  if (typeof idleWindow.requestIdleCallback === "function") {
-    return {
-      type: "idle",
-      id: idleWindow.requestIdleCallback(() => callback(), {
-        timeout: 120
-      })
-    };
-  }
-
-  return {
-    type: "timeout",
-    id: globalThis.setTimeout(callback, 50)
-  };
-}
-
-function cancelScheduledLoad(scheduledLoad: ScheduledLoad): void {
-  if (
-    scheduledLoad.type === "idle" &&
-    typeof idleWindow.cancelIdleCallback === "function"
-  ) {
-    idleWindow.cancelIdleCallback(scheduledLoad.id);
-    return;
-  }
-
-  if (scheduledLoad.type === "timeout") {
-    globalThis.clearTimeout(scheduledLoad.id);
-  }
-}
-
 function armVisibleLoading(host: HTMLElement): void {
   if (host.dataset.hero3dArmed === "true" || host.dataset.fallback === "true") {
     return;
@@ -179,23 +129,12 @@ function armVisibleLoading(host: HTMLElement): void {
   host.dataset.hero3dArmed = "true";
   host.dataset.hero3dState = "deferred";
 
-  let scheduledLoad: ScheduledLoad | null = null;
   const controller = new AbortController();
 
   const requestLoad = () => {
-    if (scheduledLoad !== null) {
-      cancelScheduledLoad(scheduledLoad);
-      scheduledLoad = null;
-    }
-
     controller.abort();
     void loadHero(host);
   };
-
-  scheduledLoad = scheduleWhenIdle(() => {
-    scheduledLoad = null;
-    void loadHero(host);
-  });
 
   host.addEventListener("pointerenter", requestLoad, {
     once: true,

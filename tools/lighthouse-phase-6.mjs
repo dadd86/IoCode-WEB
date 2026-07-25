@@ -303,7 +303,15 @@ try {
   errors.push(`Lighthouse Fase 6 falló: ${error instanceof Error ? error.message : String(error)}`);
 } finally {
   if (chrome) {
-    chrome.kill();
+    try {
+      chrome.kill();
+    } catch (error) {
+      warnings.push(
+        `Chrome terminó, pero no se pudo limpiar su directorio temporal: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
   }
 }
 

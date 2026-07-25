@@ -2,6 +2,7 @@
 import "../assets/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
@@ -65,6 +66,9 @@ const breadcrumbItems = [
       ])
 ];
 
+const organizationSameAs =
+  siteConfig.socialLinks.length > 0 ? { sameAs: siteConfig.socialLinks } : {};
+
 const offerCatalogItems = siteConfig.offerCatalog.map((offer) => ({
   "@type": "Offer",
   itemOffered: {
@@ -84,6 +88,30 @@ const offerCatalogItems = siteConfig.offerCatalog.map((offer) => ({
   }
 }));
 
+const pageTypeByRoute: Partial<Record<RouteKey, string>> = {
+  services: "CollectionPage",
+  about: "AboutPage",
+  projects: "CollectionPage",
+  skills: "CollectionPage",
+  contact: "ContactPage"
+};
+
+const pageType = pageTypeByRoute[routeKey] ?? "WebPage";
+const pageServiceOffer =
+  routeKey === "plc" || routeKey === "robotics"
+    ? siteConfig.offerCatalog.find((offer) => offer.routeKey === routeKey)
+    : undefined;
+const serviceEntityId = `${canonicalUrl}#service`;
+
+const mainEntityId: Partial<Record<RouteKey, string>> = {
+  services: `${siteConfig.url}/#professional-service`,
+  plc: serviceEntityId,
+  robotics: serviceEntityId,
+  projects: `${canonicalUrl}#projects`,
+  skills: `${canonicalUrl}#technical-skills`,
+  contact: `${siteConfig.url}/#contact-person`
+};
+
 const structuredDataGraph: Array<Record<string, unknown>> = [
   {
     "@type": "Organization",
@@ -92,7 +120,15 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     legalName: siteConfig.legalName,
     url: siteConfig.url,
     email: siteConfig.email,
-    logo: `${siteConfig.url}${siteConfig.logoPath}`,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${siteConfig.url}/#logo`,
+      contentUrl: `${siteConfig.url}${siteConfig.logoPath}`,
+      url: `${siteConfig.url}${siteConfig.logoPath}`,
+      width: 512,
+      height: 512,
+      caption: siteConfig.name
+    },
     description: siteConfig.businessDescription[locale],
     address: {
       "@type": "PostalAddress",
@@ -112,7 +148,7 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
         "European Union"
       ]
     },
-    sameAs: siteConfig.socialLinks
+    ...organizationSameAs
   },
   {
     "@type": "ProfessionalService",
@@ -121,9 +157,11 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     legalName: siteConfig.legalName,
     url: siteConfig.url,
     email: siteConfig.email,
-    image: `${siteConfig.url}${siteConfig.logoPath}`,
+    image: {
+      "@id": `${siteConfig.url}/#logo`
+    },
     slogan: siteConfig.tagline[locale],
-    description,
+    description: siteConfig.businessDescription[locale],
     serviceType: siteConfig.serviceTypes[locale],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
@@ -142,7 +180,7 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
       addressRegion: siteConfig.location.region,
       addressCountry: siteConfig.location.country
     },
-    sameAs: siteConfig.socialLinks
+    ...organizationSameAs
   },
   {
     "@type": "WebSite",
@@ -155,12 +193,7 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     }
   },
   {
-    "@type": "BreadcrumbList",
-    "@id": `${canonicalUrl}#breadcrumb`,
-    itemListElement: breadcrumbItems
-  },
-  {
-    "@type": "WebPage",
+    "@type": pageType,
     "@id": `${canonicalUrl}#webpage`,
     url: canonicalUrl,
     name: title,
@@ -169,14 +202,53 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     isPartOf: {
       "@id": `${siteConfig.url}/#website`
     },
-    breadcrumb: {
-      "@id": `${canonicalUrl}#breadcrumb`
-    },
+    ...(routeKey === "home"
+      ? {}
+      : {
+          breadcrumb: {
+            "@id": `${canonicalUrl}#breadcrumb`
+          }
+        }),
     about: {
       "@id": `${siteConfig.url}/#professional-service`
-    }
+    },
+    ...(mainEntityId[routeKey]
+      ? {
+          mainEntity: {
+            "@id": mainEntityId[routeKey]
+          }
+        }
+      : {})
   }
 ];
+
+if (routeKey !== "home") {
+  structuredDataGraph.push({
+    "@type": "BreadcrumbList",
+    "@id": `${canonicalUrl}#breadcrumb`,
+    itemListElement: breadcrumbItems
+  });
+}
+
+if (pageServiceOffer) {
+  structuredDataGraph.push({
+    "@type": "Service",
+    "@id": serviceEntityId,
+    name: pageServiceOffer.name[locale],
+    description: pageServiceOffer.description[locale],
+    url: canonicalUrl,
+    serviceType: pageServiceOffer.name[locale],
+    provider: {
+      "@id": `${siteConfig.url}/#organization`
+    },
+    areaServed: [
+      siteConfig.location.city,
+      siteConfig.location.region,
+      siteConfig.location.country,
+      "European Union"
+    ]
+  });
+}
 
 if (routeKey === "contact") {
   structuredDataGraph.push({
@@ -234,6 +306,10 @@ const structuredData = {
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content={ogLocale[locale]} />
+    <meta property="og:image" content={`${siteConfig.url}${siteConfig.logoPath}`} />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content={siteConfig.name} />
     {alternateOgLocales.map((alternateLocale) => (
       <meta property="og:locale:alternate" content={alternateLocale} />
     ))}
@@ -241,6 +317,8 @@ const structuredData = {
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteConfig.url}${siteConfig.logoPath}`} />
+    <meta name="twitter:image:alt" content={siteConfig.name} />
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
   </head>
@@ -248,6 +326,7 @@ const structuredData = {
     <a class="skipLink" href="#contenido">{skipText[locale]}</a>
     <Header locale={locale} activeKey={routeKey} />
     <main id="contenido">
+      {routeKey !== "home" && <Breadcrumbs locale={locale} routeKey={routeKey} />}
       <slot />
     </main>
     <Footer locale={locale} />

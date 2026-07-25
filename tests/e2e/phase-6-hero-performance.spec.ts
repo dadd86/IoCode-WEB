@@ -83,6 +83,7 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     const hero = page.locator("[data-hero3d]");
 
     await expect(hero).toBeVisible();
+    await hero.hover();
 
     await expect(hero).toHaveAttribute("data-fallback", "true", {
       timeout: 15_000
@@ -245,6 +246,7 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     await expect(page.locator("main")).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(page.locator("[data-hero-placeholder]")).toBeVisible();
+    await hero.hover();
 
     await page.waitForFunction(
       () => {
@@ -322,6 +324,7 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     const hero = page.locator("[data-hero3d]");
     const canvas = page.locator("[data-hero-viewer] canvas");
 
+    await hero.hover();
     await expect(hero).toHaveAttribute("data-hero3d-state", "ready", {
       timeout: 30_000
     });
@@ -400,6 +403,7 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
+    await page.locator("[data-hero3d]").hover();
     await page.waitForFunction(
       () => {
         const hero = document.querySelector<HTMLElement>("[data-hero3d]");
@@ -635,6 +639,7 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
+    await page.locator("[data-hero3d]").hover();
     await page.waitForFunction(
       () => {
         const hero = document.querySelector<HTMLElement>("[data-hero3d]");
