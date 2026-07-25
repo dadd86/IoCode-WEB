@@ -57,5 +57,6 @@ La línea base falló en las tres portadas: performance 0,51–0,71 y TBT 2.436�
 
 - `c188859` — prueba RED para metadata GEO y schema.
 - `0cde12e` — prueba RED para aplazar el Hero3D hasta interacción.
+- `26aea8d` — implementación GREEN, regresiones y evidencia de rendimiento.
 
 Si los commits se reorganizan, esta tabla conserva la evidencia RED/GREEN del trabajo.
