@@ -1,5 +1,11 @@
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  readdir,
+  readFile,
+  stat,
+  writeFile
+} from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -20,6 +26,17 @@ const MOJIBAKE_PATTERNS = [
   /ï»¿/u,
   /ðŸ/u
 ];
+
+const RUNTIME_EXTENSIONS = new Set([
+  ".astro",
+  ".css",
+  ".html",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".ts",
+  ".tsx"
+]);
 
 function splitTableRow(line) {
   return line
@@ -425,6 +442,41 @@ function resolveFrom(basePath, targetPath) {
   return isAbsolute(targetPath) ? targetPath : resolve(basePath, targetPath);
 }
 
+async function collectRuntimeFiles(sourcePath) {
+  if (!existsSync(sourcePath)) {
+    return [sourcePath];
+  }
+
+  const sourceStat = await stat(sourcePath);
+  if (sourceStat.isFile()) {
+    return [sourcePath];
+  }
+
+  if (!sourceStat.isDirectory()) {
+    return [];
+  }
+
+  const entries = await readdir(sourcePath, { withFileTypes: true });
+  const nestedFiles = await Promise.all(
+    entries.map(async (entry) => {
+      const entryPath = resolve(sourcePath, entry.name);
+      if (entry.isDirectory()) {
+        return collectRuntimeFiles(entryPath);
+      }
+
+      const extensionIndex = entry.name.lastIndexOf(".");
+      const extension =
+        extensionIndex === -1 ? "" : entry.name.slice(extensionIndex);
+
+      return entry.isFile() && RUNTIME_EXTENSIONS.has(extension)
+        ? [entryPath]
+        : [];
+    })
+  );
+
+  return nestedFiles.flat();
+}
+
 export async function validateProject({
   configPath,
   now = new Date()
@@ -465,9 +517,16 @@ export async function validateProject({
     );
   }
 
+  const runtimeFiles = [];
   for (const runtimeSource of config.runtimeSources ?? []) {
+    runtimeFiles.push(
+      ...(await collectRuntimeFiles(resolveFrom(configRoot, runtimeSource)))
+    );
+  }
+
+  for (const runtimeFile of runtimeFiles) {
     await validateRuntimeSource({
-      filePath: resolveFrom(configRoot, runtimeSource),
+      filePath: runtimeFile,
       allowedOrigins: config.allowedRuntimeOrigins ?? [],
       findings
     });
@@ -479,7 +538,7 @@ export async function validateProject({
     status: findings.length === 0 ? "passed" : "failed",
     config: absoluteConfigPath,
     checkedDocuments: (config.documents ?? []).length,
-    checkedRuntimeSources: (config.runtimeSources ?? []).length,
+    checkedRuntimeSources: runtimeFiles.length,
     warningCount: 0,
     errorCount: findings.length,
     findings,
