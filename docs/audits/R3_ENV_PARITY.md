@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R3 | Evidencia RED/GREEN de paridad entre `.env.example` y Compose | Configuración Docker y servidor estático | ES, EN, DE | Fixtures, Node test runner y `docker compose config` | 2026-07-28 | RED `c5a9268`; GREEN unitario `76e8544`; integración pendiente de firma |
+| R3 | Evidencia RED/GREEN de paridad entre `.env.example` y Compose | Configuración Docker y servidor estático | ES, EN, DE | Fixtures, Node test runner y `docker compose config` | 2026-07-28 | RED `c5a9268`; GREEN unitario `76e8544`; integración `3f8233d` |
 
 Estado: `Done with evidence`.
 
