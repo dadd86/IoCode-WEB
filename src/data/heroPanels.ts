@@ -58,7 +58,7 @@ export const heroPanels = [
     mobileVisible: true,
     screenFallback: {
       x: 20,
-      y: 15
+      y: 20
     },
     motion: {
       parallax: 0.78
@@ -134,7 +134,7 @@ export const heroPanels = [
     mobileVisible: false,
     screenFallback: {
       x: 80,
-      y: 15
+      y: 20
     },
     motion: {
       parallax: 0.78
@@ -210,7 +210,7 @@ export const heroPanels = [
     mobileVisible: true,
     screenFallback: {
       x: 20,
-      y: 75
+      y: 80
     },
     motion: {
       parallax: 0.74
@@ -248,7 +248,7 @@ export const heroPanels = [
     mobileVisible: false,
     screenFallback: {
       x: 80,
-      y: 75
+      y: 80
     },
     motion: {
       parallax: 0.74

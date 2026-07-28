@@ -34,13 +34,13 @@
 }
 
 .hero3d__headline {
-  max-width: 20ch;
+  max-width: 20.5ch;
   margin: 0;
   overflow-wrap: normal;
   color: var(--color-heading);
-  font-size: clamp(2.15rem, 2.56vw, 3.12rem);
-  line-height: 1.05;
-  letter-spacing: -0.038em;
+  font-size: clamp(2.25rem, 2.65vw, 3.3rem);
+  line-height: 1.03;
+  letter-spacing: -0.042em;
   text-wrap: balance;
 }
 
@@ -144,7 +144,8 @@
 
   .hero3d__content {
     grid-area: content;
-    padding-top: clamp(0.8rem, 1.8vw, 1.5rem);
+    align-self: start;
+    padding-top: clamp(4.25rem, 7vw, 6.5rem);
   }
 
   .hero3d__visualStack {
@@ -158,7 +159,7 @@
 
 @media (min-width: 1440px) {
   .hero3d__headline {
-    font-size: clamp(2.35rem, 2.42vw, 3.24rem);
+    font-size: clamp(2.55rem, 2.72vw, 3.7rem);
   }
 }
 
@@ -279,7 +280,9 @@
   background: var(--hero-stage);
   box-shadow: 0 32px 90px var(--hero-shadow);
   isolation: isolate;
-  contain: layout paint style;
+  contain: layout paint;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .hero3d__stage::after {
@@ -354,6 +357,10 @@
   z-index: 4;
   pointer-events: none;
   perspective: 1200px;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .hero3d__panel {
@@ -381,6 +388,7 @@
   color: var(--hero-text);
   text-decoration: none;
   pointer-events: auto;
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   box-shadow: 0 18px 42px var(--hero-panel-shadow);
   transform:
@@ -615,19 +623,110 @@
   }
 }
 
-/* Móvil: 3 paneles principales sobre el logo y secundarios en dock inferior. */
+/*
+  Propósito:
+  Adaptar la composición del Hero3D a teléfonos y pantallas estrechas.
+
+  Contexto:
+  Los paneles reciben posiciones dinámicas desde Three.js mediante variables
+  CSS. En móvil se fijan posiciones deterministas con !important para impedir
+  que el movimiento orbital invada la zona central reservada al logotipo.
+
+  Tipos de datos:
+  - Longitudes CSS: rem, vw y porcentajes.
+  - Variables CSS:
+    --panel-x,
+    --panel-y,
+    --panel-dx,
+    --panel-dy,
+    --panel-lift,
+    --panel-scale,
+    --tilt-x,
+    --tilt-y.
+
+  Parámetros:
+  - Viewport móvil general: máximo 620 px.
+  - Viewport iPhone compacto: máximo 420 px.
+
+  Retorno:
+  Una composición móvil estable con:
+  - PLC y ROBOTS en la zona superior;
+  - logotipo libre en la región central;
+  - SOFTWARE por debajo de la zona central;
+  - dock secundario dentro del escenario;
+  - ausencia de overflow horizontal.
+
+  Notas de producción:
+  - No añade JavaScript.
+  - No modifica el layout de escritorio ni tablet.
+  - La posición de SOFTWARE incluye margen para textos ES, EN y DE de dos líneas.
+  - Los valores están definidos en porcentajes para no depender del DPR físico.
+*/
 @media (max-width: 620px) {
-  .hero3d__stage {
-    aspect-ratio: 1 / 1.3;
-    min-height: 34rem;
-    border-radius: 1.5rem;
+  .hero3d__scene {
+    width: 100%;
+    min-width: 0;
   }
 
+  .hero3d__stage {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: clamp(28.5rem, 122vw, 31.5rem);
+    max-height: none;
+    aspect-ratio: auto;
+    overflow: hidden;
+    border-radius: 1.35rem;
+  }
+
+  /*
+    Propósito:
+    Compactar las tarjetas primarias sin reducir su legibilidad ni permitir
+    que el runtime 3D cambie sus posiciones en pantallas móviles.
+
+    Contexto:
+    hero3d.ts puede escribir desplazamientos y transformaciones mediante
+    variables CSS. En móvil las anulamos para mantener un layout predecible.
+  */
   .hero3d__panel {
-    width: min(11.25rem, 44vw);
-    min-height: 3.85rem;
-    padding: 0.72rem 0.78rem;
-    border-radius: 1rem;
+    width: min(10.5rem, calc(50% - 1.35rem));
+    min-width: 0;
+    min-height: 3.7rem;
+    padding: 0.68rem 0.72rem;
+    border-radius: 0.95rem;
+
+    --panel-dx: 0px !important;
+    --panel-dy: 0px !important;
+    --panel-lift: 0px !important;
+    --panel-scale: 1 !important;
+    --tilt-x: 0deg !important;
+    --tilt-y: 0deg !important;
+  }
+
+  /*
+    PLC y ROBOTS comparten la franja superior. Sus centros quedan separados
+    horizontalmente y fuera de la zona central del logo.
+  */
+  .hero3d__panel[data-panel-id="plc"] {
+    --panel-x: 27% !important;
+    --panel-y: 10% !important;
+  }
+
+  .hero3d__panel[data-panel-id="robots"] {
+    --panel-x: 73% !important;
+    --panel-y: 10% !important;
+  }
+
+  /*
+    SOFTWARE se desplaza al 75 % de la altura.
+
+    El valor anterior, 72 %, dejaba poco margen cuando la descripción visible
+    ocupaba dos líneas. Con 75 % el borde superior de la tarjeta permanece
+    fuera de la zona central que termina en el 65 % del escenario.
+  */
+  .hero3d__panel[data-panel-id="software"] {
+    --panel-x: 27% !important;
+    --panel-y: 75% !important;
   }
 
   .hero3d__panel[data-mobile-visible="false"] {
@@ -639,88 +738,219 @@
   }
 
   .hero3d__panel-title {
-    margin-bottom: 0.32rem;
-    font-size: 0.68rem;
+    margin-bottom: 0.3rem;
+    font-size: clamp(0.61rem, 2.7vw, 0.68rem);
+    line-height: 1.05;
   }
 
   .hero3d__panel-text {
-    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+    font-size: clamp(0.71rem, 3vw, 0.8rem);
+    line-height: 1.22;
   }
 
+  /*
+  Propósito:
+  Mostrar DATA, HMI e IOT como tarjetas táctiles estables en iOS y Android.
+
+  Notas:
+  - Se fuerza una capa de composición independiente.
+  - No depende de transformaciones del canvas.
+  - Conserva los tres enlaces incluso si Three.js entra en fallback.
+  */
   .hero3d__mobileDock {
     position: absolute;
-    left: 0.75rem;
     right: 0.75rem;
     bottom: 0.75rem;
-    z-index: 6;
+    left: 0.75rem;
+    z-index: 12;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(
+      3,
+      minmax(0, 1fr)
+    );
     gap: 0.5rem;
+    min-width: 0;
+    opacity: 1;
+    visibility: visible;
     pointer-events: auto;
+    isolation: isolate;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
   .hero3d__mobileDock a {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.22rem;
     min-width: 0;
-    min-height: 2.8rem;
-    padding: 0.68rem 0.55rem;
+    min-height: 3.25rem;
+    padding: 0.55rem 0.35rem;
+    overflow: hidden;
     border: 1px solid var(--hero-panel-border);
     border-radius: 0.85rem;
-    background: var(--hero-panel-bg);
     color: var(--hero-text);
     text-align: center;
     text-decoration: none;
-    backdrop-filter: blur(14px);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(21, 39, 65, 0.98),
+        rgba(10, 23, 45, 0.98)
+      );
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(34, 215, 245, 0.05) inset;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
   .hero3d__mobileDock a:focus-visible {
-    outline: 3px solid rgba(34, 215, 245, 0.9);
-    outline-offset: 3px;
+    outline: 3px solid rgba(34, 215, 245, 0.95);
+    outline-offset: 2px;
   }
 
   .hero3d__mobileDock strong {
     display: block;
+    max-width: 100%;
+    overflow: hidden;
     color: var(--hero-brand-cyan-bright);
-    font-size: 0.68rem;
+    font-size: clamp(0.62rem, 2.65vw, 0.72rem);
     font-weight: 900;
-    letter-spacing: 0.12em;
-    line-height: 1;
+    letter-spacing: 0.1em;
+    line-height: 1.1;
+    text-overflow: ellipsis;
     text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .hero3d__mobileDock span {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--hero-muted);
+    font-size: clamp(0.56rem, 2.35vw, 0.66rem);
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hero3d__scene.is-fallback
+    .hero3d__mobileDock,
+  .hero3d__scene[data-fallback="true"]
+    .hero3d__mobileDock {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /*
+    Placeholder y fallback comparten el mismo encuadre central que el canvas.
+    Sus límites evitan que la imagen invada las tarjetas o el dock.
+  */
+  .hero3d__placeholder {
+    padding: 4.75rem 1.5rem 5rem;
+  }
+
+  .hero3d__placeholder img {
+    width: min(14.5rem, 54vw);
+    max-height: 48%;
+  }
+
+  .hero3d__fallback {
+    padding: 4.75rem 1.5rem 4.5rem;
+  }
+
+  .hero3d__fallback img {
+    width: min(15.5rem, 58vw);
+    max-height: 48%;
+  }
+}
+
+/*
+  Propósito:
+  Ajustar la composición a iPhone y móviles de hasta 420 px.
+
+  Contexto:
+  En estos anchos el texto traducido puede ocupar más altura y reducir el
+  margen entre SOFTWARE y el logotipo.
+
+  Retorno:
+  - SOFTWARE centrado en el 76 % de la altura.
+  - Separación suficiente respecto al área central y al dock.
+  - Objetivos táctiles de aproximadamente 42 px o superiores.
+*/
+@media (max-width: 420px) {
+  .hero3d__stage {
+    height: clamp(27.5rem, 121vw, 29.5rem);
+  }
+
+  .hero3d__panel {
+    width: calc(50% - 1.05rem);
+    min-height: 3.55rem;
+    padding: 0.58rem 0.62rem;
+  }
+
+  /*
+    PLC y ROBOTS comparten la franja superior. Sus centros quedan separados
+    horizontalmente y fuera de la zona central del logo.
+  */
+  .hero3d__panel[data-panel-id="plc"] {
+    --panel-x: 27% !important;
+    --panel-y: 10% !important;
+  }
+
+  .hero3d__panel[data-panel-id="robots"] {
+    --panel-x: 73% !important;
+    --panel-y: 10% !important;
+  }
+
+  /*
+    SOFTWARE se desplaza al 75 % de la altura.
+
+    El valor anterior, 72 %, dejaba poco margen cuando la descripción visible
+    ocupaba dos líneas. Con 75 % el borde superior de la tarjeta permanece
+    fuera de la zona central que termina en el 65 % del escenario.
+  */
+  .hero3d__panel[data-panel-id="software"] {
+    --panel-x: 27% !important;
+    --panel-y: 75% !important;
+  }
+
+  .hero3d__panel-title {
+    font-size: 0.61rem;
+    letter-spacing: 0.11em;
+  }
+
+  .hero3d__panel-text {
+    font-size: 0.71rem;
+  }
+
+  .hero3d__mobileDock {
+    right: 0.5rem;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    gap: 0.35rem;
+  }
+
+  .hero3d__mobileDock a {
+    min-height: 3rem;
+    padding-inline: 0.2rem;
+  }
+
+  .hero3d__mobileDock strong {
+    font-size: 0.6rem;
+    letter-spacing: 0.07em;
   }
 
   .hero3d__mobileDock span {
     display: none;
-  }
-}
-
-@media (max-width: 420px) {
-  .hero3d__stage {
-    min-height: 31.5rem;
-  }
-
-  .hero3d__panel {
-    width: min(10.3rem, 45vw);
-    min-height: 3.65rem;
-    padding: 0.64rem 0.68rem;
-  }
-
-  .hero3d__panel-title {
-    font-size: 0.64rem;
-  }
-
-  .hero3d__panel-text {
-    font-size: 0.74rem;
-  }
-
-  .hero3d__mobileDock {
-    left: 0.55rem;
-    right: 0.55rem;
-    bottom: 0.55rem;
-    gap: 0.38rem;
-  }
-
-  .hero3d__mobileDock a {
-    padding-inline: 0.42rem;
   }
 }
 

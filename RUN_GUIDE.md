@@ -138,13 +138,46 @@ docker compose exec dev sh -lc "find dist -type f -name 'index.html' ! -path '*/
 
 El segundo comando debe quedar sin salida.
 
-## Limpieza fuerte
+## Limpieza fuerte del proyecto
 
 ```powershell
-docker compose down -v --remove-orphans
+docker compose --profile prod --profile qa --profile assets down --remove-orphans --volumes
+
+docker images --format "{{.Repository}}:{{.Tag}}" |
+  Where-Object { $_ -like "iocode-solutions-*" } |
+  ForEach-Object { docker image rm $_ -f }
+
+docker builder prune --all --force
+docker buildx prune --all --force
 ```
 
-Advertencia: `-v` elimina los volúmenes de dependencias del proyecto. No hay base de datos en este Compose, pero será necesario reconstruir dependencias.
+`--volumes` elimina los volúmenes de dependencias del proyecto. No hay base de datos en este Compose, pero será necesario descargar y reconstruir las dependencias.
+
+La limpieza global siguiente es opcional y destructiva para todos los proyectos Docker del equipo, no solo IoCode. Revisar primero `docker system df` y ejecutarla únicamente si se acepta perder contenedores detenidos, imágenes sin uso, redes sin uso, cachés y volúmenes no conectados:
+
+```powershell
+docker system df
+docker system prune --all --volumes
+```
+
+## Reconstrucción y validación después de Full Clean
+
+```powershell
+docker compose --profile assets build --no-cache --pull assets
+docker compose --profile assets run --rm assets "npm run prepare:assets:6"
+
+docker compose --profile prod --profile qa build --no-cache --pull web performance-qa
+docker compose --profile prod --profile qa up -d web
+
+docker compose --profile prod --profile qa run --rm performance-qa sh -lc "npm run typecheck:src && npm run typecheck:tests"
+docker compose --profile prod --profile qa run --rm performance-qa sh -lc "npm run qa:hero3d-cross-platform:6"
+docker compose --profile prod --profile qa run --rm performance-qa sh -lc "npm run qa:hero3d-ios:6"
+docker compose --profile prod --profile qa run --rm performance-qa sh -lc "npm run qa:services-responsive"
+docker compose --profile prod --profile qa run --rm performance-qa sh -lc "npm run qa:responsive-visual:6"
+docker compose --profile prod --profile qa run --rm performance-qa
+```
+
+El último comando ejecuta el gate completo. No considerar cerrada la fase si falta `qa-artifacts/performance/phase-6/summary.json` o si su estado no es `passed`.
 
 ## Problemas frecuentes
 
@@ -163,3 +196,19 @@ Ejecutar primero `prepare:assets:6` en el servicio `assets`. No crear el informe
 ### No se crea el ZIP
 
 Comprobar el resumen y `git status --short`. El bloqueo por árbol sucio es intencional: el ZIP solo representa el commit actual.
+
+
+## Matriz mínima para PC, móvil y tablet
+
+| Perfil | Proyecto Playwright | Criterio |
+|---|---|---|
+| PC | `chromium-desktop` | Logo completo, autocarga, paneles y navegación desktop |
+| Android | `chromium-mobile` | Autocarga sin toque, DPR ≤ 1,5 y sin overflow |
+| iPhone | `webkit-iphone` | Logo completo, DATA/HMI/IOT visibles, fallback accesible |
+| iPad/tablet | `webkit-ipad` | Autocarga, DPR ≤ 1,5 y menú hamburguesa funcional |
+
+El servicio local se levanta con:
+
+```powershell
+docker compose --profile prod up -d --force-recreate web
+```

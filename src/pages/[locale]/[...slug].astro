@@ -85,7 +85,13 @@ const skillStructuredData =
   ) : routeKey === "process" ? (
     <ProcessMethod locale={locale} />
   ) : (
-    <PageHero eyebrow={content.eyebrow} title={content.heading} text={content.intro} />
+    <PageHero
+      eyebrow={content.eyebrow}
+      title={content.heading}
+      text={content.intro}
+      variant={routeKey === "services" ? "services" : "default"}
+      serviceMap={content.serviceMap}
+    />
   )}
 
   {routesWithStandardCards.includes(routeKey) ? (

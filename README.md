@@ -6,27 +6,35 @@ El proyecto usa Astro, TypeScript, Three.js y Docker Compose. La web está orien
 
 ## Estado validado localmente
 
-Última fase validada: Fase 1.1A.
+Fase activa: Fase 6, todavía `NO CERRADA`.
 
 Estado comprobado por terminal:
 
 - `npm run check` dentro del contenedor: 0 errores, 0 warnings, 0 hints.
 - `npm run build` dentro del contenedor: 29 páginas generadas.
 - `npm run audit:prod`: 0 vulnerabilidades de producción.
-- Imagen Docker de producción construida correctamente.
+- Imagen Docker de producción construida correctamente para las correcciones actuales.
 - Contenedor `web` iniciado correctamente.
 - `/health`: 200 OK.
 - `/es/proceso/`, `/en/process/`, `/de/prozess/`: 200 OK.
 - `/sitemap.xml`: 200 OK.
+- Autocarga del Hero3D validada en Chromium desktop/mobile y WebKit iPhone/iPad sobre ES/EN/DE.
+- Logo canónico, composición iOS y menú hamburguesa móvil/tablet validados mediante pruebas focalizadas.
+- Titulares internos, contacto y navegación responsive validados en 93 casos Chromium/WebKit.
+- Evidencia visual disponible en 72 capturas ES/EN/DE para móvil, tablet y escritorio.
+
+El pipeline Docker completo terminó con código `0`; Lighthouse produjo 10/10 mediciones válidas y `summary.json` quedó en `passed`, sin warnings ni errores.
+
+Pendiente para cerrar Fase 6: contrastar una captura del mismo build en un iPhone físico y completar los gates de entrega/producción.
 - `/no-existe/`: 404 Not Found.
 - Rutas sin slash final redirigen con 308.
 - Headers HTTP avanzados activos en el servidor estático local.
 
-No se afirma posicionamiento real en Google ni rendimiento Lighthouse todavía. Eso requiere publicación, medición y Search Console.
+No se afirma posicionamiento real en Google ni rendimiento de campo. Lighthouse local es evidencia de laboratorio; la publicación, RUM/CrUX y Search Console siguen siendo necesarias.
 
 ## Stack
 
-- Astro 6.
+- Astro 7.
 - TypeScript.
 - Three.js para escena 3D.
 - Docker Compose.
@@ -202,8 +210,15 @@ http://localhost:4321/es/
 
 ## Producción local
 docker compose --profile prod up -d web
+docker compose --profile prod up -d --force-recreate web
 docker compose --profile prod logs -f web
 
 URL:
 
 http://localhost:8080/es/
+
+Comando normal para ver cambios en localhost:8080
+Desde la raíz del proyecto:
+docker compose --profile prod build web
+docker compose --profile prod up -d --force-recreate web
+docker compose --profile prod logs --tail=40 web

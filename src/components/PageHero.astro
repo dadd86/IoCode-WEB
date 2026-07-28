@@ -1,12 +1,52 @@
 ---
-type Props = { eyebrow: string; title: string; text: string };
-const { eyebrow, title, text } = Astro.props;
+type PageHeroVariant = "default" | "services";
+
+type ServiceMapNode = {
+  label: string;
+  detail: string;
+  position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+};
+
+type Props = {
+  eyebrow: string;
+  title: string;
+  text: string;
+  variant?: PageHeroVariant;
+  serviceMap?: ServiceMapNode[];
+};
+
+const {
+  eyebrow,
+  title,
+  text,
+  variant = "default",
+  serviceMap = []
+} = Astro.props;
+
+const isServices = variant === "services" && serviceMap.length > 0;
 ---
 
-<section class="pageHero">
+<section class={`pageHero pageHero--${variant}`}>
   <div class="container pageHero__content">
-    <p class="eyebrow">{eyebrow}</p>
-    <h1>{title}</h1>
-    <p>{text}</p>
+    <div class="pageHero__copy">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p>{text}</p>
+    </div>
+
+    {isServices && (
+      <aside class="pageHero__serviceMap" aria-hidden="true">
+        <div class="serviceMap__grid">
+          <span class="serviceMap__core">IT/OT</span>
+
+          {serviceMap.map((node) => (
+            <span class="serviceMap__node" data-position={node.position}>
+              <strong>{node.label}</strong>
+              <em>{node.detail}</em>
+            </span>
+          ))}
+        </div>
+      </aside>
+    )}
   </div>
 </section>

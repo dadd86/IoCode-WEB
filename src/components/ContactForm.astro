@@ -24,6 +24,68 @@ const copyStatusId = `copy-status-${locale}`;
 ---
 
 <div class="contactGrid" data-phase="4-contact">
+  <form
+    class="contactForm"
+    id="contactForm"
+    data-contact-email={siteConfig.email}
+    data-email-verification-status={contactEmailVerification.status}
+    data-last-mailto=""
+    data-mailto-subject-prefix={content.mailtoSubjectPrefix}
+    data-body-label-name={content.mailtoBodyLabels.name}
+    data-body-label-email={content.mailtoBodyLabels.email}
+    data-body-label-project-type={content.mailtoBodyLabels.projectType}
+    data-body-label-message={content.mailtoBodyLabels.message}
+    data-body-label-language={content.mailtoBodyLabels.language}
+    data-locale={locale}
+    aria-describedby={noteId}
+  >
+    <p class="formNote" id={noteId}>{labels.contactNote}</p>
+
+    <label for={`nombre-${locale}`}>{labels.contactName}</label>
+    <input
+      class="input"
+      id={`nombre-${locale}`}
+      type="text"
+      name="nombre"
+      autocomplete="name"
+      minlength="2"
+      maxlength="120"
+      required
+    />
+
+    <label for={`correo-${locale}`}>{labels.contactEmail}</label>
+    <input
+      class="input"
+      id={`correo-${locale}`}
+      type="email"
+      name="correo"
+      autocomplete="email"
+      maxlength="160"
+      required
+    />
+
+    <label for={`tipoProyecto-${locale}`}>{labels.contactProjectType}</label>
+    <select class="input" id={`tipoProyecto-${locale}`} name="tipoProyecto" required>
+      <option value="">{labels.selectOption}</option>
+      {topics.map((topic) => <option value={topic.label}>{topic.label}</option>)}
+    </select>
+
+    <label for={`mensaje-${locale}`}>{labels.contactMessage}</label>
+    <textarea
+      class="input"
+      id={`mensaje-${locale}`}
+      name="mensaje"
+      rows="6"
+      minlength="20"
+      maxlength="4000"
+      required
+    ></textarea>
+
+    <button class="button button--primary button--full" type="submit">
+      {labels.contactSubmit}
+    </button>
+  </form>
+
   <aside class="contactPanel">
     <LogoImage
       imgClass="contactPanel__logo"
@@ -118,67 +180,6 @@ const copyStatusId = `copy-status-${locale}`;
     </article>
   </aside>
 
-  <form
-    class="contactForm"
-    id="contactForm"
-    data-contact-email={siteConfig.email}
-    data-email-verification-status={contactEmailVerification.status}
-    data-last-mailto=""
-    data-mailto-subject-prefix={content.mailtoSubjectPrefix}
-    data-body-label-name={content.mailtoBodyLabels.name}
-    data-body-label-email={content.mailtoBodyLabels.email}
-    data-body-label-project-type={content.mailtoBodyLabels.projectType}
-    data-body-label-message={content.mailtoBodyLabels.message}
-    data-body-label-language={content.mailtoBodyLabels.language}
-    data-locale={locale}
-    aria-describedby={noteId}
-  >
-    <p class="formNote" id={noteId}>{labels.contactNote}</p>
-
-    <label for={`nombre-${locale}`}>{labels.contactName}</label>
-    <input
-      class="input"
-      id={`nombre-${locale}`}
-      type="text"
-      name="nombre"
-      autocomplete="name"
-      minlength="2"
-      maxlength="120"
-      required
-    />
-
-    <label for={`correo-${locale}`}>{labels.contactEmail}</label>
-    <input
-      class="input"
-      id={`correo-${locale}`}
-      type="email"
-      name="correo"
-      autocomplete="email"
-      maxlength="160"
-      required
-    />
-
-    <label for={`tipoProyecto-${locale}`}>{labels.contactProjectType}</label>
-    <select class="input" id={`tipoProyecto-${locale}`} name="tipoProyecto" required>
-      <option value="">{labels.selectOption}</option>
-      {topics.map((topic) => <option value={topic.label}>{topic.label}</option>)}
-    </select>
-
-    <label for={`mensaje-${locale}`}>{labels.contactMessage}</label>
-    <textarea
-      class="input"
-      id={`mensaje-${locale}`}
-      name="mensaje"
-      rows="6"
-      minlength="20"
-      maxlength="4000"
-      required
-    ></textarea>
-
-    <button class="button button--primary button--full" type="submit">
-      {labels.contactSubmit}
-    </button>
-  </form>
 </div>
 
 <script>

@@ -6,10 +6,12 @@ import {
   writeFileSync
 } from "node:fs";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import sharp from "sharp";
 
 const artifactRoot = "qa-artifacts/performance/phase-6";
 const glbPath = "public/logo/3d/iocode_solutions_logo_extruded_3d.glb";
+const sourceLogoPath = "public/logo/iocode-logo.png";
 const errors = [];
 const warnings = [];
 
@@ -21,6 +23,10 @@ const maxEmbeddedTextureDimension = 512;
 function writeArtifact(name, payload) {
   mkdirSync(artifactRoot, { recursive: true });
   writeFileSync(join(artifactRoot, name), JSON.stringify(payload, null, 2), "utf8");
+}
+
+function sha256Buffer(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
 }
 
 function readGlbJson(path) {
@@ -165,6 +171,7 @@ async function inspectEmbeddedImagesAlpha(path) {
       mimeType: image.mimeType ?? null,
       bufferView: image.bufferView,
       byteLength: view.byteLength,
+      sha256: sha256Buffer(imageBuffer),
       status: alpha.hasTransparency ? "passed" : "failed",
       alpha
     });
@@ -205,6 +212,12 @@ if (!existsSync(glbPath)) {
     if (gltf.extras?.iocodePhase6LogoMode !== "alpha-safe-billboard") {
       errors.push(
         "El GLB no fue generado como alpha-safe-billboard por tools/repair-glb-phase-6.mjs. El GLB anterior produce fragmentación visual en Three.js."
+      );
+    }
+
+    if (gltf.extras?.source !== sourceLogoPath) {
+      errors.push(
+        `El GLB no declara ${sourceLogoPath} como fuente visual canónica.`
       );
     }
 
@@ -287,6 +300,15 @@ if (!existsSync(glbPath)) {
       if (imageReport.status === "failed") {
         errors.push(
           `GLB image[${imageReport.index}] no conserva transparencia alpha. Esto causa rectángulo blanco en Three.js. Ejecuta npm run repair:glb:6 dentro del contenedor assets.`
+        );
+      }
+
+      if (
+        imageReport.sha256 !==
+        gltf.extras?.sourceSha256
+      ) {
+        errors.push(
+          `GLB image[${imageReport.index}] no coincide con la textura canónica registrada por el generador.`
         );
       }
 

@@ -14,7 +14,7 @@ const errors = [];
 const warnings = [];
 
 const expectedNames = [
-  "aplaza el runtime 3D hasta una interacción intencional",
+  "autocarga el runtime 3D al entrar en viewport sin interacción",
   "fallback y contenido aparecen aunque WebGL no esté disponible",
   "reduced motion no carga escena pesada y mantiene contenido usable",
   "fallback se activa si el GLB no se puede descargar",

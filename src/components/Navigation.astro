@@ -1,31 +1,70 @@
 ---
-import { navigationRouteKeys, routeAlternates } from "../i18n/routes";
+import {
+  navigationRouteKeys,
+  routeAlternates
+} from "../i18n/routes";
+
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
+
+/**
+ * Propósito:
+ * Renderizar la lista de navegación localizada.
+ *
+ * Tipos de datos:
+ * - locale: `es`, `en` o `de`.
+ * - activeKey: ruta activa.
+ * - variant: presentación desktop o móvil.
+ *
+ * Parámetros:
+ * Propiedades Astro.
+ *
+ * Retorno:
+ * Lista UL con enlaces localizados y `aria-current`.
+ */
 
 type Props = {
   locale: Locale;
   activeKey: RouteKey;
+  variant?: "desktop" | "mobile";
 };
 
-const { locale, activeKey } = Astro.props as Props;
+const {
+  locale,
+  activeKey,
+  variant = "desktop"
+} = Astro.props as Props;
 ---
 
-<ul class="navLinks">
-  {navigationRouteKeys.map((routeKey) => {
-    const item = routeAlternates[routeKey];
-    const isActive = item.key === activeKey;
+<ul
+  class:list={[
+    "navLinks",
+    {
+      "navLinks--desktop": variant === "desktop",
+      "navLinks--mobile": variant === "mobile"
+    }
+  ]}
+>
+  {
+    navigationRouteKeys.map((routeKey) => {
+      const item = routeAlternates[routeKey];
+      const isActive = item.key === activeKey;
 
-    return (
-      <li>
-        <a
-          href={item.path[locale]}
-          class:list={{ "is-active": isActive }}
-          aria-current={isActive ? "page" : undefined}
-        >
-          {item.label[locale]}
-        </a>
-      </li>
-    );
-  })}
+      return (
+        <li>
+          <a
+            href={item.path[locale]}
+            class:list={{
+              "is-active": isActive
+            }}
+            aria-current={
+              isActive ? "page" : undefined
+            }
+          >
+            {item.label[locale]}
+          </a>
+        </li>
+      );
+    })
+  }
 </ul>

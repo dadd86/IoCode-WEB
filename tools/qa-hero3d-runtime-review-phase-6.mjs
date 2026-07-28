@@ -24,34 +24,54 @@ const checks = [
     passed:
       loader.includes("IntersectionObserver") &&
       loader.includes("observer.unobserve(host)") &&
-      loader.includes("armVisibleLoading(host)")
+      loader.includes("controller?.scheduleVisibleLoad()")
   },
   {
-    id: "interaction-before-heavy-runtime",
+    id: "automatic-idle-load",
     requirement:
-      "El runtime pesado espera pointer, touch o foco y no se programa automáticamente durante el primer render.",
+      "El runtime se solicita automáticamente al entrar en viewport mediante requestIdleCallback y timeout, sin exigir interacción.",
     evidence: loaderPath,
     passed:
-      loader.includes('"pointerenter"') &&
-      loader.includes('"pointerdown"') &&
-      loader.includes('"touchstart"') &&
-      loader.includes('"focusin"') &&
-      !loader.includes("requestIdleCallback") &&
-      !loader.includes("scheduleWhenIdle")
+      loader.includes("requestIdleCallback") &&
+      loader.includes("scheduleVisibleLoad") &&
+      loader.includes("window.setTimeout") &&
+      !loader.includes('host.addEventListener(\n    "pointerenter"') &&
+      !loader.includes('host.addEventListener(\n    "pointerdown"') &&
+      !loader.includes('host.addEventListener(\n    "touchstart"') &&
+      !loader.includes('host.addEventListener(\n    "focusin"')
   },
   {
     id: "reduced-motion-before-load",
     requirement: "prefers-reduced-motion evita cargar la escena pesada.",
     evidence: loaderPath,
     passed:
-      loader.includes('matchMedia("(prefers-reduced-motion: reduce)")') &&
-      loader.includes('activateFallback(host, "prefers-reduced-motion")')
+      /matchMedia\(\s*"\(prefers-reduced-motion: reduce\)"\s*\)/s.test(
+        loader
+      ) &&
+      /activateFallback\(\s*host,\s*"prefers-reduced-motion"\s*\)/s.test(
+        loader
+      )
   },
   {
     id: "dpr-limit",
-    requirement: "El devicePixelRatio queda limitado a un máximo de 2.",
+    requirement: "El devicePixelRatio queda limitado a 1.5 en touch/tablet y a 2 en desktop.",
     evidence: runtimePath,
-    passed: /setPixelRatio\(Math\.min\(window\.devicePixelRatio \|\| 1, 2\)\)/.test(runtime)
+    passed:
+      runtime.includes("const pixelRatioLimit") &&
+      runtime.includes("? 1.5") &&
+      runtime.includes(": 2") &&
+      runtime.includes("pixelRatioLimit")
+  },
+  {
+    id: "source-texture-fidelity",
+    requirement:
+      "El logo usa la textura fuente en un material sin iluminación ni tone mapping.",
+    evidence: runtimePath,
+    passed:
+      runtime.includes("new THREE.MeshBasicMaterial") &&
+      runtime.includes("THREE.NoToneMapping") &&
+      runtime.includes('"source-texture-fidelity"') &&
+      !runtime.includes("RoomEnvironment")
   },
   {
     id: "document-visibility-pause",
@@ -90,14 +110,12 @@ const checks = [
   },
   {
     id: "resource-disposal",
-    requirement: "Geometrías, materiales, texturas, targets y renderer se liberan.",
+    requirement: "Geometrías, materiales, texturas y renderer se liberan.",
     evidence: runtimePath,
     passed:
       runtime.includes("mesh.geometry.dispose()") &&
       runtime.includes("texture.dispose()") &&
       runtime.includes("material.dispose()") &&
-      runtime.includes("environmentTarget?.dispose()") &&
-      runtime.includes("pmremGenerator?.dispose()") &&
       runtime.includes("renderer?.dispose()")
   },
   {
@@ -114,6 +132,17 @@ const checks = [
       css.includes(".hero3d__panel:hover .hero3d__panel-description") &&
       css.includes('.hero3d__panel[data-active="true"] .hero3d__panel-description') &&
       css.includes("max-height: 6.4rem")
+  },
+  {
+    id: "ios-secondary-panel-composition",
+    requirement:
+      "DATA, HMI e IOT se mantienen en una capa táctil visible por encima del canvas en móvil.",
+    evidence: cssPath,
+    passed:
+      css.includes(".hero3d__mobileDock") &&
+      css.includes("z-index: 12") &&
+      css.includes("-webkit-transform: translateZ(0)") &&
+      css.includes("-webkit-backface-visibility: hidden")
   },
 ];
 

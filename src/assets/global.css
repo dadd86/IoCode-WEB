@@ -60,9 +60,18 @@ main {
 
 h1,
 h2,
-h3,
+h3 {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+
 p {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: pretty;
 }
 
 h1,

@@ -1,12 +1,38 @@
 ---
 import Navigation from "./Navigation.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
+import LogoImage from "./LogoImage.astro";
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
-import LogoImage from "./LogoImage.astro";
-type Props = { locale: Locale; activeKey: RouteKey };
-const { locale, activeKey } = Astro.props;
+
+/**
+ * Propósito:
+ * Renderizar el encabezado principal con navegación desktop y un menú
+ * hamburguesa nativo para móvil y tablet.
+ *
+ * Tipos de datos:
+ * - locale: idioma activo.
+ * - activeKey: ruta activa.
+ *
+ * Parámetros:
+ * Propiedades Astro del componente.
+ *
+ * Retorno:
+ * HTML semántico accesible sin JavaScript de navegación.
+ *
+ * Notas:
+ * El menú móvil usa details/summary para funcionar incluso con JavaScript
+ * desactivado y evitar una nueva dependencia de hidratación.
+ */
+
+type Props = {
+  locale: Locale;
+  activeKey: RouteKey;
+};
+
+const { locale, activeKey } =
+  Astro.props as Props;
 
 const navLabel: Record<Locale, string> = {
   es: "Navegación principal",
@@ -19,11 +45,30 @@ const brandLabel: Record<Locale, string> = {
   en: "Go to IoCode SOLUTIONS home",
   de: "Zur Startseite von IoCode SOLUTIONS"
 };
+
+const menuLabel: Record<Locale, string> = {
+  es: "Abrir o cerrar el menú principal",
+  en: "Open or close the main menu",
+  de: "Hauptmenü öffnen oder schließen"
+};
+
+const menuText: Record<Locale, string> = {
+  es: "Menú",
+  en: "Menu",
+  de: "Menü"
+};
 ---
 
 <header class="siteHeader">
-  <nav class="navbar container" aria-label={navLabel[locale]}>
-    <a class="brand" href={`/${locale}/`} aria-label={brandLabel[locale]}>
+  <nav
+    class="navbar container"
+    aria-label={navLabel[locale]}
+  >
+    <a
+      class="brand"
+      href={`/${locale}/`}
+      aria-label={brandLabel[locale]}
+    >
       <LogoImage
         imgClass="brand__logo"
         alt={siteConfig.name}
@@ -32,7 +77,50 @@ const brandLabel: Record<Locale, string> = {
         sizes="96px"
       />
     </a>
-    <Navigation locale={locale} activeKey={activeKey} />
-    <LanguageSwitcher locale={locale} activeKey={activeKey} />
+
+    <div class="desktopNavigation">
+      <Navigation
+        locale={locale}
+        activeKey={activeKey}
+        variant="desktop"
+      />
+    </div>
+
+    <div class="desktopLanguage">
+      <LanguageSwitcher
+        locale={locale}
+        activeKey={activeKey}
+      />
+    </div>
+
+    <details class="mobileMenu">
+      <summary
+        class="mobileMenu__toggle"
+        aria-label={menuLabel[locale]}
+      >
+        <span class="mobileMenu__icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+
+        <span class="mobileMenu__label">
+          {menuText[locale]}
+        </span>
+      </summary>
+
+      <div class="mobileMenu__panel">
+        <Navigation
+          locale={locale}
+          activeKey={activeKey}
+          variant="mobile"
+        />
+
+        <LanguageSwitcher
+          locale={locale}
+          activeKey={activeKey}
+        />
+      </div>
+    </details>
   </nav>
 </header>

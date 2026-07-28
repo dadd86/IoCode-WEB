@@ -57,17 +57,55 @@ No ejecutar Node, npm, Playwright, Lighthouse, Sharp, glTF-Transform ni glTF Val
 Los límites viven en `compose.yml` y los scripts fallan si se superan. `performance-budgets.json` mide `dist/` como superficie desplegable; `public/` se usa para comprobar las fuentes requeridas sin duplicar los totales.
 - `qa:logo3d-version:6`: la query `?v=` del GLB coincide con el SHA-256 real del archivo actual.
 
+Lighthouse conserva 10 resultados comparables: portadas ES/EN/DE, Servicios ES
+y Contacto ES, cada una en desktop y mobile. Cada resultado desktop se obtiene
+de la mediana de tres ejecuciones consecutivas del score de performance, con
+TBT como desempate; mobile conserva una ejecución. Todos los intentos quedan
+registrados en `lighthouse-summary.json`.
+
 ## Decisiones del Hero3D
 
 - El HTML, el H1, los CTA, los enlaces y el fallback existen antes del runtime 3D.
-- El loader ligero usa `IntersectionObserver` y solo activa el runtime pesado tras `pointerenter`, `pointerdown`, `touchstart` o `focusin`.
-- Three.js y `GLTFLoader` permanecen en un chunk dinámico y no compiten con el primer render sin una interacción intencional.
+- El loader ligero usa `IntersectionObserver` y programa la carga con `requestIdleCallback`; un timeout máximo de 800 ms evita que Safari, Chrome iOS o Android permanezcan indefinidamente en `deferred`.
+- Una comprobación geométrica inmediata usa el mismo margen de precarga de 320 px para cubrir la notificación inicial tardía de `IntersectionObserver` observada en WebKit, sin adelantar la descarga del runtime cuando el Hero sigue lejos del viewport.
+- La autocarga no registra ni necesita `pointerenter`, `pointerdown`, `touchstart` o `focusin`.
+- Three.js y `GLTFLoader` permanecen en un chunk dinámico y se solicitan automáticamente cuando el Hero entra en la zona próxima al viewport.
 - Con `prefers-reduced-motion: reduce` o sin WebGL no se solicita el runtime pesado.
 - El render se pausa con reduced motion, pestaña oculta o hero fuera de viewport.
-- El DPR se limita a 2.
-- En `pagehide`, error o pérdida de contexto se cancelan listeners/RAF y se liberan geometrías, materiales, texturas, targets y renderer.
+- El DPR se limita a 1,5 en pantallas táctiles/tablet y a 2 en escritorio.
+- El GLB contiene una única cara alpha-safe generada desde `public/logo/iocode-logo.png`.
+- El runtime sustituye el material PBR importado por `MeshBasicMaterial`, desactiva tone mapping y conserva la textura canónica sin duplicarla como mapa emisivo. La perspectiva, la rotación limitada y el movimiento aportan profundidad sin deformar el logotipo.
+- En `pagehide`, error o pérdida de contexto se cancelan listeners/RAF y se liberan geometrías, materiales, texturas y renderer.
 - La pérdida de contexto activa un fallback HTML usable.
 - El GLB usa en `src/data/site.ts` los primeros 12 caracteres de su SHA-256 como versión de caché. `qa:headers:6` bloquea cualquier binario cuyo parámetro `v` no coincida.
+- En viewports de hasta 620 px, PLC y ROBOTS ocupan la franja superior, SOFTWARE permanece por debajo de la zona central y las áreas secundarias se presentan mediante el dock inferior.
+- DATA, HMI e IOT usan un dock HTML independiente del canvas, con `z-index` propio y composición WebKit mediante `translateZ(0)` y `backface-visibility`.
+- La zona central del logo se valida geométricamente en WebKit iPhone sobre las portadas ES, EN y DE.
+- Las posiciones móviles se expresan en porcentajes de píxeles CSS, por lo que el gate de layout no depende del DPR físico.
+- `qa:hero3d-ios:6` bloquea la Fase 6 si un panel invade el área del logo, el escenario genera overflow o el dock sale de sus límites.
+- El encabezado cambia a un `details/summary` tipo hamburguesa hasta 1280 px, por lo que funciona en móvil y tablet horizontal sin depender de hidratación JavaScript.
+- Los H1 internos usan `clamp()`, `text-wrap: balance`, palabras completas y columnas amplias; la prosa usa `text-wrap: pretty` sin cortes silábicos artificiales.
+- `qa:responsive-visual:6` conserva 72 capturas (24 rutas internas × móvil/tablet/escritorio) bajo `qa-artifacts/performance/phase-6/responsive-pages/`.
+
+## Estado de verificación del 27-07-2026
+
+Estado de la fase: `NO CERRADA`.
+
+| Verificación | Estado | Evidencia |
+|---|---|---|
+| `astro check` y build de 29 rutas | PASS | Build de la imagen `web`: 93 archivos, 0 errores, 0 warnings |
+| Preparación, validación y versión del GLB | PASS | `prepare:assets:6`, `qa:assets:6`, `qa:logo3d-version:6` |
+| Autocarga ES/EN/DE | PASS | 12 casos sin reintentos: Chromium desktop/mobile y WebKit iPhone/iPad |
+| Composición iOS y fallback | PASS | 5 casos de `phase-6-hero-ios.spec.ts` |
+| Menú hamburguesa móvil/tablet | PASS | 25 casos Chromium y 8 casos focalizados WebKit |
+| Responsive interno ES/EN/DE | PASS | 93 casos Chromium/WebKit + 72 capturas visuales |
+| Contacto responsive y mailto | PASS | 6 casos funcionales desktop/móvil; formulario primero |
+| Fidelidad visual automatizada | PASS | Test de píxeles y capturas claro/oscuro/iPhone |
+| Pipeline completo `qa:phase-6` | PASS | Ejecución Docker encadenada finalizada con código `0` |
+| Lighthouse completo y `summary.json` final | PASS | 10/10 mediciones; `passed`, 0 warnings y 0 errores |
+| iPhone/iPad físicos | NOT TESTED | La evidencia actual usa WebKit automatizado |
+
+La Fase 6 no se puede cerrar hasta contrastar al menos una captura de dispositivo físico con el mismo build y completar los gates de entrega/producción.
 
 ## Entrega HTTP y caché
 
@@ -107,6 +145,13 @@ Lighthouse es evidencia de laboratorio y sirve como gate de regresión. No demue
 - El test runtime `logo 3D no se renderiza fragmentado ni como rectángulo roto` no pasa.
 - El GLB fue regenerado pero `siteConfig.logo3dPath` conserva una query antigua.
 - El navegador puede servir un GLB roto desde caché porque la URL del modelo no cambió.
+- `qa:hero3d-ios:6` falla en WebKit iPhone sobre cualquiera de las portadas ES, EN y DE.
+- PLC, ROBOTS o SOFTWARE invaden la región central del logo.
+- El Hero3D móvil produce overflow horizontal.
+- La proporción del escenario móvil supera `1.35`.
+- DATA, HMI o IOT no son visibles y accionables en el dock.
+- El menú hamburguesa no funciona en móvil o tablet.
+- No existe una captura física de iPhone que corresponda al mismo build validado por Docker.
 
 ## Propiedad y actualización
 

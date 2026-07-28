@@ -13,6 +13,12 @@ export type HeroHeadingContent = {
   tail: string;
 };
 
+export type ServiceMapNode = {
+  label: string;
+  detail: string;
+  position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+};
+
 export type PageContent = {
   title: string;
   description: string;
@@ -21,6 +27,7 @@ export type PageContent = {
   intro: string;
   heroHeading?: HeroHeadingContent;
   proofPoints?: string[];
+  serviceMap?: ServiceMapNode[];
   cards?: CardContent[];
 };
 
@@ -62,13 +69,35 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
       ]
     },
     services: {
-      title: "Servicios | PLC, robótica, software industrial e Industria 4.0",
+      title: "Servicios técnicos | PLC, HMI, robótica, IoT y software industrial",
       description:
-        "Servicios empresariales de automatización PLC, HMI, robótica industrial, software técnico, integración IoT, datos industriales y ERP.",
-      eyebrow: "Servicios",
-      heading: "Soluciones técnicas para conectar planta industrial, software y datos.",
+        "Servicios técnicos de automatización PLC, HMI, robótica industrial, integración IoT, datos industriales, software técnico y ERP.",
+      eyebrow: "Servicios técnicos",
+      heading: "Conectar planta, software y datos con criterio industrial.",
       intro:
-        "Los servicios se orientan a resolver problemas operativos reales: paradas, falta de diagnóstico, datos aislados, integración entre sistemas y software difícil de mantener.",
+        "Automatización, diagnóstico, robótica, sensores, bases de datos y aplicaciones para reducir paradas, mejorar trazabilidad y mantener sistemas industriales conectados.",
+      serviceMap: [
+        {
+          label: "PLC / HMI",
+          detail: "Control, diagnóstico y operación",
+          position: "top-left"
+        },
+        {
+          label: "Robótica",
+          detail: "Movimiento, proceso y manipulación",
+          position: "top-right"
+        },
+        {
+          label: "IoT / Datos",
+          detail: "Sensores, trazabilidad y señales",
+          position: "bottom-left"
+        },
+        {
+          label: "Software / ERP",
+          detail: "Aplicaciones, bases de datos e integración",
+          position: "bottom-right"
+        }
+      ],
       cards: [
         {
           title: "Automatización PLC y HMI",
@@ -246,13 +275,35 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
       ]
     },
     services: {
-      title: "Services | PLC, Robotics, Industrial Software & Industry 4.0",
+      title: "Technical services | PLC, HMI, robotics, IoT and industrial software",
       description:
-        "Business services for PLC automation, HMI, industrial robotics, technical software, IoT integration, industrial data and ERP systems.",
-      eyebrow: "Services",
-      heading: "Technical solutions that connect the shop floor, software and data.",
+        "Technical services for PLC automation, HMI, industrial robotics, IoT integration, industrial data, technical software and ERP.",
+      eyebrow: "Technical services",
+      heading: "Connect the shop floor, software and data with industrial criteria.",
       intro:
-        "The services focus on real operational problems: downtime, insufficient diagnostics, isolated data, system integration and software that must remain maintainable.",
+        "Automation, diagnostics, robotics, sensors, databases and applications to reduce downtime, improve traceability and keep industrial systems connected.",
+      serviceMap: [
+        {
+          label: "PLC / HMI",
+          detail: "Control, diagnostics and operation",
+          position: "top-left"
+        },
+        {
+          label: "Robotics",
+          detail: "Motion, process and handling",
+          position: "top-right"
+        },
+        {
+          label: "IoT / Data",
+          detail: "Sensors, traceability and signals",
+          position: "bottom-left"
+        },
+        {
+          label: "Software / ERP",
+          detail: "Applications, databases and integration",
+          position: "bottom-right"
+        }
+      ],
       cards: [
         {
           title: "PLC and HMI automation",
@@ -394,13 +445,35 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
       ]
     },
     services: {
-      title: "Leistungen | SPS, Robotik, Industriesoftware und Industrie 4.0",
+      title: "Technische Services | SPS, HMI, Robotik, IoT und Industriesoftware",
       description:
-        "Unternehmensleistungen für SPS-Automatisierung, HMI, Industrierobotik, technische Software, IoT-Integration, Industriedaten und ERP-Systeme.",
-      eyebrow: "Leistungen",
-      heading: "Technische Lösungen, die Produktion, Software und Daten verbinden.",
+        "Technische Services für SPS-Automatisierung, HMI, Industrierobotik, IoT-Integration, Industriedaten, Industriesoftware und ERP.",
+      eyebrow: "Technische Services",
+      heading: "Produktion, Software und Daten mit industriellem Blick verbinden.",
       intro:
-        "Die Leistungen fokussieren reale operative Probleme: Stillstand, unzureichende Diagnose, isolierte Daten, Systemintegration und Software, die wartbar bleiben muss.",
+        "Automatisierung, Diagnose, Robotik, Sensorik, Datenbanken und Anwendungen zur Reduzierung von Stillständen, besseren Rückverfolgbarkeit und verbundenen Industriesystemen.",
+      serviceMap: [
+        {
+          label: "SPS / HMI",
+          detail: "Steuerung, Diagnose und Bedienung",
+          position: "top-left"
+        },
+        {
+          label: "Robotik",
+          detail: "Bewegung, Prozess und Handling",
+          position: "top-right"
+        },
+        {
+          label: "IoT / Daten",
+          detail: "Sensorik, Rückverfolgbarkeit und Signale",
+          position: "bottom-left"
+        },
+        {
+          label: "Software / ERP",
+          detail: "Anwendungen, Datenbanken und Integration",
+          position: "bottom-right"
+        }
+      ],
       cards: [
         {
           title: "SPS- und HMI-Automatisierung",

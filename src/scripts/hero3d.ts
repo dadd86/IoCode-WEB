@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 
@@ -15,12 +14,6 @@ type PointerState = {
   targetY: number;
 };
 
-type LogoMaterialRuntime = {
-  material: THREE.Material;
-  baseOpacity: number;
-};
-
-
 type LogoScene = {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -31,14 +24,6 @@ type LogoScene = {
   stage: HTMLElement;
   panels: PanelElement[];
   pointer: PointerState;
-  getActivePanel: () => PanelElement | null;
-  materials: LogoMaterialRuntime[];
-  lights: {
-    ambient: THREE.HemisphereLight;
-    key: THREE.SpotLight;
-    cyan: THREE.PointLight;
-    blue: THREE.PointLight;
-  };
   reducedMotion: boolean;
 };
 
@@ -48,8 +33,6 @@ type RuntimeState = {
   resizeObserver: ResizeObserver | null;
   intersectionObserver: IntersectionObserver | null;
   renderer: THREE.WebGLRenderer | null;
-  pmremGenerator: THREE.PMREMGenerator | null;
-  environmentTarget: THREE.WebGLRenderTarget | null;
   isVisible: boolean;
   isDocumentVisible: boolean;
   disposed: boolean;
@@ -149,13 +132,6 @@ function getMaterialList(material: THREE.Material | THREE.Material[]): THREE.Mat
   return Array.isArray(material) ? material : [material];
 }
 
-const COLOR_TEXTURE_KEYS = [
-  "map",
-  "emissiveMap",
-  "specularColorMap",
-  "sheenColorMap"
-] as const;
-
 const DISPOSABLE_TEXTURE_KEYS = [
   "map",
   "alphaMap",
@@ -184,6 +160,7 @@ const DISPOSABLE_TEXTURE_KEYS = [
 type MaterialWithOptionalMaps = THREE.Material & {
   alphaTest?: number;
   depthWrite?: boolean;
+  depthTest?: boolean;
   opacity?: number;
   side?: THREE.Side;
   toneMapped?: boolean;
@@ -199,13 +176,32 @@ function configureColorTexture(texture: THREE.Texture | null | undefined): void 
   texture.needsUpdate = true;
 }
 
-function materialHasLogoTexture(material: MaterialWithOptionalMaps): boolean {
-  return COLOR_TEXTURE_KEYS.some((key) => material[key] instanceof THREE.Texture);
-}
-
-function prepareLogoMaterials(logo: THREE.Object3D): LogoMaterialRuntime[] {
-  const materialRuntimes: LogoMaterialRuntime[] = [];
-  const seenMaterials = new Set<THREE.Material>();
+/**
+ * Propósito:
+ * Sustituir los materiales PBR importados por una cara frontal sin iluminación
+ * que reproduce la textura original del logo.
+ *
+ * Parámetros:
+ * - logo: grupo cargado desde el GLB.
+ * - renderer: renderer activo, utilizado para limitar la anisotropía.
+ *
+ * Retorno:
+ * void.
+ *
+ * Contexto:
+ * El GLB de producción es un billboard alpha-safe. Aplicar simultáneamente la
+ * textura como baseColor y emissiveMap altera el color y puede generar bordes
+ * fragmentados en WebKit. MeshBasicMaterial conserva los píxeles originales;
+ * la profundidad visual procede de la perspectiva y del movimiento del grupo.
+ */
+function prepareLogoMaterials(
+  logo: THREE.Object3D,
+  renderer: THREE.WebGLRenderer
+): void {
+  const maxAnisotropy = Math.min(
+    renderer.capabilities.getMaxAnisotropy(),
+    4
+  );
 
   logo.traverse((child: THREE.Object3D) => {
     if (!(child instanceof THREE.Mesh)) {
@@ -221,50 +217,75 @@ function prepareLogoMaterials(logo: THREE.Object3D): LogoMaterialRuntime[] {
     mesh.receiveShadow = false;
     mesh.frustumCulled = false;
 
-    getMaterialList(mesh.material).forEach((material) => {
-      if (seenMaterials.has(material)) {
-        return;
-      }
+    const sourceMaterials =
+      getMaterialList(mesh.material);
 
-      seenMaterials.add(material);
+    const fidelityMaterials =
+      sourceMaterials.flatMap((material) => {
+        const source =
+          material as MaterialWithOptionalMaps;
 
-      const logoMaterial = material as MaterialWithOptionalMaps;
-      const hasTexture = materialHasLogoTexture(logoMaterial);
-      const baseOpacity = typeof logoMaterial.opacity === "number" ? logoMaterial.opacity : 1;
+        const texture =
+          source.map instanceof THREE.Texture
+            ? source.map
+            : source.emissiveMap instanceof
+                THREE.Texture
+              ? source.emissiveMap
+              : null;
 
-      COLOR_TEXTURE_KEYS.forEach((key) => configureColorTexture(logoMaterial[key]));
-
-      if (hasTexture) {
-        logoMaterial.transparent = true;
-        logoMaterial.alphaTest = 0.02;
-        logoMaterial.depthWrite = false;
-        logoMaterial.depthTest = true;
-        logoMaterial.side = THREE.FrontSide;
-
-        if ("toneMapped" in logoMaterial) {
-          logoMaterial.toneMapped = false;
+        if (!texture) {
+          material.dispose();
+          return [];
         }
 
-        mesh.renderOrder = 10;
-      } else {
-        logoMaterial.transparent = false;
-        logoMaterial.depthWrite = true;
-        logoMaterial.depthTest = true;
-        logoMaterial.side = THREE.FrontSide;
-        mesh.renderOrder = 1;
-      }
+        configureColorTexture(texture);
+        texture.anisotropy = maxAnisotropy;
 
-      logoMaterial.opacity = baseOpacity;
-      logoMaterial.needsUpdate = true;
+        const fidelityMaterial =
+          new THREE.MeshBasicMaterial({
+            alphaMap:
+              source.alphaMap instanceof
+              THREE.Texture
+                ? source.alphaMap
+                : null,
+            alphaTest: 0.01,
+            color: 0xffffff,
+            depthTest: true,
+            depthWrite: false,
+            fog: false,
+            map: texture,
+            opacity:
+              typeof source.opacity === "number"
+                ? source.opacity
+                : 1,
+            side: THREE.FrontSide,
+            toneMapped: false,
+            transparent: true
+          });
 
-      materialRuntimes.push({
-        material,
-        baseOpacity
+        fidelityMaterial.name =
+          `${material.name || "IoCodeLogo"}-source-fidelity`;
+
+        material.dispose();
+
+        return [fidelityMaterial];
       });
-    });
-  });
 
-  return materialRuntimes;
+    const firstFidelityMaterial =
+      fidelityMaterials[0];
+
+    if (!firstFidelityMaterial) {
+      mesh.visible = false;
+      return;
+    }
+
+    mesh.material =
+      Array.isArray(mesh.material)
+        ? fidelityMaterials
+        : firstFidelityMaterial;
+
+    mesh.renderOrder = 10;
+  });
 }
 
 function disposeMaterial(material: THREE.Material): void {
@@ -334,11 +355,8 @@ function setupPanelInteractions(
   panelsWrapper: HTMLElement,
   panels: PanelElement[],
   abortController: AbortController
-): () => PanelElement | null {
-  let activePanel: PanelElement | null = null;
-
+): void {
   function setActive(panel: PanelElement | null): void {
-    activePanel = panel;
     panelsWrapper.dataset.hasActive = panel ? "true" : "false";
     host.dataset.activePanel = panel?.dataset.panelId || "";
 
@@ -395,74 +413,80 @@ function setupPanelInteractions(
       }
     );
   });
-
-  return () => activePanel;
 }
 
-function createLights(scene: THREE.Scene): LogoScene["lights"] {
-  const ambient = new THREE.HemisphereLight(0xffffff, 0x061020, 1.05);
-
-  const key = new THREE.SpotLight(
-    0xffffff,
-    42,
-    28,
-    Math.PI * 0.22,
-    0.38,
-    1
-  );
-
-  const cyan = new THREE.PointLight(0x26d9f4, 2.55, 16, 1.8);
-  const blue = new THREE.PointLight(0x246ab7, 1.8, 16, 1.8);
-
-  key.position.set(4.2, 4.8, 7.4);
-  key.castShadow = true;
-
-  cyan.position.set(3, 1.15, 3);
-  blue.position.set(-3.1, -0.85, 1.6);
-
-  scene.add(ambient, key, cyan, blue);
-
-  return {
-    ambient,
-    key,
-    cyan,
-    blue
-  };
-}
-
-function applyTheme(runtime: LogoScene, host: HTMLElement): void {
+function applyTheme(host: HTMLElement): void {
   const dark = isDarkMode(host);
-  const { scene, renderer, lights } = runtime;
-
-  scene.fog = new THREE.FogExp2(dark ? 0x030816 : 0xf6fbff, dark ? 0.028 : 0.01);
-
-  lights.ambient.intensity = dark ? 1.12 : 1.22;
-  lights.key.intensity = dark ? 42 : 34;
-  lights.cyan.intensity = dark ? 2.55 : 1.55;
-  lights.blue.intensity = dark ? 1.8 : 0.95;
-
-  renderer.toneMappingExposure = dark ? 1.1 : 1.04;
 
   host.dataset.theme = dark ? "dark" : "light";
 }
 
-function resizeRuntime(runtime: LogoScene): void {
-  const { width, height } = getStageSize(runtime.stage);
+/**
+ * Propósito:
+ * Adaptar renderer y cámara al viewport limitando el coste del framebuffer.
+ *
+ * Parámetros:
+ * - runtime: escena activa del Logo3D.
+ *
+ * Retorno:
+ * void.
+ *
+ * Notas:
+ * En pantallas táctiles se limita el DPR a 1.5. En escritorio se conserva
+ * un máximo de 2. El CSS continúa trabajando en píxeles lógicos.
+ */
+function resizeRuntime(
+  runtime: LogoScene
+): void {
+  const { width, height } =
+    getStageSize(runtime.stage);
 
-  runtime.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  runtime.renderer.setSize(width, height, false);
+  const coarsePointer = window.matchMedia(
+    "(hover: none) and (pointer: coarse)"
+  ).matches;
 
-  runtime.camera.aspect = width / height;
-  runtime.camera.fov = width < 640 ? 41 : width < 960 ? 36 : 31;
+  const pixelRatioLimit =
+    coarsePointer || width < 960
+      ? 1.5
+      : 2;
 
-  runtime.camera.position.z = fitCameraToBox(
-    runtime.camera,
-    runtime.logoFittedBox,
-    runtime.camera.aspect,
-    width
+  runtime.renderer.setPixelRatio(
+    Math.min(
+      window.devicePixelRatio || 1,
+      pixelRatioLimit
+    )
   );
 
-  runtime.camera.position.y = width < 640 ? 0.36 : width < 960 ? 0.22 : 0.14;
+  runtime.renderer.setSize(
+    width,
+    height,
+    false
+  );
+
+  runtime.camera.aspect = width / height;
+
+  runtime.camera.fov =
+    width < 640
+      ? 41
+      : width < 960
+        ? 36
+        : 31;
+
+  runtime.camera.position.z =
+    fitCameraToBox(
+      runtime.camera,
+      runtime.logoFittedBox,
+      runtime.camera.aspect,
+      width
+    );
+
+  runtime.camera.position.y =
+    width < 640
+      ? 0.36
+      : width < 960
+        ? 0.22
+        : 0.14;
+
   runtime.camera.position.x = 0;
   runtime.camera.lookAt(0, 0, 0);
   runtime.camera.updateProjectionMatrix();
@@ -537,14 +561,6 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
 
     runtime.pointer.x += (runtime.pointer.targetX - runtime.pointer.x) * 0.045;
     runtime.pointer.y += (runtime.pointer.targetY - runtime.pointer.y) * 0.045;
-
-    runtime.materials.forEach(({ material, baseOpacity }) => {
-      const logoMaterial = material as THREE.Material & { opacity?: number };
-
-      if (typeof logoMaterial.opacity === "number") {
-        logoMaterial.opacity = baseOpacity;
-      }
-    });
 
     const breathingScale =
       1 + Math.sin(elapsed * 0.72) * 0.018 * motionFactor;
@@ -627,21 +643,6 @@ function animateRuntime(runtime: LogoScene, state: RuntimeState, startTime: numb
       0
     );
 
-    runtime.lights.key.position.x =
-      3.8 + Math.sin(elapsed * 0.55) * 0.3 * motionFactor;
-
-    runtime.lights.cyan.position.set(
-      Math.cos(elapsed * 0.62) * 3,
-      1.15,
-      3 + Math.sin(elapsed * 0.62) * 0.55
-    );
-
-    runtime.lights.blue.position.set(
-      Math.sin(elapsed * 0.5) * 3.1,
-      -0.85,
-      1.6
-    );
-
     runtime.logo.updateMatrixWorld(true);
 
     runtime.panels.forEach((panel) => projectPanel(runtime, panel, elapsed));
@@ -694,8 +695,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
     resizeObserver: null,
     intersectionObserver: null,
     renderer: null,
-    pmremGenerator: null,
-    environmentTarget: null,
     isVisible: true,
     isDocumentVisible: document.visibilityState === "visible",
     disposed: false
@@ -710,34 +709,41 @@ export async function initHero(host: HTMLElement): Promise<void> {
     sceneToDispose = scene;
     const camera = new THREE.PerspectiveCamera(31, 1, 0.1, 120);
 
+    /**
+     * Perfil GPU:
+     * - Desktop: antialias y preferencia de alto rendimiento.
+     * - Touch/tablet: menor framebuffer y sin antialias MSAA.
+     *
+     * El modelo actual no necesita recibir sombras para conservar legibilidad.
+     */
+    const coarsePointer = window.matchMedia(
+      "(hover: none) and (pointer: coarse)"
+    ).matches;
+
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !coarsePointer,
       alpha: true,
-      powerPreference: "high-performance"
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: false,
+      powerPreference: coarsePointer
+        ? "default"
+        : "high-performance"
     });
 
     state.renderer = renderer;
 
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.outputColorSpace =
+      THREE.SRGBColorSpace;
+
+    renderer.toneMapping =
+      THREE.NoToneMapping;
+
+    renderer.shadowMap.enabled = false;
     renderer.setClearColor(0x000000, 0);
     renderer.sortObjects = true;
 
     viewer.innerHTML = "";
     viewer.appendChild(renderer.domElement);
-
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    const roomEnvironment = new RoomEnvironment();
-
-    state.pmremGenerator = pmremGenerator;
-    state.environmentTarget = pmremGenerator.fromScene(roomEnvironment, 0.035);
-    disposeObject3D(roomEnvironment);
-
-    scene.environment = state.environmentTarget.texture;
-
-    const lights = createLights(scene);
 
     const loader = new GLTFLoader();
 
@@ -747,7 +753,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     scene.add(logo);
 
-    const materials = prepareLogoMaterials(logo);
+    prepareLogoMaterials(logo, renderer);
 
     const logoBaseScale = normalizeLogoByWidth(logo, 4.8);
 
@@ -805,7 +811,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
       }
     );
 
-    const getActivePanel = setupPanelInteractions(
+    setupPanelInteractions(
       host,
       panelsWrapper,
       panels,
@@ -824,9 +830,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
       stage,
       panels,
       pointer,
-      getActivePanel,
-      materials,
-      lights,
       reducedMotion: reducedMotionQuery.matches
     };
 
@@ -893,8 +896,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
       state.intersectionObserver?.disconnect();
 
       disposeObject3D(scene);
-      state.environmentTarget?.dispose();
-      state.pmremGenerator?.dispose();
       state.renderer?.dispose();
 
       viewer?.replaceChildren();
@@ -939,7 +940,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
 
     const colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    const handleThemeChange = () => applyTheme(runtime, host);
+    const handleThemeChange = () => applyTheme(host);
 
     window.addEventListener("themechange", handleThemeChange, {
       signal: state.abortController.signal
@@ -949,7 +950,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
       signal: state.abortController.signal
     });
 
-    applyTheme(runtime, host);
+    applyTheme(host);
 
     resizeRuntime(runtime);
 
@@ -973,6 +974,8 @@ export async function initHero(host: HTMLElement): Promise<void> {
     );
 
     host.dataset.fallback = "false";
+    host.dataset.hero3dLogoMode =
+      "source-texture-fidelity";
     host.dataset.hero3dState = "ready";
     delete host.dataset.hero3dFallbackReason;
     host.classList.remove("is-loading", "is-fallback");
@@ -1004,8 +1007,6 @@ export async function initHero(host: HTMLElement): Promise<void> {
       disposeObject3D(sceneToDispose);
     }
 
-    state.environmentTarget?.dispose();
-    state.pmremGenerator?.dispose();
     state.renderer?.dispose();
 
     viewer.replaceChildren();

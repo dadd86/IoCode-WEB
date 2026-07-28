@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import sharp from "sharp";
 
 test.describe("Fase 6 - Performance Hero3D", () => {
-  test("aplaza el runtime 3D hasta una interacción intencional", async ({ page }) => {
+  test("autocarga el runtime 3D al entrar en viewport sin interacción", async ({ page }) => {
     test.setTimeout(90_000);
 
     await page.emulateMedia({
@@ -16,14 +16,17 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     const hero = page.locator("[data-hero3d]");
 
     await expect(hero).toBeVisible();
-    await page.waitForTimeout(750);
-    await expect(hero).toHaveAttribute("data-hero3d-state", "deferred");
-    await expect(page.locator("[data-hero-viewer] canvas")).toHaveCount(0);
-
-    await hero.hover();
-    await expect(hero).toHaveAttribute("data-hero3d-state", "ready", {
-      timeout: 30_000
+    await expect(hero).toHaveAttribute("data-hero3d-armed", "true");
+    await expect(hero).toHaveAttribute("data-hero3d-requested", "true", {
+      timeout: 8_000
     });
+    await expect(hero).toHaveAttribute("data-hero3d-state", "ready", {
+      timeout: 45_000
+    });
+    await expect(hero).toHaveAttribute(
+      "data-hero3d-logo-mode",
+      "source-texture-fidelity"
+    );
     await expect(page.locator("[data-hero-viewer] canvas")).toHaveCount(1);
   });
 
@@ -83,7 +86,9 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     const hero = page.locator("[data-hero3d]");
 
     await expect(hero).toBeVisible();
-    await hero.hover();
+    await expect(hero).toHaveAttribute("data-hero3d-requested", "true", {
+      timeout: 8_000
+    });
 
     await expect(hero).toHaveAttribute("data-fallback", "true", {
       timeout: 15_000
@@ -246,7 +251,6 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     await expect(page.locator("main")).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(page.locator("[data-hero-placeholder]")).toBeVisible();
-    await hero.hover();
 
     await page.waitForFunction(
       () => {
@@ -324,7 +328,6 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     const hero = page.locator("[data-hero3d]");
     const canvas = page.locator("[data-hero-viewer] canvas");
 
-    await hero.hover();
     await expect(hero).toHaveAttribute("data-hero3d-state", "ready", {
       timeout: 30_000
     });
@@ -403,7 +406,6 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
-    await page.locator("[data-hero3d]").hover();
     await page.waitForFunction(
       () => {
         const hero = document.querySelector<HTMLElement>("[data-hero3d]");
@@ -639,7 +641,6 @@ test.describe("Fase 6 - Performance Hero3D", () => {
       waitUntil: "domcontentloaded"
     });
 
-    await page.locator("[data-hero3d]").hover();
     await page.waitForFunction(
       () => {
         const hero = document.querySelector<HTMLElement>("[data-hero3d]");

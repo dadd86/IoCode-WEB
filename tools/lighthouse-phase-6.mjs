@@ -58,6 +58,10 @@ function getAuditScore(lhr, auditId) {
   return lhr.audits?.[auditId]?.score ?? null;
 }
 
+function getAuditScoreDisplayMode(lhr, auditId) {
+  return lhr.audits?.[auditId]?.scoreDisplayMode ?? null;
+}
+
 function getLcpElement(lhr) {
   const audit = lhr.audits?.["largest-contentful-paint-element"];
   const item = audit?.details?.items?.[0];
@@ -150,7 +154,8 @@ function createMobileConfig() {
   };
 }
 
-function validateResult(result) {
+function getValidationErrors(result) {
+  const resultErrors = [];
   const {
     route,
     profile,
@@ -167,25 +172,25 @@ function validateResult(result) {
       : thresholds.mobilePerformance;
 
   if (performance === null || performance < minPerformance) {
-    errors.push(
+    resultErrors.push(
       `${profile} ${route}: performance ${performance} menor que presupuesto ${minPerformance}.`
     );
   }
 
   if (largestContentfulPaint !== null && largestContentfulPaint > thresholds.maxLcpMs) {
-    errors.push(
+    resultErrors.push(
       `${profile} ${route}: LCP ${largestContentfulPaint}ms supera ${thresholds.maxLcpMs}ms. Elemento LCP: ${JSON.stringify(lcpElement)}`
     );
   }
 
   if (cumulativeLayoutShift !== null && cumulativeLayoutShift > thresholds.maxCls) {
-    errors.push(
+    resultErrors.push(
       `${profile} ${route}: CLS ${cumulativeLayoutShift} supera ${thresholds.maxCls}.`
     );
   }
 
   if (totalBlockingTime !== null && totalBlockingTime > thresholds.maxTbtMs) {
-    errors.push(
+    resultErrors.push(
       `${profile} ${route}: TBT ${totalBlockingTime}ms supera ${thresholds.maxTbtMs}ms.`
     );
   }
@@ -210,13 +215,69 @@ function validateResult(result) {
 
   for (const audit of requiredAuditScores) {
     const score = result.auditScores?.[audit.id];
+    const scoreDisplayMode = result.auditScoreDisplayModes?.[audit.id];
+    const isNotApplicable =
+      score === null && scoreDisplayMode === "notApplicable";
 
-    if (score !== 1) {
-      errors.push(
-        `${route} ${profile}: ${audit.label} no pasó. Audit ${audit.id} score=${score}.`
+    if (score !== 1 && !isNotApplicable) {
+      resultErrors.push(
+        `${route} ${profile}: ${audit.label} no pasó. Audit ${audit.id} score=${score}, scoreDisplayMode=${scoreDisplayMode}.`
       );
     }
   }
+
+  return resultErrors;
+}
+
+function createResult(lhr, route, profile) {
+  return {
+    route,
+    profile,
+    requestedUrl: lhr.requestedUrl,
+    finalDisplayedUrl: lhr.finalDisplayedUrl,
+    performance: getScore(lhr, "performance"),
+    accessibility: getScore(lhr, "accessibility"),
+    bestPractices: getScore(lhr, "best-practices"),
+    seo: getScore(lhr, "seo"),
+    largestContentfulPaint: getNumericAudit(lhr, "largest-contentful-paint"),
+    cumulativeLayoutShift: getNumericAudit(lhr, "cumulative-layout-shift"),
+    totalBlockingTime: getNumericAudit(lhr, "total-blocking-time"),
+    speedIndex: getNumericAudit(lhr, "speed-index"),
+    lcpElement: getLcpElement(lhr),
+    auditScores: {
+      "errors-in-console": getAuditScore(lhr, "errors-in-console"),
+      "inspector-issues": getAuditScore(lhr, "inspector-issues"),
+      "uses-text-compression": getAuditScore(lhr, "uses-text-compression"),
+      "label-content-name-mismatch": getAuditScore(lhr, "label-content-name-mismatch")
+    },
+    auditScoreDisplayModes: {
+      "errors-in-console": getAuditScoreDisplayMode(lhr, "errors-in-console"),
+      "inspector-issues": getAuditScoreDisplayMode(lhr, "inspector-issues"),
+      "uses-text-compression": getAuditScoreDisplayMode(lhr, "uses-text-compression"),
+      "label-content-name-mismatch": getAuditScoreDisplayMode(
+        lhr,
+        "label-content-name-mismatch"
+      )
+    }
+  };
+}
+
+function selectMedianAttempt(attempts) {
+  const ordered = [...attempts].sort((left, right) => {
+    const leftPerformance = left.result.performance ?? -1;
+    const rightPerformance = right.result.performance ?? -1;
+
+    if (leftPerformance !== rightPerformance) {
+      return leftPerformance - rightPerformance;
+    }
+
+    return (
+      (right.result.totalBlockingTime ?? Number.POSITIVE_INFINITY) -
+      (left.result.totalBlockingTime ?? Number.POSITIVE_INFINITY)
+    );
+  });
+
+  return ordered[Math.floor(ordered.length / 2)];
 }
 
 let chrome = null;
@@ -244,26 +305,51 @@ try {
     for (const profile of ["desktop", "mobile"]) {
       const url = new URL(route, baseURL).toString();
       const config = profile === "desktop" ? createDesktopConfig() : createMobileConfig();
+      const expectedAttempts = profile === "desktop" ? 3 : 1;
+      const attempts = [];
 
-      console.log(`Lighthouse Fase 6: ${profile} ${route}`);
+      for (let attempt = 1; attempt <= expectedAttempts; attempt += 1) {
+        console.log(
+          `Lighthouse Fase 6: ${profile} ${route} (${attempt}/${expectedAttempts})`
+        );
 
-      const runnerResult = await lighthouse(
-        url,
-        {
-          port: chrome.port,
-          output: ["json", "html"],
-          logLevel: "error",
-          onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
-        },
-        config
-      );
+        const runnerResult = await lighthouse(
+          url,
+          {
+            port: chrome.port,
+            output: ["json", "html"],
+            logLevel: "error",
+            onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
+          },
+          config
+        );
 
-      if (!runnerResult?.lhr) {
-        errors.push(`${profile} ${route}: Lighthouse no generó LHR.`);
+        if (!runnerResult?.lhr) {
+          errors.push(
+            `${profile} ${route}: Lighthouse no generó LHR en el intento ${attempt}.`
+          );
+          continue;
+        }
+
+        attempts.push({
+          attempt,
+          lhr: runnerResult.lhr,
+          result: createResult(runnerResult.lhr, route, profile)
+        });
+      }
+
+      if (attempts.length !== expectedAttempts) {
+        errors.push(
+          `${profile} ${route}: se esperaban ${expectedAttempts} intentos Lighthouse y se recibieron ${attempts.length}.`
+        );
+      }
+
+      if (attempts.length === 0) {
         continue;
       }
 
-      const { lhr } = runnerResult;
+      const selectedAttempt = selectMedianAttempt(attempts);
+      const { lhr } = selectedAttempt;
       const slug = `${profile}-${slugify(route)}`;
       const jsonPath = join(lighthouseRoot, `${slug}.json`);
       const htmlPath = join(lighthouseRoot, `${slug}.html`);
@@ -272,30 +358,26 @@ try {
       writeFileSync(htmlPath, ReportGenerator.generateReport(lhr, "html"), "utf8");
 
       const result = {
-        route,
-        profile,
-        requestedUrl: lhr.requestedUrl,
-        finalDisplayedUrl: lhr.finalDisplayedUrl,
-        performance: getScore(lhr, "performance"),
-        accessibility: getScore(lhr, "accessibility"),
-        bestPractices: getScore(lhr, "best-practices"),
-        seo: getScore(lhr, "seo"),
-        largestContentfulPaint: getNumericAudit(lhr, "largest-contentful-paint"),
-        cumulativeLayoutShift: getNumericAudit(lhr, "cumulative-layout-shift"),
-        totalBlockingTime: getNumericAudit(lhr, "total-blocking-time"),
-        speedIndex: getNumericAudit(lhr, "speed-index"),
-        lcpElement: getLcpElement(lhr),
+        ...selectedAttempt.result,
         reportJson: jsonPath.replaceAll("\\", "/"),
         reportHtml: htmlPath.replaceAll("\\", "/"),
-        auditScores: {
-          "errors-in-console": getAuditScore(lhr, "errors-in-console"),
-          "inspector-issues": getAuditScore(lhr, "inspector-issues"),
-          "uses-text-compression": getAuditScore(lhr, "uses-text-compression"),
-          "label-content-name-mismatch": getAuditScore(lhr, "label-content-name-mismatch")
-        }
+        expectedAttempts,
+        selectedAttempt: selectedAttempt.attempt,
+        selectionMethod:
+          expectedAttempts === 1
+            ? "single-run"
+            : "median-performance-score-with-tbt-tiebreak",
+        attempts: attempts.map(({ attempt, result: attemptResult }) => ({
+          attempt,
+          performance: attemptResult.performance,
+          largestContentfulPaint: attemptResult.largestContentfulPaint,
+          cumulativeLayoutShift: attemptResult.cumulativeLayoutShift,
+          totalBlockingTime: attemptResult.totalBlockingTime,
+          speedIndex: attemptResult.speedIndex
+        }))
       };
 
-      validateResult(result);
+      errors.push(...getValidationErrors(result));
       results.push(result);
     }
   }

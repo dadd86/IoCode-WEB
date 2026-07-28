@@ -18,14 +18,17 @@ ENV CI=1 \
     PERFORMANCE_BASE_URL=http://web:8080 \
     CHROME_PATH=/usr/local/bin/chromium
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
+RUN set -eux; \
+  sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g' /etc/apt/sources.list.d/ubuntu.sources; \
+  sed -i 's|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list.d/ubuntu.sources; \
+  apt-get -o Acquire::Retries=5 update; \
+  apt-get install -y --no-install-recommends \
     ca-certificates \
     imagemagick \
     jq \
     gzip \
-    brotli \
-  && rm -rf /var/lib/apt/lists/*
+    brotli; \
+  rm -rf /var/lib/apt/lists/*
 
 COPY package*.json .npmrc ./
 
