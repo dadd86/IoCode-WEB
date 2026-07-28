@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R1 | Evidencia RED/GREEN del guardián documental y runtime | Documentación, herramientas y pruebas | ES | Programa R0–R8, fixtures, Node test runner y reporte del corpus | 2026-07-28 | Checkpoints `12c4e42`, `f5ea1cb`, `0bc6016`, `0d48131`, `b493b65`; integración pendiente de firma |
+| R1 | Evidencia RED/GREEN del guardián documental y runtime | Documentación, herramientas y pruebas | ES | Programa R0–R8, fixtures, Node test runner y reporte del corpus | 2026-07-28 | Checkpoints `12c4e42`, `f5ea1cb`, `0bc6016`, `0d48131`, `b493b65`; GREEN e integración `50fc0ba` |
 
 Estado: `Done with evidence`.
 
@@ -24,7 +24,7 @@ Los comportamientos se derivan del programa R0–R8 corregido entregado por el p
 |---|---|---|
 | Validador inicial | `12c4e42`: `ERR_MODULE_NOT_FOUND` para `tools/doc-validator.js` | `f5ea1cb`: 7/7 pruebas en verde |
 | Directorios runtime | `0bc6016`: `EISDIR` al inspeccionar una raíz | `0d48131`: recorrido recursivo y 10/10 pruebas |
-| Fences anidados | `b493b65`: falta `DOC_FENCE_NESTED` | Implementación posterior: 10/10 pruebas |
+| Fences anidados | `b493b65`: falta `DOC_FENCE_NESTED` | `50fc0ba`: detección activa y 10/10 pruebas |
 
 ## Especificación comprobada
 
@@ -80,4 +80,3 @@ El reporte estructurado se genera en `qa-artifacts/documentation/doc-validator.j
 - El parser cubre el subconjunto Markdown utilizado por el repositorio; no pretende sustituir un parser CommonMark completo.
 - Las cargas runtime construidas dinámicamente mediante concatenación no se resuelven estáticamente.
 - La validez jurídica o editorial del contenido no puede automatizarse con este gate.
-
