@@ -1,0 +1,15 @@
+services:
+  dev:
+    ports:
+      - "${ASTRO_DEV_PORT:-4321}:4321"
+  preview:
+    ports:
+      - "${ASTRO_PREVIEW_PORT:-4322}:4321"
+  web:
+    environment:
+      ENABLE_HSTS: "${ENABLE_HSTS:-false}"
+      ENABLE_COOP: "${ENABLE_COOP:-false}"
+      ENABLE_UPGRADE_INSECURE_REQUESTS: "${ENABLE_UPGRADE_INSECURE_REQUESTS:-false}"
+      NODE_ENV: production
+    ports:
+      - "${WEB_PORT:-8080}:8080"
