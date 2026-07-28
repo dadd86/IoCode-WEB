@@ -1,0 +1,103 @@
+{
+  "packageJson": "../package.json",
+  "documents": [
+    {
+      "path": "../README.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
+      "path": "../RUN_GUIDE.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "../SECURITY.md",
+      "type": "security",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "../CHANGELOG.md",
+      "type": "changelog"
+    },
+    {
+      "path": "../QA_CHECKLIST.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "../Docker/README.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "../Docker/OPERATIONS.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "../Docker/SECURITY_NOTES.md",
+      "type": "security",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "index.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
+      "path": "MAINTENANCE.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "I18N.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
+      "path": "MIGRATION_FROM_STATIC_HTML.md",
+      "type": "historical"
+    },
+    {
+      "path": "PERFORMANCE.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
+      "path": "PROJECT_SELECTION.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
+      "path": "QA_PHASE_1_1C.md",
+      "type": "historical"
+    },
+    {
+      "path": "audits/R0_BASELINE.md",
+      "type": "historical"
+    },
+    {
+      "path": "testing/phase-6-closure.tdd.md",
+      "type": "historical"
+    },
+    {
+      "path": "testing/r1-document-validator.tdd.md",
+      "type": "historical"
+    },
+    {
+      "path": "testing/seo-geo-rag.tdd.md",
+      "type": "historical"
+    }
+  ],
+  "runtimeSources": [
+    "../src",
+    "../public"
+  ],
+  "allowedRuntimeOrigins": []
+}

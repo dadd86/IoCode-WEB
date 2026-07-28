@@ -245,7 +245,18 @@ function validateFences(filePath, content, findings) {
 
     if (/^\s*```\s*$/u.test(line)) {
       openFenceLine = null;
+      return;
     }
+
+    findings.push(
+      finding({
+        code: "DOC_FENCE_NESTED",
+        file: filePath,
+        line: index + 1,
+        message:
+          "Se encontró un nuevo fence con lenguaje o atributos antes de cerrar el bloque anterior."
+      })
+    );
   });
 
   if (openFenceLine !== null) {
