@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R2 | Evidencia del corpus consolidado y validado | Documentación, arquitectura y operación | ES, EN, DE | Diff R2 y reporte de `docs:lint` | 2026-07-28 | Pendiente de firma |
+| R2 | Evidencia del corpus consolidado y validado | Documentación, arquitectura y operación | ES, EN, DE | Diff R2 y reporte de `docs:lint` | 2026-07-28 | `4aee712` |
 
 Estado: `Done with evidence`.
 
