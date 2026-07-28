@@ -64,6 +64,7 @@ test("reports unclosed fences and residual editor attributes", async () => {
   });
 
   assert.ok(findings.some(({ code }) => code === "DOC_FENCE_UNCLOSED"));
+  assert.ok(findings.some(({ code }) => code === "DOC_FENCE_NESTED"));
   assert.ok(
     findings.some(
       ({ code, line }) => code === "DOC_FENCE_ATTRIBUTE" && line === 10
