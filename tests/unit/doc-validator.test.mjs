@@ -1,5 +1,11 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -79,6 +85,68 @@ test("reports missing metadata fields and stale verification dates", async () =>
   assert.ok(findings.some(({ code }) => code === "DOC_METADATA_STALE"));
 });
 
+test("reports absent metadata, BOM and invalid or future dates", () => {
+  const missingMetadata = validateDocument({
+    filePath: join(fixtureRoot, "missing.md"),
+    content: "# Sin tabla\n",
+    documentType: "runbook",
+    maxAgeDays: 90,
+    now: referenceDate,
+    packageScripts: {}
+  });
+  assert.ok(
+    missingMetadata.some(({ code }) => code === "DOC_METADATA_MISSING")
+  );
+
+  const invalidDate = validateDocument({
+    filePath: join(fixtureRoot, "invalid-date.md"),
+    content:
+      "\uFEFF# Fecha inválida\n\n" +
+      "| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |\n" +
+      "|---|---|---|---|---|---|\n" +
+      "| R1 | Fixture | Docs | ES | Test | mañana |\n",
+    documentType: "runbook",
+    maxAgeDays: 90,
+    now: referenceDate,
+    packageScripts: {}
+  });
+  assert.ok(invalidDate.some(({ code }) => code === "DOC_ENCODING_BOM"));
+  assert.ok(invalidDate.some(({ code }) => code === "DOC_METADATA_DATE"));
+
+  const futureDate = validateDocument({
+    filePath: join(fixtureRoot, "future-date.md"),
+    content:
+      "# Fecha futura\n\n" +
+      "| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |\n" +
+      "|---|---|---|---|---|---|\n" +
+      "| R1 | Fixture | Docs | ES | Test | 2026-08-01 |\n",
+    documentType: "runbook",
+    maxAgeDays: 90,
+    now: referenceDate,
+    packageScripts: {}
+  });
+  assert.ok(futureDate.some(({ code }) => code === "DOC_METADATA_DATE"));
+});
+
+test("ADRs and historical documents do not expire", async () => {
+  const findings = validateDocument({
+    filePath: join(fixtureRoot, "invalid-metadata.md"),
+    content: (await readFixture("invalid-metadata.md")).replace(
+      "| Bloque | Descripción | Ámbito | Idiomas afectados | Última verificación |",
+      "| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |"
+    ).replace(
+      "| R1 | Fixture inválido | Documentación | ES | 2025-01-01 |",
+      "| R1 | Fixture válido | Documentación | ES | Test | 2025-01-01 |"
+    ),
+    documentType: "adr",
+    maxAgeDays: 1,
+    now: referenceDate,
+    packageScripts: {}
+  });
+
+  assert.deepEqual(findings, []);
+});
+
 test("reports unknown npm scripts and broken relative links", async () => {
   const findings = validateDocument({
     filePath: join(fixtureRoot, "invalid-command-link.md"),
@@ -109,6 +177,58 @@ test("runtime scan rejects remote loads but ignores informational links", async 
   assert.ok(runtimeCodes.includes("RUNTIME_REMOTE_FETCH"));
   assert.ok(runtimeCodes.includes("RUNTIME_REMOTE_CSS_URL"));
   assert.ok(!runtimeCodes.includes("RUNTIME_INFORMATIONAL_LINK"));
+});
+
+test("allowed runtime origins pass and missing configured files are reported", async () => {
+  const tempRoot = await mkdtemp(join(tmpdir(), "iocode-doc-project-"));
+
+  try {
+    await mkdir(join(tempRoot, "runtime"), { recursive: true });
+    await writeFile(
+      join(tempRoot, "valid.md"),
+      await readFixture("valid.md"),
+      "utf8"
+    );
+    await writeFile(
+      join(tempRoot, "runtime", "allowed.astro"),
+      '<script src="https://assets.example.com/runtime.js"></script>\n',
+      "utf8"
+    );
+    await writeFile(
+      join(tempRoot, "config.json"),
+      JSON.stringify({
+        packageJson: resolve("package.json"),
+        documents: [
+          { path: "valid.md", type: "runbook", maxAgeDays: 90 },
+          { path: "missing.md", type: "historical" }
+        ],
+        runtimeSources: [
+          "runtime/allowed.astro",
+          "runtime/missing.astro"
+        ],
+        allowedRuntimeOrigins: ["https://assets.example.com"]
+      }),
+      "utf8"
+    );
+
+    const report = await validateProject({
+      configPath: join(tempRoot, "config.json"),
+      now: referenceDate
+    });
+
+    assert.equal(report.status, "failed");
+    assert.ok(
+      report.findings.some(({ code }) => code === "DOC_FILE_MISSING")
+    );
+    assert.ok(
+      report.findings.some(({ code }) => code === "RUNTIME_FILE_MISSING")
+    );
+    assert.ok(
+      !report.findings.some(({ code }) => code === "RUNTIME_REMOTE_SCRIPT")
+    );
+  } finally {
+    await rm(tempRoot, { recursive: true, force: true });
+  }
 });
 
 test("CLI writes a parseable structured report and exits non-zero on defects", async () => {
@@ -143,4 +263,3 @@ test("CLI writes a parseable structured report and exits non-zero on defects", a
     await rm(tempRoot, { recursive: true, force: true });
   }
 });
-
