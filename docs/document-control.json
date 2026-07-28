@@ -96,6 +96,10 @@
       "type": "historical"
     },
     {
+      "path": "audits/R0_R3_INTEGRATED_GATE.md",
+      "type": "historical"
+    },
+    {
       "path": "testing/phase-6-closure.tdd.md",
       "type": "historical"
     },

@@ -12,7 +12,7 @@ Sitio estático multilingüe de IoCode SOLUTIONS para automatización industrial
 - 29 páginas producidas por el build Astro.
 - Sin backend, base de datos, login, sesiones ni cookies de aplicación.
 - El contacto usa `mailto:` y no almacena mensajes en infraestructura propia.
-- R0 y R1 están cerradas con evidencia; R2 está en ejecución.
+- R0, R1, R2 y R3 están cerradas con evidencia.
 - La Fase 6 visual sigue `NO CERRADA` hasta validar el mismo build en un iPhone físico.
 
 ## Inicio rápido
