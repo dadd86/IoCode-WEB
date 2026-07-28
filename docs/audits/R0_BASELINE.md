@@ -2,9 +2,9 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R0 | Preservación e inventario del trabajo existente antes del programa R0–R8 | Repositorio completo | ES, EN, DE | `git status`, `git diff HEAD`, configuración Git y artefactos locales | 2026-07-28 | Base `2d70884da722`; commit de baseline pendiente |
+| R0 | Preservación e inventario del trabajo existente antes del programa R0–R8 | Repositorio completo | ES, EN, DE | `git status`, `git diff HEAD`, configuración Git y artefactos locales | 2026-07-28 | Baseline `1573da9` sobre base `2d70884da722` |
 
-Estado: `Ready for baseline commit`.
+Estado: `Done with evidence`.
 
 ## Decisiones autorizadas
 
@@ -98,3 +98,9 @@ Resultado registrado el 2026-07-28:
 - `npm audit --omit=dev`: 0 vulnerabilidades.
 
 El intento con solo `--profile qa` no llegó a ejecutar las pruebas porque `browser-qa` depende del servicio `web`, perteneciente al perfil `prod`. La necesidad de activar ambos perfiles queda registrada como entrada para la consolidación del runbook y la revisión de Compose.
+
+## Firma de R0
+
+- Commit de preservación: `1573da9`.
+- El commit pertenece a `codex/baseline-r0` y conserva los 33 cambios iniciales.
+- La firma documental se completa en un commit posterior para no reescribir la evidencia de preservación.
