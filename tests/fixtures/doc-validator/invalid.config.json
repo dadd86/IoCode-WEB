@@ -1,0 +1,24 @@
+{
+  "documents": [
+    {
+      "path": "invalid-mojibake.md",
+      "type": "historical"
+    },
+    {
+      "path": "invalid-fence.md",
+      "type": "historical"
+    },
+    {
+      "path": "invalid-metadata.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "invalid-command-link.md",
+      "type": "historical"
+    }
+  ],
+  "runtimeSources": [],
+  "allowedRuntimeOrigins": []
+}
+

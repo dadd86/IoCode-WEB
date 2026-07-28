@@ -1,0 +1,16 @@
+{
+  "documents": [
+    {
+      "path": "valid.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    }
+  ],
+  "runtimeSources": [
+    "runtime/good.astro",
+    "runtime/bad.astro",
+    "runtime/bad.css"
+  ],
+  "allowedRuntimeOrigins": []
+}
+
