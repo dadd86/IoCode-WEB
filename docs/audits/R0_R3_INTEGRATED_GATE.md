@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R0–R3 | Resultado integrado y frontera de continuación | Git, documentación, entorno, Astro, dependencias y HTTP local | ES, EN, DE | Terminal Docker, reportes JSON y smoke HTTP | 2026-07-28 | Pendiente de firma |
+| R0–R3 | Resultado integrado y frontera de continuación | Git, documentación, entorno, Astro, dependencias y HTTP local | ES, EN, DE | Terminal Docker, reportes JSON y smoke HTTP | 2026-07-28 | `3290cad` |
 
 Estado: `Done with evidence` hasta R3. R4: `Blocked by X-LEGAL`.
 
