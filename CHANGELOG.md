@@ -1,50 +1,34 @@
 # Changelog
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| Histórico | Resumen cronológico de entregas completadas | Proyecto completo | ES, EN, DE | Historial documental y Git | 2026-07-28 |
+
+## R0–R2
+
+- Se preservó la línea base sin modificar `master` ni el remoto.
+- Se añadió un validador documental desarrollado mediante ciclos RED/GREEN.
+- Se consolidaron las guías operativas en `docs/RUNBOOK.md`.
+- Se registraron decisiones arquitectónicas mediante ADRs.
+- Se corrigieron metadatos, codificación y delimitadores Markdown.
+
 ## Fase 1.1B
 
-DocumentaciÃ³n y runbooks actualizados:
-
-- README principal reescrito.
-- RUN_GUIDE actualizado.
-- Docker README actualizado.
-- Docker operations runbook actualizado.
-- notas de seguridad Docker actualizadas.
-- SECURITY actualizado.
-- QA_CHECKLIST actualizado.
-- docs index aÃ±adido.
-- ARCHITECTURE actualizado.
-- MAINTENANCE actualizado.
-- documento de migraciÃ³n convertido en nota histÃ³rica.
-
-Objetivo:
-
-- eliminar instrucciones obsoletas.
-- alinear documentaciÃ³n con `compose.yml`.
-- documentar `/health`.
-- documentar seguridad HTTP avanzada.
-- documentar SEO tÃ©cnico avanzado.
-- documentar criterios de cierre de Fase 0, 1 y 1.1A.
+- Se alineó la documentación inicial con `compose.yml`.
+- Se documentaron health, seguridad HTTP, SEO técnico y operación Docker.
 
 ## Fase 1.1A
 
-- PÃ¡gina Proceso rediseÃ±ada.
-- Limpieza semÃ¡ntica de `pageContent.ts`.
-- Seguridad HTTP avanzada en servidor estÃ¡tico.
-- Sitemap con hreflang y lastmod.
-- Schema ampliado con BreadcrumbList, ContactPoint y OfferCatalog.
-- Redirect canÃ³nico 308 para rutas sin slash.
-- 404 real validado.
+- Se rediseñó la página Proceso.
+- Se amplió la seguridad del servidor estático.
+- Se añadieron sitemap multilingüe, schema, redirección canónica 308 y 404 real.
 
 ## Fase 1
 
-- Home y Servicios reforzados con copy CEO/SEO/AI.
-- Secciones de valor industrial.
-- Mensajes adaptados a espaÃ±ol, inglÃ©s y alemÃ¡n.
+- Se reforzaron Home y Servicios con contenido en español, inglés y alemán.
+- Se añadieron secciones de valor industrial.
 
 ## Fase 0
 
-- Base multilingÃ¼e.
-- Rutas localizadas.
-- PÃ¡gina Empresa.
-- Contacto con persona fÃ­sica verificable.
-- Schema base.
+- Se creó la base Astro multilingüe.
+- Se añadieron rutas localizadas, Empresa y Contacto.

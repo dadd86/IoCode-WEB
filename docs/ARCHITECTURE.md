@@ -1,5 +1,9 @@
 # Architecture
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Arquitectura implementada y magnitudes del build | Astro, i18n, 3D, Docker y runtime HTTP | ES, EN, DE | Fuente del repositorio y build Docker de R0 | 2026-07-28 |
+
 Arquitectura actual de IoCode SOLUTIONS Web.
 
 ## Tipo de aplicación
@@ -69,6 +73,8 @@ Comando:
 - servicio `web` en `compose.yml`.
 
 ## Rutas principales
+
+La fuente `src/i18n/routes.ts` declara exactamente **9 claves de ruta**. Cada clave tiene una variante en los 3 locales, por lo que existen **27 rutas localizadas**. El build comprobado genera **29 páginas HTML**: las 27 localizadas, la entrada raíz y la página 404.
 
 Español:
 
@@ -140,11 +146,12 @@ Implementado en runtime local:
 - Contacto por `mailto`: evita almacenar datos personales en esta fase.
 - Persona física solo en contacto: equilibrio entre marca empresarial y confianza.
 
+Las decisiones estables se registran en [adr/](adr/); el código y las pruebas siguen siendo la fuente ejecutable.
+
 ## Límites actuales
 
 - No hay CMS.
 - No hay backend para formularios.
 - No hay analytics.
-- No hay Lighthouse documentado.
-- No hay pruebas Playwright.
+- Lighthouse y Playwright existen como validación local de laboratorio; no aportan métricas de campo ni una prueba de dispositivo físico.
 - HSTS no activado por defecto.

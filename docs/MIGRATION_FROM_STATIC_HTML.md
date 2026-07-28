@@ -1,5 +1,9 @@
 # Migration From Static HTML
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| Histórico | Contexto conservado de la migración a Astro | Arquitectura histórica | ES, EN, DE | Historial del proyecto | 2026-07-28 |
+
 Este documento conserva el contexto histórico de migración.
 
 ## Estado actual
@@ -60,4 +64,4 @@ Implementado:
 
 ## Nota
 
-Este documento es histórico. Para ejecutar el proyecto, usar `RUN_GUIDE.md`.
+Este documento es histórico. Para ejecutar el proyecto, usar `docs/RUNBOOK.md`.

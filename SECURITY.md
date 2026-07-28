@@ -1,209 +1,91 @@
-# Security
+# Seguridad técnica
 
-Documento de seguridad para IoCode SOLUTIONS Web.
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Modelo de amenazas y controles técnicos comprobables | Fuente, dependencias, contenedor y servidor estático | ES, EN, DE | `Docker/Dockerfile`, `Docker/node-static-server.mjs`, `compose.yml` y `package-lock.json` | 2026-07-28 |
 
-## Alcance
+Este documento describe seguridad técnica. Los requisitos jurídicos, privacidad e identificación legal pertenecen a `COMPLIANCE.md` cuando R4 disponga de datos revisados.
 
-Esta revisión aplica al estado actual del proyecto:
+## Alcance real
 
-- sitio estático Astro;
-- Docker local;
-- servidor estático Node;
-- formulario `mailto`;
-- sin base de datos;
-- sin login;
-- sin sesiones;
-- sin API propia;
-- sin cookies de aplicación;
-- sin pagos;
-- sin subida de archivos.
+El proyecto genera un sitio Astro estático. No tiene backend de aplicación, base de datos, autenticación, sesiones, pagos, subida de archivos ni cookies propias. El formulario crea un enlace `mailto:` y delega el envío al cliente de correo del visitante; el sitio no almacena el mensaje.
 
-## Datos tratados
+## Fronteras y amenazas
 
-El sitio puede preparar datos de contacto mediante el cliente de correo del usuario:
+| Frontera | Riesgo principal | Control actual |
+|---|---|---|
+| Fuente y dependencias | paquete vulnerable o secreto versionado | lockfile, `npm ci`, audit de producción y exclusiones Git/Docker |
+| Build | artefacto distinto al código revisado | build reproducible en contenedor y release desde `HEAD` limpio |
+| Navegador | XSS, framing o carga de terceros | CSP con hashes por HTML, `frame-ancestors 'none'`, sin orígenes runtime remotos |
+| Servidor estático | path traversal, MIME o caché incorrecta | resolución dentro de `dist`, allowlist MIME, 404 real y políticas de caché |
+| Contenedor | escalada o escritura | usuario no root, filesystem read-only, `tmpfs`, sin capabilities y `no-new-privileges` |
+| Despliegue | TLS o headers mal configurados | controles HTTPS desactivados por defecto y validación obligatoria en staging |
 
-- nombre;
-- email;
-- tipo de proyecto;
-- mensaje.
+## Cabeceras
 
-El sitio no almacena estos datos en servidor propio en esta fase. El formulario construye un enlace `mailto:` y delega el envío en el cliente de correo del usuario.
+`Docker/node-static-server.mjs` emite:
 
-## Controles implementados
-
-Servidor estático:
-
-- `Content-Security-Policy`;
-- `X-Content-Type-Options`;
-- `X-Frame-Options`;
-- `Referrer-Policy`;
+- `Content-Security-Policy` con hashes SHA-256 de scripts y estilos inline del HTML servido;
+- `X-Content-Type-Options: nosniff`;
+- `X-Frame-Options: DENY`;
+- `Referrer-Policy: strict-origin-when-cross-origin`;
 - `Permissions-Policy`;
-- `Cross-Origin-Opener-Policy`;
-- `Cross-Origin-Resource-Policy`;
-- `Origin-Agent-Cluster`;
-- ETag;
-- Last-Modified;
-- 404 real;
-- redirect 308 para rutas canónicas;
-- healthcheck sin caché.
+- `Cross-Origin-Resource-Policy: same-origin`;
+- `Origin-Agent-Cluster: ?1`;
+- ETag, Last-Modified, Vary y caché según recurso.
 
-Docker runtime:
+`Cross-Origin-Opener-Policy`, HSTS y `upgrade-insecure-requests` son condicionales. Permanecen desactivados en el laboratorio HTTP y solo se habilitan detrás de HTTPS validado.
 
-- usuario no root;
-- filesystem read-only;
-- sin capabilities Linux;
-- `no-new-privileges`;
-- `tmpfs` para `/tmp`.
+## CSP
 
-## CSP sin unsafe-inline
+La política efectiva se construye al servir cada HTML. No incluye `unsafe-inline`: calcula hashes para los bloques inline generados por Astro. Si cambia el HTML, los hashes cambian con la respuesta. Los recursos runtime se restringen al propio origen, `data:` o `blob:` según la directiva.
 
-La política CSP efectiva se define en:
+Una modificación de CSP debe repetir el build, los smoke tests y el gate de cabeceras de Fase 6. No se documentarán nonces, WAF o CSP de CDN mientras no existan.
 
-```text
-Docker/node-static-server.mjs
+## Contacto y datos sensibles
 
-```md id="rmmq70"
-## HSTS
+La UI advierte en ES, EN y DE que no se envíen contraseñas, tokens, datos bancarios ni información sensible. El correo configurado debe verificarse externamente antes de publicar; su presencia en fuente no demuestra recepción.
 
-HSTS es un control de despliegue HTTPS.
+Los enlaces personales de verificación técnica se limitan a:
 
-En auditoría local HTTP no se exige `Strict-Transport-Security`, porque el objetivo local es validar el servidor estático, CSP, headers base y superficie de privacidad.
-
-Para despliegue HTTPS real:
-
-```text
-ENABLE_HSTS=true
-SECURITY_REQUIRE_HSTS=true
-
-## Formulario de contacto
-
-El formulario debe mantener una advertencia visible para evitar que el usuario envíe información sensible.
-
-Textos esperados:
-
-```text
-ES: No escribas contraseñas, tokens, datos bancarios ni información sensible.
-EN: Do not write passwords, tokens, banking data or sensitive information.
-DE: Bitte keine Passwörter, Tokens, Bankdaten oder sensiblen Informationen eingeben.
-```
-
-El correo empresarial configurado es:
-
-```text
-contact@iocode-solutions.com
-```
-
-El formulario no debe almacenar mensajes ni enviar datos a un backend en esta fase.
-
-## Persona física y enlaces externos
-
-Los enlaces a LinkedIn y GitHub de la persona técnica responsable solo deben aparecer en las páginas de contacto:
-
-```text
-/es/contacto/
-/en/contact/
-/de/kontakt/
-```
-
-No deben aparecer en páginas comerciales generales como home, servicios, proyectos, habilidades, empresa o proceso.
-
-## Dependencias
-
-Validación actual esperada:
-
-```bash
-docker compose exec dev npm run audit:prod
-```
-
-Resultado esperado:
-
-```text
-found 0 vulnerabilities
-```
-
-No usar `npm audit fix --force` sin revisar cambios rompientes.
+- `/es/contacto/`;
+- `/en/contact/`;
+- `/de/kontakt/`.
 
 ## Secretos
 
-No versionar:
+No versionar ni incluir en un release:
 
-- tokens reales;
-- contraseñas reales;
-- claves privadas;
-- dumps;
-- backups;
-- `.env` con valores reales;
-- credenciales cloud;
-- claves de API.
+- `.env` real, tokens, contraseñas o claves privadas;
+- credenciales cloud o claves de API;
+- dumps, backups, logs sensibles o directorios de credenciales;
+- `.git`, `.agents`, `node_modules`, `dist` o `qa-artifacts`.
 
-Archivos y carpetas que no deben entrar en artefactos públicos:
+Las variables públicas actuales controlan puertos y cabeceras; no son un almacén de secretos.
 
-```text
-.env
-.env.*
-.git
-node_modules
-dist
-.astro
-backups
-dumps
-secrets
-credentials
-private
-keys
+## Dependencias
+
+```powershell
+docker compose --profile qa --profile prod run --rm qa
 ```
 
-El Docker context debe excluir `.git` y `.env` mediante `.dockerignore`.
+El gate ejecuta `npm ci`, Astro check, build y `npm audit --omit=dev`. No usar `npm audit fix --force` sin analizar cambios rompientes.
 
-## Validaciones recomendadas
+## Divulgación de vulnerabilidades
 
-Validación completa de Fase 1.1D:
+R5 publicará el canal conforme a RFC 9116 únicamente después de confirmar DNS y recepción del correo. Hasta entonces no existe un `security.txt` operativo y este archivo no inventa un canal alternativo. Los detalles de una vulnerabilidad no deben abrirse en un issue público.
 
-```bash
-docker compose exec dev npm run qa:phase-1-1d
-```
-
-Validar que LinkedIn, GitHub y el nombre de la persona física no aparecen fuera de contacto:
-
-```bash
-docker compose exec dev sh -lc "find dist -type f -name 'index.html' ! -path '*/contacto/*' ! -path '*/contact/*' ! -path '*/kontakt/*' -exec grep -HnE 'Diego Armando Diaz Devia|Diego Diaz|dadd86|linkedin\\.com/in/diegoarmandodiaz|github\\.com/dadd86' {} + || true"
-```
-
-Resultado esperado:
-
-```text
-sin salida
-```
-
-Validar que no hay asignaciones evidentes de secretos en fuente, documentación o Docker:
-
-```bash
-docker compose exec dev sh -lc "grep -RInE '(password|passwd|pwd|token|secret|api[_-]?key|private[_-]?key|access[_-]?key|client[_-]?secret)[[:space:]]*[:=][[:space:]]*[\"'\"']?[^\"'\"'[:space:]#;]{8,}|-----BEGIN (RSA |DSA |EC |OPENSSH |)?PRIVATE KEY-----' src docs Docker .env.example compose.yml README.md RUN_GUIDE.md SECURITY.md .gitignore .dockerignore 2>/dev/null || true"
-```
-
-Resultado esperado:
-
-```text
-sin salida
-```
-
-## No-go para publicar
+## No-go
 
 No publicar si:
 
-- `check` falla;
-- `build` falla;
-- `audit:prod` reporta vulnerabilidades;
-- `/health` no devuelve 200;
-- rutas inexistentes no devuelven 404;
-- aparece información personal fuera de contacto;
-- el correo de contacto no existe;
-- hay secretos reales en el repositorio;
-- hay `.env` real en el artefacto;
-- hay `.git` en un artefacto público;
-- HSTS se activa sin HTTPS real validado;
-- aparece texto con codificación dañada en páginas visibles o documentación de release.
+- fallan check, build, auditoría, health o rutas canónicas;
+- aparecen secretos o datos personales fuera del alcance definido;
+- CSP contiene `unsafe-inline` o desaparecen cabeceras base;
+- se activa HSTS sin HTTPS real validado;
+- el artefacto contiene archivos excluidos;
+- se declara un canal de seguridad que no recibe mensajes.
 
-## Limitaciones
+## Límites
 
-Este documento no certifica cumplimiento legal ni normativo. Solo describe controles técnicos revisados localmente para una web estática sin backend, sin login, sin sesiones, sin cookies de aplicación y sin almacenamiento propio de datos de formulario.
+Esta revisión no certifica cumplimiento legal, disponibilidad del dominio ni entrega de correo. Tampoco afirma que exista WAF, monitorización de producción, firma de artefactos o proceso de respuesta a incidentes; esas capacidades pertenecen a fases posteriores.

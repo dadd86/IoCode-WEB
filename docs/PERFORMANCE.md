@@ -1,5 +1,9 @@
 # Fase 6 — Performance, Core Web Vitals y 3D avanzado
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Contratos medibles de rendimiento, entrega y fidelidad del Hero3D | Astro, Three.js, GLB, HTTP y Lighthouse | ES, EN, DE | `compose.yml`, scripts Fase 6, GLB actual y artefactos QA locales | 2026-07-28 |
+
 Estado: `Current`. Esta fase solo se considera cerrada cuando el pipeline oficial Docker genera `qa-artifacts/performance/phase-6/summary.json` con `status: passed`, cero errores, cero warnings y cero tests flaky.
 
 ## Objetivo y alcance
@@ -19,7 +23,7 @@ La Fase 6 demuestra que Three.js, el GLB, las imágenes, el JavaScript y la entr
 | 6.9 Lighthouse | `lighthouse-summary.json` y los JSON/HTML bajo `lighthouse/` |
 | 6.10 Modos degradados | Pruebas sin WebGL, reduced motion, error de GLB y pérdida de contexto |
 | 6.11 Regresión Docker | `npm run qa:phase-6` ejecutado por `performance-qa` |
-| 6.12 Documentación | Este documento, `RUN_GUIDE.md` y `QA_CHECKLIST.md` |
+| 6.12 Documentación | Este documento, `docs/RUNBOOK.md` y `QA_CHECKLIST.md` |
 
 ## Flujo oficial, solo Docker
 
@@ -56,6 +60,12 @@ No ejecutar Node, npm, Playwright, Lighthouse, Sharp, glTF-Transform ni glTF Val
 
 Los límites viven en `compose.yml` y los scripts fallan si se superan. `performance-budgets.json` mide `dist/` como superficie desplegable; `public/` se usa para comprobar las fuentes requeridas sin duplicar los totales.
 - `qa:logo3d-version:6`: la query `?v=` del GLB coincide con el SHA-256 real del archivo actual.
+
+### Contrato real del logo 3D
+
+El archivo `public/logo/3d/iocode_solutions_logo_extruded_3d.glb` verificado en R2 pesa **168.812 bytes**, por debajo del objetivo de R8 de **250.000 bytes**. El programa R8 exige bloquear por encima de **500.000 bytes**.
+
+Los umbrales ejecutables actuales de Fase 6 siguen siendo 2.000.000, 5.000.000 y 8.000.000 bytes en `compose.yml` y en los scripts de QA. Por DYC, el objetivo R8 no se considera aplicado hasta que esos gates cambien y sus pruebas demuestren el bloqueo de 500.000 bytes. Mientras tanto, prevalece la tabla de límites ejecutables anterior para describir el sistema actual.
 
 Lighthouse conserva 10 resultados comparables: portadas ES/EN/DE, Servicios ES
 y Contacto ES, cada una en desktop y mobile. Cada resultado desktop se obtiene
@@ -155,4 +165,4 @@ Lighthouse es evidencia de laboratorio y sirve como gate de regresión. No demue
 
 ## Propiedad y actualización
 
-Responsable: mantenedor del repositorio. Actualizar este documento y `QA_CHECKLIST.md` cuando cambien el GLB, Three.js, el loader, presupuestos, rutas Lighthouse, servidor estático, Dockerfiles o scripts de Fase 6.
+Responsable: mantenedor del repositorio. Actualizar este documento, `docs/RUNBOOK.md` y `QA_CHECKLIST.md` cuando cambien el GLB, Three.js, el loader, presupuestos, rutas Lighthouse, servidor estático, Dockerfiles o scripts de Fase 6.

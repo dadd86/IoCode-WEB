@@ -1,5 +1,9 @@
 # Evidencia TDD — SEO, GEO, schema y rendimiento inicial
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| Histórico | Evidencia TDD de SEO, GEO y datos estructurados | SEO técnico y rendimiento inicial | ES, EN, DE | Commits y pruebas del workstream SEO/GEO/RAG | 2026-07-28 |
+
 Fecha: 2026-07-25  
 Rama: `codex/seo-geo-rag`
 

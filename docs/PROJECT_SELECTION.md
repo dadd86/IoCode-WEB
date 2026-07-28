@@ -1,5 +1,9 @@
 # PROJECT_SELECTION.md
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Criterios editoriales para seleccionar proyectos públicos | Contenido y portafolio | ES, EN, DE | `src/data/projects.ts` y política editorial existente | 2026-07-28 |
+
 Guía de selección de proyectos para IoCode SOLUTIONS Web.
 
 ## 1. Propósito

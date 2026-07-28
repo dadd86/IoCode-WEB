@@ -1,5 +1,9 @@
 # QA Checklist
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Checklist manual y automatizado de Fase 6 | QA visual, 3D, rendimiento y release | ES, EN, DE | Scripts QA, Playwright y `docs/PERFORMANCE.md` | 2026-07-28 |
+
 ## Fase actual
 
 Fase 6 — Performance, Core Web Vitals y 3D avanzado.
@@ -41,7 +45,7 @@ docker compose --profile prod --profile qa down --remove-orphans
 - [x] `qa:responsive-visual:6` genera 72 capturas de páginas internas en móvil, tablet y escritorio.
 - [x] Las rutas ES/EN/DE mantienen navegación, SEO y ausencia de overflow.
 - [x] `summary.json` agrega todos los artefactos sin ocultar warnings.
-- [x] `docs/PERFORMANCE.md` y `RUN_GUIDE.md` coinciden con este flujo.
+- [x] `docs/PERFORMANCE.md` y `docs/RUNBOOK.md` coinciden con este flujo.
 - [x] `qa:logo3d-version:6`: passed.
 - [ ] Captura de un iPhone físico contrastada con este mismo build.
 

@@ -1,5 +1,9 @@
 # Fase 1.1C - QA visual, accesibilidad y Lighthouse
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| Histórico | Evidencia y criterio de la Fase 1.1C | QA, accesibilidad y rendimiento de laboratorio | ES, EN, DE | Scripts y artefactos históricos de Fase 1.1C | 2026-07-28 |
+
 ## Objetivo
 
 Validar que la web no solo compila, sino que también conserva calidad visual, semántica, accesibilidad básica, SEO renderizado y rendimiento mínimo medible.

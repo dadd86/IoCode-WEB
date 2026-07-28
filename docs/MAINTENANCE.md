@@ -1,5 +1,9 @@
 # Maintenance
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Mantenimiento por tipo de cambio | Contenido, rutas, SEO, seguridad y 3D | ES, EN, DE | Fuente Astro, Compose y servidor estático | 2026-07-28 |
+
 Guía de mantenimiento del sitio.
 
 ## Cambiar datos de empresa

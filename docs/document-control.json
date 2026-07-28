@@ -7,11 +7,6 @@
       "maxAgeDays": 180
     },
     {
-      "path": "../RUN_GUIDE.md",
-      "type": "runbook",
-      "maxAgeDays": 90
-    },
-    {
       "path": "../SECURITY.md",
       "type": "security",
       "maxAgeDays": 90
@@ -26,24 +21,14 @@
       "maxAgeDays": 90
     },
     {
-      "path": "../Docker/README.md",
-      "type": "runbook",
-      "maxAgeDays": 90
-    },
-    {
-      "path": "../Docker/OPERATIONS.md",
-      "type": "runbook",
-      "maxAgeDays": 90
-    },
-    {
-      "path": "../Docker/SECURITY_NOTES.md",
-      "type": "security",
-      "maxAgeDays": 90
-    },
-    {
       "path": "index.md",
       "type": "architecture",
       "maxAgeDays": 180
+    },
+    {
+      "path": "RUNBOOK.md",
+      "type": "runbook",
+      "maxAgeDays": 90
     },
     {
       "path": "ARCHITECTURE.md",
@@ -79,7 +64,31 @@
       "type": "historical"
     },
     {
+      "path": "adr/0001-static-first-runtime.md",
+      "type": "adr"
+    },
+    {
+      "path": "adr/0002-route-key-i18n.md",
+      "type": "adr"
+    },
+    {
+      "path": "adr/0003-progressive-hero3d.md",
+      "type": "adr"
+    },
+    {
+      "path": "adr/0004-csp-response-hashes.md",
+      "type": "adr"
+    },
+    {
+      "path": "adr/0005-ai-crawler-policy.md",
+      "type": "adr"
+    },
+    {
       "path": "audits/R0_BASELINE.md",
+      "type": "historical"
+    },
+    {
+      "path": "audits/R2_DOCUMENTATION.md",
       "type": "historical"
     },
     {

@@ -1,35 +1,28 @@
-# Documentation Index
+# Índice de documentación
 
-Índice de documentación técnica.
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Mapa del corpus documental controlado | Arquitectura, operación, seguridad y QA | ES, EN, DE | `docs/document-control.json` | 2026-07-28 |
 
-## Documentos raíz
+## Entrada y arquitectura
 
-- `README.md`: visión general del proyecto.
-- `RUN_GUIDE.md`: ejecución local, QA y producción local.
-- `SECURITY.md`: modelo de seguridad.
-- `QA_CHECKLIST.md`: checklist de validación.
-- `CHANGELOG.md`: cambios por fase.
+- [README](../README.md): inicio rápido.
+- [ARCHITECTURE](ARCHITECTURE.md): límites y magnitudes reales.
+- [ADRs](adr/0001-static-first-runtime.md): decisiones estables.
+- [I18N](I18N.md): rutas, contenidos y locales.
 
-## Docker
+## Operación y calidad
 
-- `Docker/README.md`: servicios Docker y uso básico.
-- `Docker/OPERATIONS.md`: runbook operativo.
-- `Docker/SECURITY_NOTES.md`: notas de seguridad Docker.
+- [RUNBOOK](RUNBOOK.md): única guía operativa.
+- [PERFORMANCE](PERFORMANCE.md): presupuestos, Hero3D y Fase 6.
+- [MAINTENANCE](MAINTENANCE.md): cambios habituales.
+- [QA_CHECKLIST](../QA_CHECKLIST.md): gate manual y automatizado.
 
-## Arquitectura y mantenimiento
+## Seguridad e historial
 
-- `docs/ARCHITECTURE.md`: arquitectura actual.
-- `docs/MAINTENANCE.md`: mantenimiento del sitio.
-- `docs/I18N.md`: internacionalización.
-- `docs/MIGRATION_FROM_STATIC_HTML.md`: nota histórica de migración.
-- `docs/PROJECT_SELECTION.md`: criterios de selección de proyectos.
+- [SECURITY](../SECURITY.md): controles técnicos y límites.
+- [CHANGELOG](../CHANGELOG.md): entregas.
+- [Migración](MIGRATION_FROM_STATIC_HTML.md): contexto histórico.
+- [Evidencia R0](audits/R0_BASELINE.md) y [evidencia R1](testing/r1-document-validator.tdd.md).
 
-## Estado actual
-
-- Sitio Astro estático.
-- Docker Compose desde `compose.yml` en raíz.
-- Servidor estático Node para producción local.
-- Rutas ES/EN/DE.
-- SEO técnico avanzado implementado.
-- Seguridad HTTP avanzada local implementada.
-- Persona física visible solo en contacto.
+`COMPLIANCE.md` y las rutas legales no se publican como verificadas hasta completar X-LEGAL y R4. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.

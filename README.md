@@ -1,224 +1,63 @@
 # IoCode SOLUTIONS Web
 
-Sitio web estático y multilingüe de IoCode SOLUTIONS.
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| R2 | Entrada breve y verificable al repositorio | Desarrollo, QA y operación local | ES, EN, DE | `package.json`, `compose.yml`, `src/i18n/routes.ts` y build Astro | 2026-07-28 |
 
-El proyecto usa Astro, TypeScript, Three.js y Docker Compose. La web está orientada a automatización industrial, PLC, robótica, software industrial, datos e Industria 4.0.
+Sitio estático multilingüe de IoCode SOLUTIONS para automatización industrial, PLC, robótica, software y datos. Usa Astro 7, TypeScript, Three.js y Docker Compose.
 
-## Estado validado localmente
+## Estado comprobado
 
-Fase activa: Fase 6, todavía `NO CERRADA`.
+- 9 claves de ruta y 27 rutas localizadas en ES, EN y DE.
+- 29 páginas producidas por el build Astro.
+- Sin backend, base de datos, login, sesiones ni cookies de aplicación.
+- El contacto usa `mailto:` y no almacena mensajes en infraestructura propia.
+- R0 y R1 están cerradas con evidencia; R2 está en ejecución.
+- La Fase 6 visual sigue `NO CERRADA` hasta validar el mismo build en un iPhone físico.
 
-Estado comprobado por terminal:
+## Inicio rápido
 
-- `npm run check` dentro del contenedor: 0 errores, 0 warnings, 0 hints.
-- `npm run build` dentro del contenedor: 29 páginas generadas.
-- `npm run audit:prod`: 0 vulnerabilidades de producción.
-- Imagen Docker de producción construida correctamente para las correcciones actuales.
-- Contenedor `web` iniciado correctamente.
-- `/health`: 200 OK.
-- `/es/proceso/`, `/en/process/`, `/de/prozess/`: 200 OK.
-- `/sitemap.xml`: 200 OK.
-- Autocarga del Hero3D validada en Chromium desktop/mobile y WebKit iPhone/iPad sobre ES/EN/DE.
-- Logo canónico, composición iOS y menú hamburguesa móvil/tablet validados mediante pruebas focalizadas.
-- Titulares internos, contacto y navegación responsive validados en 93 casos Chromium/WebKit.
-- Evidencia visual disponible en 72 capturas ES/EN/DE para móvil, tablet y escritorio.
+Requisito: Docker Desktop activo.
 
-El pipeline Docker completo terminó con código `0`; Lighthouse produjo 10/10 mediciones válidas y `summary.json` quedó en `passed`, sin warnings ni errores.
-
-Pendiente para cerrar Fase 6: contrastar una captura del mismo build en un iPhone físico y completar los gates de entrega/producción.
-- `/no-existe/`: 404 Not Found.
-- Rutas sin slash final redirigen con 308.
-- Headers HTTP avanzados activos en el servidor estático local.
-
-No se afirma posicionamiento real en Google ni rendimiento de campo. Lighthouse local es evidencia de laboratorio; la publicación, RUM/CrUX y Search Console siguen siendo necesarias.
-
-## Stack
-
-- Astro 7.
-- TypeScript.
-- Three.js para escena 3D.
-- Docker Compose.
-- Node.js Alpine para desarrollo y runtime local.
-- Sitio estático generado en `dist/`.
-- Servidor estático Node en `Docker/node-static-server.mjs`.
-
-## Estructura principal
-
-- `src/`: código fuente Astro, componentes, datos e i18n.
-- `src/data/`: contenidos y configuración semántica.
-- `src/i18n/`: rutas, locales y UI strings.
-- `src/pages/`: páginas Astro y sitemap.
-- `src/components/`: componentes visuales y funcionales.
-- `src/assets/`: CSS global y componentes.
-- `public/`: assets públicos servidos como raíz del sitio.
-- `Docker/`: Dockerfiles y servidor estático.
-- `docs/`: documentación técnica.
-- `compose.yml`: definición actual de servicios Docker.
-- `.env.example`: variables locales no sensibles.
-
-## Requisitos
-
-Recomendado:
-
-- Docker Desktop.
-- PowerShell en Windows.
-- VS Code opcional.
-- Node.js local no es obligatorio si trabajas con Docker.
-
-## Inicio rápido con Docker
-
-Desde la raíz del proyecto:
-
-    docker compose up -d dev
-
-Abrir:
-
-    http://localhost:4321/es/
-    http://localhost:4321/en/
-    http://localhost:4321/de/
-
-## QA local
-
-Desde la raíz:
-
-    docker compose exec dev npm run check
-    docker compose exec dev npm run build
-    docker compose exec dev npm run audit:prod
-
-O usando el servicio QA:
-
-    docker compose run --rm qa
-
-## Producción local
-
-Construir y levantar producción local:
-
-    docker compose --profile prod up --build -d web
-
-Comprobar:
-
-    curl.exe -I http://localhost:8080/health
-    curl.exe -I http://localhost:8080/es/
-    curl.exe -I http://localhost:8080/en/
-    curl.exe -I http://localhost:8080/de/
-    curl.exe -I http://localhost:8080/sitemap.xml
-    curl.exe -I http://localhost:8080/no-existe/
-
-Resultados esperados:
-
-- `/health`: 200.
-- páginas principales: 200.
-- `/sitemap.xml`: 200.
-- ruta inexistente: 404.
-- ruta sin slash final: 308 hacia la versión con slash.
-
-## Servicios Docker
-
-- `dev`: Astro dev server en puerto 4321.
-- `qa`: ejecuta check, build y audit de producción.
-- `preview`: build + Astro preview en puerto 4322.
-- `web`: runtime estático de producción local en puerto 8080.
-
-## Variables locales
-
-Archivo de ejemplo:
-
-    .env.example
-
-Variables soportadas:
-
-- `ASTRO_DEV_PORT`: puerto local de desarrollo. Por defecto 4321.
-- `ASTRO_PREVIEW_PORT`: puerto local de preview. Por defecto 4322.
-- `WEB_PORT`: puerto local de producción. Por defecto 8080.
-- `ASTRO_TELEMETRY_DISABLED`: desactiva telemetría de Astro.
-- `ENABLE_HSTS`: activar solo en despliegue HTTPS real.
-- `ENABLE_UPGRADE_INSECURE_REQUESTS`: activar solo en despliegue HTTPS real.
-
-No guardes secretos reales en archivos versionados.
-
-## Seguridad HTTP local
-
-El servidor estático incluye:
-
-- `Content-Security-Policy`.
-- `X-Content-Type-Options`.
-- `X-Frame-Options`.
-- `Referrer-Policy`.
-- `Permissions-Policy`.
-- `Cross-Origin-Opener-Policy`.
-- `Cross-Origin-Resource-Policy`.
-- `ETag`.
-- `Last-Modified`.
-- cache diferenciado para HTML, sitemap, health y assets.
-- redirect 308 para rutas canónicas con slash final.
-
-HSTS está desactivado por defecto. No lo actives hasta verificar HTTPS real en el dominio final.
-
-## SEO técnico
-
-Implementado:
-
-- páginas estáticas indexables.
-- rutas ES/EN/DE.
-- canonical.
-- hreflang HTML.
-- sitemap XML con hreflang y lastmod.
-- robots.txt.
-- schema `Organization`.
-- schema `ProfessionalService`.
-- schema `ContactPoint`.
-- schema `OfferCatalog`.
-- schema `BreadcrumbList`.
-- schema `Person` solo en páginas de contacto.
-
-No se garantiza ranking. La indexación real debe comprobarse con Google Search Console después de publicar.
-
-## Contacto
-
-El formulario es estático y usa `mailto:`. No envía datos a un backend.
-
-Antes de publicar, confirma que el correo configurado en `src/data/site.ts` existe y recibe mensajes.
-
-## Documentación relacionada
-
-- `RUN_GUIDE.md`: guía de ejecución.
-- `SECURITY.md`: modelo de seguridad y límites.
-- `QA_CHECKLIST.md`: checklist de validación.
-- `Docker/README.md`: uso de servicios Docker.
-- `Docker/OPERATIONS.md`: runbook operativo.
-- `docs/ARCHITECTURE.md`: arquitectura.
-- `docs/MAINTENANCE.md`: mantenimiento.
-- `docs/I18N.md`: internacionalización.
-- `docs/PROJECT_SELECTION.md`: criterios de proyectos.
-
-## No hacer
-
-- No usar comandos antiguos con archivos compose dentro de la carpeta Docker.
-- No depender de archivos env dentro de la carpeta Docker.
-- No ejecutar `npm audit fix --force` sin revisar impacto.
-- No publicar ZIPs con `.git`, `node_modules`, `.astro` o `dist`.
-- No afirmar producción real sin validar dominio, HTTPS, Search Console, Lighthouse y correo.
-
-
-## Desarrollo local
+```powershell
 docker compose up -d dev
 docker compose logs -f dev
+```
 
-URL:
+Abrir `http://localhost:4321/es/`, `/en/` o `/de/`.
 
-http://localhost:4321/es/
+## Puerta local
+
+```powershell
+docker compose --profile qa --profile prod run --rm qa
+docker compose --profile release run --rm release-tools "npm run docs:test"
+docker compose --profile release run --rm release-tools "npm run docs:lint"
+```
+
+El primer comando ejecuta `astro check`, build y auditoría de dependencias de producción. El flujo completo de rendimiento y 3D está en [docs/RUNBOOK.md](docs/RUNBOOK.md).
 
 ## Producción local
-docker compose --profile prod up -d web
-docker compose --profile prod up -d --force-recreate web
-docker compose --profile prod logs -f web
 
-URL:
+```powershell
+docker compose --profile prod up --build -d web
+curl.exe -I http://localhost:8080/health
+curl.exe -I http://localhost:8080/es/
+curl.exe -I http://localhost:8080/no-existe/
+```
 
-http://localhost:8080/es/
+Se espera `200` en health y páginas, `404` en la ruta inexistente y `308` en rutas válidas sin slash final.
 
-Comando normal para ver cambios en localhost:8080
-Desde la raíz del proyecto:
-docker compose --profile prod build web
-docker compose --profile prod up -d --force-recreate web
-docker compose --profile prod logs --tail=40 web
+## Configuración pública
+
+Copiar `.env.example` a `.env` solo para overrides locales. Los puertos y controles HTTPS son los únicos valores operables previstos; no guardar secretos en archivos versionados. HSTS, upgrade de contenido inseguro y COOP permanecen desactivados hasta validar HTTPS real.
+
+## Documentación
+
+- [Índice técnico](docs/index.md)
+- [Runbook único](docs/RUNBOOK.md)
+- [Arquitectura](docs/ARCHITECTURE.md)
+- [Rendimiento y Hero3D](docs/PERFORMANCE.md)
+- [Seguridad técnica](SECURITY.md)
+- [Checklist QA](QA_CHECKLIST.md)
+
+`master` es la rama de release. El trabajo de remediación se conserva en `codex/baseline-r0`; no se publica ni se mueve el repositorio sin una decisión explícita del propietario.

@@ -1,5 +1,9 @@
 # Evidencia TDD — cierre de Fase 6
 
+| Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
+|---|---|---|---|---|---|
+| Histórico | Evidencia RED/GREEN acumulada de Fase 6 | Pruebas 3D, performance y entrega HTTP | ES, EN, DE | Commits, pruebas y artefactos de Fase 6 | 2026-07-28 |
+
 Fecha: 2026-07-18  
 Alcance: ciclo de vida del Hero 3D, fallback WebGL, presupuestos, caché y evidencia de cierre.
 
