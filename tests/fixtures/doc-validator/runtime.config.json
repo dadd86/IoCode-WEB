@@ -7,10 +7,7 @@
     }
   ],
   "runtimeSources": [
-    "runtime/good.astro",
-    "runtime/bad.astro",
-    "runtime/bad.css"
+    "runtime"
   ],
   "allowedRuntimeOrigins": []
 }
-
