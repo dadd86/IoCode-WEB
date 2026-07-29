@@ -70,8 +70,8 @@ Invoke-Checked "npm run audit:prod" {
   docker compose exec dev npm run audit:prod
 }
 
-Invoke-Checked "npm run qa:static" {
-  docker compose exec dev npm run qa:static
+Invoke-Checked "npm run qa:static:1.1c" {
+  docker compose exec dev npm run qa:static:1.1c
 }
 
 Invoke-Checked "docker compose --profile prod up --build -d web" {

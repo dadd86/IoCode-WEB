@@ -16,6 +16,9 @@
   "excludedDocumentDirectories": [
     "archive"
   ],
+  "toolSources": [
+    "../tools"
+  ],
   "documents": [
     {
       "path": "../README.md",

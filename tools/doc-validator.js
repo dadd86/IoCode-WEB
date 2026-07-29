@@ -42,6 +42,15 @@ const RUNTIME_EXTENSIONS = new Set([
   ".tsx"
 ]);
 
+const TOOL_EXTENSIONS = new Set([
+  ".cjs",
+  ".js",
+  ".mjs",
+  ".ps1",
+  ".sh",
+  ".ts"
+]);
+
 function splitTableRow(line) {
   return line
     .trim()
@@ -292,6 +301,31 @@ function validateNpmScripts(
           file: filePath,
           line: lineNumberAt(content, match.index),
           message: `El script npm "${scriptName}" no existe en package.json.`
+        })
+      );
+    }
+  }
+}
+
+function validateToolNpmScripts(
+  filePath,
+  content,
+  packageScripts,
+  findings
+) {
+  const commandPattern = /\bnpm\s+run\s+([a-zA-Z0-9_.:-]+)/gu;
+
+  for (const match of content.matchAll(commandPattern)) {
+    const scriptName = match[1];
+    if (!Object.hasOwn(packageScripts, scriptName)) {
+      findings.push(
+        finding({
+          category: "tooling",
+          code: "TOOL_NPM_SCRIPT_UNKNOWN",
+          file: filePath,
+          line: lineNumberAt(content, match.index),
+          message:
+            `La invocación npm "${scriptName}" en tools/ no existe en package.json.`
         })
       );
     }
@@ -675,7 +709,7 @@ function resolveFrom(basePath, targetPath) {
   return isAbsolute(targetPath) ? targetPath : resolve(basePath, targetPath);
 }
 
-async function collectRuntimeFiles(sourcePath) {
+async function collectFiles(sourcePath, allowedExtensions) {
   if (!existsSync(sourcePath)) {
     return [sourcePath];
   }
@@ -694,20 +728,28 @@ async function collectRuntimeFiles(sourcePath) {
     entries.map(async (entry) => {
       const entryPath = resolve(sourcePath, entry.name);
       if (entry.isDirectory()) {
-        return collectRuntimeFiles(entryPath);
+        return collectFiles(entryPath, allowedExtensions);
       }
 
       const extensionIndex = entry.name.lastIndexOf(".");
       const extension =
         extensionIndex === -1 ? "" : entry.name.slice(extensionIndex);
 
-      return entry.isFile() && RUNTIME_EXTENSIONS.has(extension)
+      return entry.isFile() && allowedExtensions.has(extension)
         ? [entryPath]
         : [];
     })
   );
 
   return nestedFiles.flat();
+}
+
+async function collectRuntimeFiles(sourcePath) {
+  return collectFiles(sourcePath, RUNTIME_EXTENSIONS);
+}
+
+async function collectToolFiles(sourcePath) {
+  return collectFiles(sourcePath, TOOL_EXTENSIONS);
 }
 
 export async function validateProject({
@@ -767,6 +809,34 @@ export async function validateProject({
     });
   }
 
+  const toolFiles = [];
+  for (const toolSource of config.toolSources ?? []) {
+    toolFiles.push(
+      ...(await collectToolFiles(resolveFrom(configRoot, toolSource)))
+    );
+  }
+
+  for (const toolFile of toolFiles) {
+    if (!existsSync(toolFile)) {
+      findings.push(
+        finding({
+          category: "tooling",
+          code: "TOOL_SOURCE_MISSING",
+          file: toolFile,
+          message: "La fuente de herramientas configurada no existe."
+        })
+      );
+      continue;
+    }
+
+    validateToolNpmScripts(
+      toolFile,
+      await readFile(toolFile, "utf8"),
+      packageScripts,
+      findings
+    );
+  }
+
   return {
     schemaVersion: 1,
     check: "documentation-integrity",
@@ -774,6 +844,7 @@ export async function validateProject({
     config: absoluteConfigPath,
     checkedDocuments: (config.documents ?? []).length,
     checkedRuntimeSources: runtimeFiles.length,
+    checkedToolSources: toolFiles.length,
     warningCount: 0,
     errorCount: findings.length,
     findings,
