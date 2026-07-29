@@ -26,6 +26,7 @@
 - [Migración](MIGRATION_FROM_STATIC_HTML.md): contexto histórico.
 - [Evidencia R0](audits/R0_BASELINE.md) y [evidencia R1](testing/r1-document-validator.tdd.md).
 - [Evidencia R2-recovery / G-03](testing/r2-recovery-g03.tdd.md): 25 construcciones y fixtures.
+- [Propuesta R3.5b](audits/R3_5B_SCRIPT_DISPOSITION.md): 90 scripts, disposición, consumidores y radio de cambio; no autorizada.
 
 ## Archivo excluido del control operativo
 

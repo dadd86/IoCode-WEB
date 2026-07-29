@@ -119,6 +119,11 @@
       "type": "historical"
     },
     {
+      "path": "audits/R3_5B_SCRIPT_DISPOSITION.md",
+      "type": "architecture",
+      "maxAgeDays": 180
+    },
+    {
       "path": "testing/phase-6-closure.tdd.md",
       "type": "historical"
     },

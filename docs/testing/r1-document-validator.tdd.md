@@ -58,6 +58,33 @@ construcciones, añade los tres pares de fixtures solicitados y eleva la suite a
 12 pruebas. La tabla anterior se conserva como evidencia del alcance histórico,
 no como inventario vigente.
 
+## Ampliación B1 previa a R3.5b
+
+El inventario R3.5a demostró que `DOC_NPM_SCRIPT_UNKNOWN` solo protegía
+documentos controlados y dejaba fuera `tools/`. El RED `393a538` fijó el defecto:
+12/13 pruebas pasaron y la invocación inexistente en herramientas no fue
+detectada. El GREEN `38d7da4` añadió `toolSources`, recorrido recursivo de
+PowerShell/JavaScript/TypeScript/shell y `TOOL_NPM_SCRIPT_UNKNOWN`.
+
+Resultado vigente: 13/13 PASS, 98,45% de líneas, 84,87% de ramas y 97,56% de
+funciones. El corpus real pasa con cero errores tras corregir las dos
+invocaciones de `qa:static` a `qa:static:1.1c`. La ficha G-01 y los fixtures
+positivos/negativos están registrados en
+[`R3_5B_SCRIPT_DISPOSITION.md`](../audits/R3_5B_SCRIPT_DISPOSITION.md).
+
+## Condición dura antes de R4
+
+R4 no puede arrancar hasta que existan y pasen cuatro fixtures adicionales:
+
+1. URL malformada en `isAllowedRemoteUrl`;
+2. `<link>` sin `rel` ni `href`;
+3. directorio runtime anidado;
+4. tabla I-03 de igual longitud con campo incorrecto o en orden incorrecto.
+
+La cobertura 84,87% de ramas no sustituye estos casos. R1 conserva
+`GATE LOCAL OK` porque G-03 cubre 25/25 construcciones, pero esta deuda es un
+NO-GO de entrada a R4, no una nota diferible.
+
 ## Comandos y resultados
 
 ```text

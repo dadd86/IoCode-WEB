@@ -166,3 +166,10 @@ Lighthouse es evidencia de laboratorio y sirve como gate de regresión. No demue
 ## Propiedad y actualización
 
 Responsable: mantenedor del repositorio. Actualizar este documento, `docs/RUNBOOK.md` y `QA_CHECKLIST.md` cuando cambien el GLB, Three.js, el loader, presupuestos, rutas Lighthouse, servidor estático, Dockerfiles o scripts de Fase 6.
+
+El cierre formal de Fase 6 dispara además un entregable independiente: volver a
+inventariar los 21 scripts 66–86 y presentar para CONFIRM su reclasificación de
+`internal:*` a `historical:*`. El disparador exige evidencia física y sign-off;
+presupuestos automatizados en verde no bastan. `docs/archive/` permanece fuera
+del cambio. El contrato completo vive en
+[`R3_5B_SCRIPT_DISPOSITION.md`](audits/R3_5B_SCRIPT_DISPOSITION.md).

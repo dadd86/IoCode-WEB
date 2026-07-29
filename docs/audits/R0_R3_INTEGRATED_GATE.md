@@ -17,8 +17,9 @@ Estado: `Done with evidence` hasta R3. R4: `Blocked by X-LEGAL`.
 
 | Puerta | Resultado |
 |---|---|
-| Pruebas del validador documental | 12/12 PASS |
+| Pruebas del validador documental y de herramientas | 13/13 PASS |
 | Gate G-03 | 25/25 construcciones con fixtures positivos y negativos |
+| Invocaciones npm literales en `tools/` | PASS; 0 nombres desconocidos reales |
 | Corpus documental | 0 errores |
 | Pruebas de paridad de entorno | 6/6 PASS |
 | Allowlist pública | 6 variables, 0 divergencias |
@@ -50,4 +51,14 @@ El programa exige convergencia con X-LEGAL antes de montar y validar la arquitec
 2. datos definitivos y firmados para el Impressum conforme a §5 DDG;
 3. determinación formal de alcance o exención BFSG.
 
+Aunque X-LEGAL converja, R4 conserva además un NO-GO técnico hasta cubrir cuatro
+caminos del validador: URL remota malformada, `<link>` sin `rel` ni `href`,
+directorio runtime anidado y contrato I-03 de igual longitud con campo
+incorrecto o desordenado. El detalle está en
+[`r1-document-validator.tdd.md`](../testing/r1-document-validator.tdd.md).
+
 Por DYC no se crean `COMPLIANCE.md`, rutas legales ni un estado `REVIEWED` ficticio. R5–R8 permanecen pendientes por sus dependencias explícitas de R4, DNS/correo, CI remoto, hosting, dispositivo físico y sign-off del propietario.
+
+R3.5a está aceptada como inventario. R3.5b permanece `PROPUESTO — NO
+AUTORIZADO`; su radio y disposición se registran en
+[`R3_5B_SCRIPT_DISPOSITION.md`](R3_5B_SCRIPT_DISPOSITION.md).
