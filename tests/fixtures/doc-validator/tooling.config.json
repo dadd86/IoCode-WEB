@@ -1,0 +1,9 @@
+{
+  "packageJson": "../../../package.json",
+  "documents": [],
+  "runtimeSources": [],
+  "toolSources": [
+    "tooling"
+  ],
+  "allowedRuntimeOrigins": []
+}

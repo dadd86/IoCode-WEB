@@ -163,6 +163,40 @@ test("reports unknown npm scripts and broken relative links", async () => {
   assert.ok(findings.some(({ code }) => code === "DOC_RELATIVE_LINK_BROKEN"));
 });
 
+test("tool scan rejects unknown literal npm scripts in PowerShell and JavaScript", async () => {
+  const report = await validateProject({
+    configPath: join(fixtureRoot, "tooling.config.json"),
+    now: referenceDate
+  });
+  const toolFindings = report.findings.filter(
+    ({ category }) => category === "tooling"
+  );
+
+  assert.equal(report.status, "failed");
+  assert.equal(toolFindings.length, 2);
+  assert.ok(
+    toolFindings.some(
+      ({ code, file }) =>
+        code === "TOOL_NPM_SCRIPT_UNKNOWN" &&
+        file.endsWith("positive-unknown.ps1")
+    )
+  );
+  assert.ok(
+    toolFindings.some(
+      ({ code, file }) =>
+        code === "TOOL_NPM_SCRIPT_UNKNOWN" &&
+        file.endsWith("positive-unknown.mjs")
+    )
+  );
+  assert.ok(
+    toolFindings.every(
+      ({ file }) =>
+        !file.endsWith("negative-known.ps1") &&
+        !file.endsWith("negative-known.mjs")
+    )
+  );
+});
+
 test("runtime scan rejects remote loads but ignores informational links", async () => {
   const report = await validateProject({
     configPath: join(fixtureRoot, "runtime.config.json"),
