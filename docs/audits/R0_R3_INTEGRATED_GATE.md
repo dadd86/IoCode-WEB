@@ -26,6 +26,9 @@ Estado: `Done with evidence` hasta R3. R4: `Blocked by X-LEGAL`.
 | Build | 29 páginas |
 | Dependencias de producción | 0 vulnerabilidades |
 | Estado del contenedor `web` | healthy |
+| Playwright contacto | 6/6 PASS |
+| Playwright responsive | 93/93 PASS |
+| Budgets, raster, bundle y cabeceras | PASS; no cierra Fase 6 |
 
 ## Smoke HTTP
 

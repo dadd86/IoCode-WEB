@@ -43,6 +43,25 @@ Los originales de 1.031 y 1.065 líneas se conservan en `docs/archive/`. Sus
 SHA-256 coinciden con el snapshot previo a R2-recovery. El directorio se declaró
 excluido en `docs/document-control.json` antes del traslado.
 
+## Cierre local R2-recovery — 2026-07-29
+
+| Puerta | Resultado |
+|---|---|
+| Validador documental | 12/12 PASS; G-03 25/25; corpus 0 errores |
+| Cobertura documental | 98,32 % líneas; 84,03 % ramas; 97,37 % funciones |
+| Astro y tipos | 99 archivos; 0 errores, warnings o hints; tipos de fuente y E2E PASS |
+| Build | 29 páginas estáticas |
+| Paridad de entorno | 6/6 pruebas; 6 variables; 0 divergencias |
+| Dependencias de producción | 0 vulnerabilidades |
+| Playwright dirigido | Contacto ES/EN/DE: 6/6 PASS |
+| Playwright regresión | Responsive Chromium/iPhone/iPad: 93/93 PASS |
+| Presupuestos | Budgets, raster, bundle y cabeceras PASS |
+| Contenedor y smoke | `healthy`; rutas principales 200; inexistente 404; canonical 308 |
+
+Resultado contable: R1 y R2 quedan en `GATE LOCAL OK`. Las comprobaciones de
+presupuesto de Fase 6 se reutilizaron como gate transversal; no implican ni
+documentan el cierre visual de esa fase.
+
 ## Puerta
 
 ```text
