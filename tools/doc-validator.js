@@ -18,6 +18,10 @@ const REQUIRED_METADATA_FIELDS = [
   "Última verificación"
 ];
 
+const OPTIONAL_METADATA_FIELDS = [
+  "Commit verificado"
+];
+
 const MOJIBAKE_PATTERNS = [
   /\uFFFD/u,
   /Ã[\u0080-\u00BF]/u,
@@ -369,49 +373,234 @@ export function validateDocument({
 
 function isAllowedRemoteUrl(rawUrl, allowedOrigins) {
   try {
-    const origin = new URL(rawUrl).origin;
+    const normalizedUrl = rawUrl.startsWith("//")
+      ? `https:${rawUrl}`
+      : rawUrl;
+    const origin = new URL(normalizedUrl).origin;
     return allowedOrigins.includes(origin);
   } catch {
     return false;
   }
 }
 
-function collectRuntimeMatches(content) {
-  const checks = [
-    {
-      code: "RUNTIME_REMOTE_SCRIPT",
-      pattern: /<script\b[^>]*\bsrc\s*=\s*["'](https?:\/\/[^"']+)["'][^>]*>/giu
-    },
-    {
-      code: "RUNTIME_REMOTE_IMAGE",
-      pattern: /<img\b[^>]*\bsrc\s*=\s*["'](https?:\/\/[^"']+)["'][^>]*>/giu
-    },
-    {
-      code: "RUNTIME_REMOTE_LINK",
-      pattern:
-        /<link\b(?=[^>]*\brel\s*=\s*["'](?!canonical|alternate)[^"']+["'])[^>]*\bhref\s*=\s*["'](https?:\/\/[^"']+)["'][^>]*>/giu
-    },
-    {
-      code: "RUNTIME_REMOTE_FETCH",
-      pattern: /\bfetch\s*\(\s*["'](https?:\/\/[^"']+)["']/giu
-    },
-    {
-      code: "RUNTIME_REMOTE_IMPORT",
-      pattern: /\bimport\s*\(\s*["'](https?:\/\/[^"']+)["']/giu
-    },
-    {
-      code: "RUNTIME_REMOTE_CSS_URL",
-      pattern: /\burl\s*\(\s*["']?(https?:\/\/[^"')\s]+)["']?\s*\)/giu
-    }
-  ];
+function collectPatternMatches(content, code, pattern) {
+  return [...content.matchAll(pattern)].map((match) => ({
+    code,
+    index: match.index,
+    url: match.at(-1)
+  }));
+}
 
-  return checks.flatMap(({ code, pattern }) =>
-    [...content.matchAll(pattern)].map((match) => ({
-      code,
-      index: match.index,
-      url: match.at(-1)
-    }))
+function readQuotedAttribute(tag, attribute) {
+  const pattern = new RegExp(
+    `\\b${attribute}\\s*=\\s*["']([^"']+)["']`,
+    "iu"
   );
+  return tag.match(pattern);
+}
+
+function collectTagAttributeMatches(
+  content,
+  {
+    tagNames,
+    attribute,
+    code,
+    remoteOnly = true,
+    allowlistEligible = true
+  }
+) {
+  const tags = tagNames.join("|");
+  const tagPattern = new RegExp(`<(?:${tags})\\b[^>]*>`, "giu");
+  const matches = [];
+
+  for (const tagMatch of content.matchAll(tagPattern)) {
+    const attributeMatch = readQuotedAttribute(tagMatch[0], attribute);
+    if (!attributeMatch) {
+      continue;
+    }
+
+    const value = attributeMatch[1].trim();
+    const isRemote = /^(?:https?:)?\/\//iu.test(value);
+    if (!value || (remoteOnly && !isRemote)) {
+      continue;
+    }
+
+    matches.push({
+      code,
+      index: tagMatch.index + attributeMatch.index,
+      url: value,
+      allowlistEligible
+    });
+  }
+
+  return matches;
+}
+
+function collectLinkMatches(content) {
+  const loadRelations = new Map([
+    ["stylesheet", "RUNTIME_REMOTE_LINK_STYLESHEET"],
+    ["preload", "RUNTIME_REMOTE_LINK_PRELOAD"],
+    ["prefetch", "RUNTIME_REMOTE_LINK_PREFETCH"],
+    ["preconnect", "RUNTIME_REMOTE_LINK_PRECONNECT"],
+    ["dns-prefetch", "RUNTIME_REMOTE_LINK_DNS_PREFETCH"],
+    ["modulepreload", "RUNTIME_REMOTE_LINK_MODULEPRELOAD"]
+  ]);
+  const matches = [];
+
+  for (const tagMatch of content.matchAll(/<link\b[^>]*>/giu)) {
+    const relMatch = readQuotedAttribute(tagMatch[0], "rel");
+    const hrefMatch = readQuotedAttribute(tagMatch[0], "href");
+    if (!relMatch || !hrefMatch) {
+      continue;
+    }
+
+    const href = hrefMatch[1].trim();
+    if (!/^(?:https?:)?\/\//iu.test(href)) {
+      continue;
+    }
+
+    const relations = relMatch[1].toLowerCase().split(/\s+/u);
+    for (const relation of relations) {
+      const code = loadRelations.get(relation);
+      if (!code) {
+        continue;
+      }
+
+      matches.push({
+        code,
+        index: tagMatch.index + hrefMatch.index,
+        url: href
+      });
+    }
+  }
+
+  return matches;
+}
+
+function collectSrcsetMatches(content) {
+  const matches = [];
+
+  for (const tagMatch of content.matchAll(/<(?:img|source)\b[^>]*>/giu)) {
+    const srcsetMatch = readQuotedAttribute(tagMatch[0], "srcset");
+    if (!srcsetMatch) {
+      continue;
+    }
+
+    for (const candidate of srcsetMatch[1].split(",")) {
+      const url = candidate.trim().split(/\s+/u)[0];
+      if (!/^(?:https?:)?\/\//iu.test(url)) {
+        continue;
+      }
+
+      matches.push({
+        code: "RUNTIME_SRCSET",
+        index: tagMatch.index + srcsetMatch.index,
+        url
+      });
+    }
+  }
+
+  return matches;
+}
+
+function collectXmlHttpRequestMatches(content) {
+  const matches = [];
+  const declarationPattern =
+    /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+XMLHttpRequest\s*\(\s*\)/gu;
+
+  for (const declaration of content.matchAll(declarationPattern)) {
+    const variableName = declaration[1].replace(
+      /[.*+?^${}()|[\]\\]/gu,
+      "\\$&"
+    );
+    const openPattern = new RegExp(
+      `\\b${variableName}\\.open\\s*\\(\\s*["'][A-Z]+["']\\s*,\\s*["']((?:https?:)?//[^"']+)["']`,
+      "giu"
+    );
+
+    for (const openMatch of content.matchAll(openPattern)) {
+      matches.push({
+        code: "RUNTIME_XML_HTTP_REQUEST",
+        index: openMatch.index,
+        url: openMatch[1]
+      });
+    }
+  }
+
+  return matches;
+}
+
+function collectRuntimeMatches(content) {
+  const tagRules = [
+    [["script"], "src", "RUNTIME_REMOTE_SCRIPT"],
+    [["img"], "src", "RUNTIME_REMOTE_IMAGE"],
+    [["source"], "src", "RUNTIME_REMOTE_SOURCE"],
+    [["video"], "src", "RUNTIME_REMOTE_VIDEO"],
+    [["audio"], "src", "RUNTIME_REMOTE_AUDIO"],
+    [["iframe"], "src", "RUNTIME_REMOTE_IFRAME"],
+    [["embed"], "src", "RUNTIME_REMOTE_EMBED"],
+    [["object"], "data", "RUNTIME_REMOTE_OBJECT"],
+    [["track"], "src", "RUNTIME_REMOTE_TRACK"]
+  ];
+  const matches = tagRules.flatMap(([tagNames, attribute, code]) =>
+    collectTagAttributeMatches(content, {
+      tagNames,
+      attribute,
+      code
+    })
+  );
+
+  matches.push(
+    ...collectLinkMatches(content),
+    ...collectSrcsetMatches(content),
+    ...collectTagAttributeMatches(content, {
+      tagNames: ["form"],
+      attribute: "action",
+      code: "RUNTIME_FORM_ACTION",
+      remoteOnly: false,
+      allowlistEligible: false
+    }),
+    ...collectTagAttributeMatches(content, {
+      tagNames: ["button", "input"],
+      attribute: "formaction",
+      code: "RUNTIME_FORMACTION",
+      remoteOnly: false,
+      allowlistEligible: false
+    }),
+    ...collectPatternMatches(
+      content,
+      "RUNTIME_REMOTE_FETCH",
+      /\bfetch\s*\(\s*["']((?:https?:)?\/\/[^"']+)["']/giu
+    ),
+    ...collectPatternMatches(
+      content,
+      "RUNTIME_REMOTE_IMPORT",
+      /\bimport\s*\(\s*["']((?:https?:)?\/\/[^"']+)["']/giu
+    ),
+    ...collectXmlHttpRequestMatches(content),
+    ...collectPatternMatches(
+      content,
+      "RUNTIME_WEB_SOCKET",
+      /\bnew\s+WebSocket\s*\(\s*["']((?:wss?|https?):\/\/[^"']+)["']/giu
+    ),
+    ...collectPatternMatches(
+      content,
+      "RUNTIME_EVENT_SOURCE",
+      /\bnew\s+EventSource\s*\(\s*["']((?:https?:)?\/\/[^"']+)["']/giu
+    ),
+    ...collectPatternMatches(
+      content,
+      "RUNTIME_REMOTE_CSS_URL",
+      /\burl\s*\(\s*["']?((?:https?:)?\/\/[^"')\s]+)["']?\s*\)/giu
+    ),
+    ...collectPatternMatches(
+      content,
+      "RUNTIME_CSS_IMPORT",
+      /@import\s+(?:url\(\s*)?["']((?:https?:)?\/\/[^"']+)["']\s*\)?/giu
+    )
+  );
+
+  return matches;
 }
 
 async function validateRuntimeSource({
@@ -433,7 +622,10 @@ async function validateRuntimeSource({
 
   const content = await readFile(filePath, "utf8");
   for (const match of collectRuntimeMatches(content)) {
-    if (isAllowedRemoteUrl(match.url, allowedOrigins)) {
+    if (
+      match.allowlistEligible !== false &&
+      isAllowedRemoteUrl(match.url, allowedOrigins)
+    ) {
       continue;
     }
 
@@ -444,6 +636,36 @@ async function validateRuntimeSource({
         file: filePath,
         line: lineNumberAt(content, match.index),
         message: `Carga remota en runtime no permitida: ${match.url}.`
+      })
+    );
+  }
+}
+
+function validateMetadataContract(config, configPath, findings) {
+  if (!config.metadataContract) {
+    return;
+  }
+
+  const requiredFields = config.metadataContract.requiredFields ?? [];
+  const optionalFields = config.metadataContract.optionalFields ?? [];
+  const requiredMatches =
+    requiredFields.length === REQUIRED_METADATA_FIELDS.length &&
+    requiredFields.every(
+      (field, index) => field === REQUIRED_METADATA_FIELDS[index]
+    );
+  const optionalMatches =
+    optionalFields.length === OPTIONAL_METADATA_FIELDS.length &&
+    optionalFields.every(
+      (field, index) => field === OPTIONAL_METADATA_FIELDS[index]
+    );
+
+  if (!requiredMatches || !optionalMatches) {
+    findings.push(
+      finding({
+        code: "DOC_METADATA_CONTRACT_INVALID",
+        file: configPath,
+        message:
+          "El contrato debe declarar los seis campos exactos de I-03 y el campo opcional Commit verificado."
       })
     );
   }
@@ -501,6 +723,8 @@ export async function validateProject({
   const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8"));
   const packageScripts = packageJson.scripts ?? {};
   const findings = [];
+
+  validateMetadataContract(config, absoluteConfigPath, findings);
 
   for (const document of config.documents ?? []) {
     const filePath = resolveFrom(configRoot, document.path);

@@ -1,5 +1,21 @@
 {
   "packageJson": "../package.json",
+  "metadataContract": {
+    "requiredFields": [
+      "Bloque",
+      "Descripción",
+      "Ámbito",
+      "Idiomas afectados",
+      "Origen de datos",
+      "Última verificación"
+    ],
+    "optionalFields": [
+      "Commit verificado"
+    ]
+  },
+  "excludedDocumentDirectories": [
+    "archive"
+  ],
   "documents": [
     {
       "path": "../README.md",

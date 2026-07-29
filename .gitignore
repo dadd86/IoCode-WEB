@@ -63,6 +63,7 @@ artifacts/
 exports/
 
 # backups and dumps
+_backups/
 backups/
 backup/
 dumps/
