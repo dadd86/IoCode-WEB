@@ -2,7 +2,14 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R0 | Preservación e inventario del trabajo existente antes del programa R0–R8 | Repositorio completo | ES, EN, DE | `git status`, `git diff HEAD`, configuración Git y artefactos locales | 2026-07-28 | Baseline `1573da9` sobre base `2d70884da722` |
+| R0 | Preservación e inventario del trabajo existente antes del programa R0–R8 | Repositorio completo | ES, EN, DE | `git status`, `git diff HEAD`, configuración Git y artefactos locales | 2026-07-29 | Baseline `1573da9` sobre base `2d70884da722` |
+
+## Corrección de estado — 2026-07-29
+
+La declaración histórica `Done with evidence` se conserva debajo como parte del
+registro, pero se rebaja retroactivamente por S-02: al no existir todavía R6, no
+hay una puerta remota capaz de sostener ese estado. Estado vigente máximo:
+`GATE LOCAL OK`.
 
 Estado: `Done with evidence`.
 

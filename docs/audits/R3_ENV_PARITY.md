@@ -2,7 +2,13 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R3 | Evidencia RED/GREEN de paridad entre `.env.example` y Compose | Configuración Docker y servidor estático | ES, EN, DE | Fixtures, Node test runner y `docker compose config` | 2026-07-28 | RED `c5a9268`; GREEN unitario `76e8544`; integración `3f8233d` |
+| R3 | Evidencia RED/GREEN de paridad entre `.env.example` y Compose | Configuración Docker y servidor estático | ES, EN, DE | Fixtures, Node test runner y `docker compose config` | 2026-07-29 | RED `c5a9268`; GREEN unitario `76e8544`; integración `3f8233d` |
+
+## Corrección de estado — 2026-07-29
+
+La declaración histórica `Done with evidence` se conserva debajo, pero se rebaja
+retroactivamente por S-02: R6 no existe y la comprobación disponible sigue siendo
+local. Estado vigente máximo: `GATE LOCAL OK`.
 
 Estado: `Done with evidence`.
 

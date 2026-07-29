@@ -2,7 +2,14 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R0–R3 | Resultado integrado y frontera de continuación | Git, documentación, entorno, Astro, dependencias y HTTP local | ES, EN, DE | Terminal Docker, reportes JSON y smoke HTTP | 2026-07-28 | `3290cad` |
+| R0–R3 | Resultado integrado y frontera de continuación | Git, documentación, entorno, Astro, dependencias y HTTP local | ES, EN, DE | Terminal Docker, reportes JSON y smoke HTTP | 2026-07-29 | `3290cad`; recuperación R2 posterior a `60564f5` |
+
+## Corrección de estado — 2026-07-29
+
+La declaración histórica `Done with evidence` se conserva debajo, pero se rebaja
+retroactivamente por S-02: sin R6 no existe gate remoto que detecte una regresión
+posterior. R0–R3 alcanzan como máximo `GATE LOCAL OK`; R4 continúa bloqueada por
+X-LEGAL.
 
 Estado: `Done with evidence` hasta R3. R4: `Blocked by X-LEGAL`.
 
@@ -10,7 +17,8 @@ Estado: `Done with evidence` hasta R3. R4: `Blocked by X-LEGAL`.
 
 | Puerta | Resultado |
 |---|---|
-| Pruebas del validador documental | 10/10 PASS |
+| Pruebas del validador documental | 12/12 PASS |
+| Gate G-03 | 25/25 construcciones con fixtures positivos y negativos |
 | Corpus documental | 0 errores |
 | Pruebas de paridad de entorno | 6/6 PASS |
 | Allowlist pública | 6 variables, 0 divergencias |

@@ -2,7 +2,15 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R1 | Evidencia RED/GREEN del guardián documental y runtime | Documentación, herramientas y pruebas | ES | Programa R0–R8, fixtures, Node test runner y reporte del corpus | 2026-07-28 | Checkpoints `12c4e42`, `f5ea1cb`, `0bc6016`, `0d48131`, `b493b65`; GREEN e integración `50fc0ba` |
+| R1 | Evidencia RED/GREEN del guardián documental y runtime | Documentación, herramientas y pruebas | ES | Programa R0–R8, fixtures, Node test runner y reporte del corpus | 2026-07-29 | Checkpoints `12c4e42`, `f5ea1cb`, `0bc6016`, `0d48131`, `b493b65`; GREEN e integración `50fc0ba`; recuperación RED `c5f30e5` y GREEN `60564f5` |
+
+## Corrección de estado — 2026-07-29
+
+La declaración histórica `Done with evidence` se conserva debajo, pero se rebaja
+retroactivamente por S-02 porque R6 aún no existe. R1 se reabrió además como
+`EN CURSO — deuda G-03` al comprobarse que protegía 6 de 22 construcciones. La
+recuperación amplió el contrato a 25 y dejó 25/25 con fixtures positivos y
+negativos. Estado vigente máximo tras esa corrección: `GATE LOCAL OK`.
 
 Estado: `Done with evidence`.
 
@@ -40,6 +48,15 @@ Los comportamientos se derivan del programa R0–R8 corregido entregado por el p
 | 8 | Enlaces informativos y orígenes explícitamente permitidos no generan falsos positivos | Integración | PASS |
 | 9 | Raíces runtime se recorren de forma recursiva | Integración | PASS |
 | 10 | La CLI escribe JSON y devuelve código 1 cuando existen defectos | Integración CLI | PASS |
+
+## Ampliación R2-recovery
+
+El contrato original de seis contextos resultó insuficiente frente a G-03. La
+recuperación registrada en
+[`r2-recovery-g03.tdd.md`](r2-recovery-g03.tdd.md) amplía el gate a 25
+construcciones, añade los tres pares de fixtures solicitados y eleva la suite a
+12 pruebas. La tabla anterior se conserva como evidencia del alcance histórico,
+no como inventario vigente.
 
 ## Comandos y resultados
 

@@ -124,6 +124,10 @@
       "type": "historical"
     },
     {
+      "path": "testing/r2-recovery-g03.tdd.md",
+      "type": "historical"
+    },
+    {
       "path": "testing/seo-geo-rag.tdd.md",
       "type": "historical"
     }

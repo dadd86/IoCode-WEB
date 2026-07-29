@@ -2,7 +2,14 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R2 | Evidencia del corpus consolidado y validado | Documentación, arquitectura y operación | ES, EN, DE | Diff R2 y reporte de `docs:lint` | 2026-07-28 | `4aee712` |
+| R2 | Evidencia del corpus consolidado y validado | Documentación, arquitectura y operación | ES, EN, DE | Diff R2, recuperación R2 y reporte de `docs:lint` | 2026-07-29 | `4aee712`; recuperación posterior a `60564f5` |
+
+## Corrección de estado — 2026-07-29
+
+La declaración histórica `Done with evidence` se conserva debajo, pero se rebaja
+retroactivamente por S-02: R6 no existe y no hay aún una puerta remota que permita
+ese estado. Tras recuperar los entregables documentales omitidos, el estado vigente
+máximo es `GATE LOCAL OK`.
 
 Estado: `Done with evidence`.
 
@@ -15,6 +22,26 @@ Estado: `Done with evidence`.
 - Arquitectura registra 9 claves, 27 rutas localizadas y 29 páginas construidas.
 - PERFORMANCE conserva su historial y diferencia el presupuesto ejecutable legacy del objetivo R8 aún no implementado.
 - Cinco ADRs registran static-first, i18n, Hero3D progresivo, CSP con hashes y política de crawlers.
+
+## Recuperación de entregables — 2026-07-29
+
+| Entregable | Estado | Evidencia |
+|---|---|---|
+| Regeneración de `CHANGELOG.md` | HECHO | El documento está controlado; `docs:lint` no detecta mojibake, BOM ni estructura inválida. |
+| Reducción de `I18N.md` | HECHO | Base 1.027 → pre-recuperación 1.031 (`+4`) → vigente 150 (`-877` frente a base). Conserva contrato de rutas, alta ES/EN/DE y plantilla de clave. |
+| Reducción de `PROJECT_SELECTION.md` | HECHO | Base 1.061 → pre-recuperación 1.065 (`+4`) → vigente 176 (`-885` frente a base). Conserva clasificación, criterios, rechazo, alta y retirada. |
+| Gate anti-terceros G-03 | HECHO | 25/25 construcciones, pares positivo/negativo y 12/12 pruebas; detalle en `docs/testing/r2-recovery-g03.tdd.md`. |
+| Reconstrucción de `docs/index.md` | HECHO | Índice vigente enlaza contratos, evidencia y archivo excluido; `docs:lint` valida sus enlaces. |
+
+El crecimiento previo de `+4` líneas en ambos documentos fue causado exactamente
+por la cabecera de metadatos incorporada en R2: cabecera de tabla, separador, fila
+de datos y línea en blanco. El indicador de 300 líneas no fue usado como contrato:
+el cierre se decidió por la permanencia de los procedimientos y criterios
+enumerados en la tabla.
+
+Los originales de 1.031 y 1.065 líneas se conservan en `docs/archive/`. Sus
+SHA-256 coinciden con el snapshot previo a R2-recovery. El directorio se declaró
+excluido en `docs/document-control.json` antes del traslado.
 
 ## Puerta
 
