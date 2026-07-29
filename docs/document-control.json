@@ -17,7 +17,8 @@
     "archive"
   ],
   "toolSources": [
-    "../tools"
+    "../tools",
+    "../Docker"
   ],
   "documents": [
     {

@@ -51,6 +51,23 @@ const TOOL_EXTENSIONS = new Set([
   ".ts"
 ]);
 
+const TOOL_NPM_CONSUMER_PATTERNS = [
+  {
+    kind: "invocación shell",
+    expression: /\bnpm\s+run\s+([a-zA-Z0-9_.:-]+)/gu
+  },
+  {
+    kind: "CMD/ENTRYPOINT Docker exec",
+    expression:
+      /\b(?:CMD|ENTRYPOINT)\s*\[\s*["']npm["']\s*,\s*["']run["']\s*,\s*["']([a-zA-Z0-9_.:-]+)["']/gu
+  },
+  {
+    kind: "acceso programático",
+    expression:
+      /\bscripts(?:\?\.)?\[\s*["']([a-zA-Z0-9_.:-]+)["']\s*\]/gu
+  }
+];
+
 function splitTableRow(line) {
   return line
     .trim()
@@ -313,21 +330,21 @@ function validateToolNpmScripts(
   packageScripts,
   findings
 ) {
-  const commandPattern = /\bnpm\s+run\s+([a-zA-Z0-9_.:-]+)/gu;
-
-  for (const match of content.matchAll(commandPattern)) {
-    const scriptName = match[1];
-    if (!Object.hasOwn(packageScripts, scriptName)) {
-      findings.push(
-        finding({
-          category: "tooling",
-          code: "TOOL_NPM_SCRIPT_UNKNOWN",
-          file: filePath,
-          line: lineNumberAt(content, match.index),
-          message:
-            `La invocación npm "${scriptName}" en tools/ no existe en package.json.`
-        })
-      );
+  for (const { kind, expression } of TOOL_NPM_CONSUMER_PATTERNS) {
+    for (const match of content.matchAll(expression)) {
+      const scriptName = match[1];
+      if (!Object.hasOwn(packageScripts, scriptName)) {
+        findings.push(
+          finding({
+            category: "tooling",
+            code: "TOOL_NPM_SCRIPT_UNKNOWN",
+            file: filePath,
+            line: lineNumberAt(content, match.index),
+            message:
+              `El consumidor npm (${kind}) "${scriptName}" no existe en package.json.`
+          })
+        );
+      }
     }
   }
 }
@@ -709,7 +726,11 @@ function resolveFrom(basePath, targetPath) {
   return isAbsolute(targetPath) ? targetPath : resolve(basePath, targetPath);
 }
 
-async function collectFiles(sourcePath, allowedExtensions) {
+async function collectFiles(
+  sourcePath,
+  allowedExtensions,
+  allowedFileName = () => false
+) {
   if (!existsSync(sourcePath)) {
     return [sourcePath];
   }
@@ -728,14 +749,19 @@ async function collectFiles(sourcePath, allowedExtensions) {
     entries.map(async (entry) => {
       const entryPath = resolve(sourcePath, entry.name);
       if (entry.isDirectory()) {
-        return collectFiles(entryPath, allowedExtensions);
+        return collectFiles(
+          entryPath,
+          allowedExtensions,
+          allowedFileName
+        );
       }
 
       const extensionIndex = entry.name.lastIndexOf(".");
       const extension =
         extensionIndex === -1 ? "" : entry.name.slice(extensionIndex);
 
-      return entry.isFile() && allowedExtensions.has(extension)
+      return entry.isFile() &&
+        (allowedExtensions.has(extension) || allowedFileName(entry.name))
         ? [entryPath]
         : [];
     })
@@ -749,7 +775,12 @@ async function collectRuntimeFiles(sourcePath) {
 }
 
 async function collectToolFiles(sourcePath) {
-  return collectFiles(sourcePath, TOOL_EXTENSIONS);
+  return collectFiles(
+    sourcePath,
+    TOOL_EXTENSIONS,
+    (fileName) =>
+      fileName === "Dockerfile" || fileName.startsWith("Dockerfile.")
+  );
 }
 
 export async function validateProject({
