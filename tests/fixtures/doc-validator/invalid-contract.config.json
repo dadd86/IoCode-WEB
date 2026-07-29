@@ -1,0 +1,23 @@
+{
+  "metadataContract": {
+    "requiredFields": [
+      "Bloque",
+      "Descripción",
+      "Ámbito",
+      "Idiomas afectados",
+      "Última verificación"
+    ],
+    "optionalFields": [
+      "Commit verificado"
+    ]
+  },
+  "documents": [
+    {
+      "path": "valid.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    }
+  ],
+  "runtimeSources": [],
+  "allowedRuntimeOrigins": []
+}

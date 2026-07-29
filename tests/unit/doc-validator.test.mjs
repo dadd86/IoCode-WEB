@@ -180,6 +180,71 @@ test("runtime scan rejects remote loads but ignores informational links", async 
   assert.ok(!runtimeCodes.includes("RUNTIME_INFORMATIONAL_LINK"));
 });
 
+test("G-03 detects 25 load constructions and ignores informational contexts", async () => {
+  const report = await validateProject({
+    configPath: join(fixtureRoot, "g03.config.json"),
+    now: referenceDate
+  });
+  const runtimeFindings = report.findings.filter(
+    ({ category }) => category === "runtime"
+  );
+  const runtimeCodes = [...new Set(
+    runtimeFindings.map(({ code }) => code)
+  )].sort();
+  const expectedCodes = [
+    "RUNTIME_CSS_IMPORT",
+    "RUNTIME_CSS_URL",
+    "RUNTIME_DYNAMIC_IMPORT",
+    "RUNTIME_EVENT_SOURCE",
+    "RUNTIME_FETCH",
+    "RUNTIME_FORM_ACTION",
+    "RUNTIME_FORMACTION",
+    "RUNTIME_REMOTE_AUDIO",
+    "RUNTIME_REMOTE_EMBED",
+    "RUNTIME_REMOTE_IFRAME",
+    "RUNTIME_REMOTE_IMAGE",
+    "RUNTIME_REMOTE_LINK_DNS_PREFETCH",
+    "RUNTIME_REMOTE_LINK_MODULEPRELOAD",
+    "RUNTIME_REMOTE_LINK_PREFETCH",
+    "RUNTIME_REMOTE_LINK_PRECONNECT",
+    "RUNTIME_REMOTE_LINK_PRELOAD",
+    "RUNTIME_REMOTE_LINK_STYLESHEET",
+    "RUNTIME_REMOTE_OBJECT",
+    "RUNTIME_REMOTE_SCRIPT",
+    "RUNTIME_REMOTE_SOURCE",
+    "RUNTIME_REMOTE_TRACK",
+    "RUNTIME_REMOTE_VIDEO",
+    "RUNTIME_SRCSET",
+    "RUNTIME_WEB_SOCKET",
+    "RUNTIME_XML_HTTP_REQUEST"
+  ].sort();
+
+  assert.equal(report.status, "failed");
+  assert.deepEqual(runtimeCodes, expectedCodes);
+  assert.equal(expectedCodes.length, 25);
+  assert.equal(
+    runtimeFindings.filter(({ code }) => code === "RUNTIME_FORMACTION").length,
+    2
+  );
+  assert.ok(
+    runtimeFindings.every(({ file }) => !file.includes("negative-"))
+  );
+});
+
+test("rejects a metadata contract that diverges from I-03", async () => {
+  const report = await validateProject({
+    configPath: join(fixtureRoot, "invalid-contract.config.json"),
+    now: referenceDate
+  });
+
+  assert.equal(report.status, "failed");
+  assert.ok(
+    report.findings.some(
+      ({ code }) => code === "DOC_METADATA_CONTRACT_INVALID"
+    )
+  );
+});
+
 test("allowed runtime origins pass and missing configured files are reported", async () => {
   const tempRoot = await mkdtemp(join(tmpdir(), "iocode-doc-project-"));
 

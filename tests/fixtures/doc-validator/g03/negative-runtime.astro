@@ -1,0 +1,25 @@
+---
+const profile = "https://github.com/example";
+const schema = {
+  "@id": "https://example.com/#organization",
+  sameAs: ["https://www.linkedin.com/company/example"],
+  url: "https://example.com/"
+};
+---
+
+<a href={profile}>Perfil informativo</a>
+<link rel="canonical" href="https://example.com/es/" />
+<link rel="alternate" hreflang="en" href="https://example.com/en/" />
+<link rel="manifest" href="https://example.com/manifest.webmanifest" />
+<link rel="me" href="https://social.example/@example" />
+<link rel="author" href="https://example.com/author" />
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+<script src="/local.js"></script>
+<img src="/local.webp" srcset="/local.webp 1x, /local-2x.webp 2x" alt="" />
+<source src="/local.webm" />
+<video src="/local.mp4"></video>
+<audio src="/local.mp3"></audio>
+<iframe src="/local-frame/"></iframe>
+<embed src="/local-plugin" />
+<object data="/local-object"></object>
+<link rel="stylesheet" href="/local.css" />

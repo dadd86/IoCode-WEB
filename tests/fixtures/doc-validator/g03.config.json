@@ -1,0 +1,13 @@
+{
+  "documents": [
+    {
+      "path": "valid.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    }
+  ],
+  "runtimeSources": [
+    "g03"
+  ],
+  "allowedRuntimeOrigins": []
+}
