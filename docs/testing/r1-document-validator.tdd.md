@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación | Commit verificado |
 |---|---|---|---|---|---|---|
-| R1 | Evidencia RED/GREEN del guardián documental y runtime | Documentación, herramientas y pruebas | ES | Programa R0–R8, fixtures, Node test runner y reporte del corpus | 2026-07-29 | Checkpoints `12c4e42`, `f5ea1cb`, `0bc6016`, `0d48131`, `b493b65`; GREEN e integración `50fc0ba`; recuperación RED `c5f30e5` y GREEN `60564f5` |
+| R1 | Evidencia RED/GREEN del guardián documental y runtime | Documentación, herramientas y pruebas | ES | Programa R0–R8, fixtures, Node test runner y reporte del corpus | 2026-07-29 | B1 estructurado: RED `0cfb56c`, GREEN `ab6132a`; historial anterior conservado debajo |
 
 ## Corrección de estado — 2026-07-29
 
@@ -72,6 +72,48 @@ invocaciones de `qa:static` a `qa:static:1.1c`. La ficha G-01 y los fixtures
 positivos/negativos están registrados en
 [`R3_5B_SCRIPT_DISPOSITION.md`](../audits/R3_5B_SCRIPT_DISPOSITION.md).
 
+## Ampliación B1 estructurada posterior a R3.5b
+
+La ficha B1 anterior es un registro histórico congelado del gate literal. La
+revisión de R3.5b demostró que no cubría dos formas reales de consumidor y se
+amplió mediante un nuevo ciclo RED/GREEN.
+
+### Ficha G-01 — consumidores npm estructurados
+
+| Campo | Contrato vigente |
+|---|---|
+| Qué detecta | Nombres literales inexistentes en tres formas: shell `npm run`, Docker exec-array en `CMD`/`ENTRYPOINT` y acceso `scripts?.["nombre"]` o `scripts["nombre"]` |
+| Fuentes | Recorrido recursivo de `tools/` y `Docker/`; extensiones de herramientas más `Dockerfile` y `Dockerfile.*` |
+| Qué no detecta | Nombres calculados dinámicamente, concatenaciones, variables usadas como clave o wrappers indirectos sin nombre literal |
+| Falsos positivos conocidos | Comentarios o ejemplos literales dentro de las fuentes controladas también se consideran consumidores y deben mantenerse coherentes |
+| Allowlist | Ninguna por nombre; la autoridad única continúa siendo `package.json` |
+| Fixture positivo Docker | `Dockerfile.positive-unknown` aporta un `CMD` y un `ENTRYPOINT` inexistentes y produce dos hallazgos |
+| Fixture negativo Docker | `Dockerfile.negative-known` usa dos nombres existentes y no produce hallazgos |
+| Fixture positivo programático | `positive-programmatic.mjs` accede a una clave inexistente y produce un hallazgo |
+| Fixture negativo programático | `negative-programmatic.mjs` accede a una clave existente y no produce hallazgos |
+| Severidad | Bloqueante antes de renombrar o eliminar scripts |
+
+El RED `0cfb56c` ejecutó el objetivo completo: 12/13 pruebas pasaron y el caso
+B1 encontró 2 hallazgos frente a los 5 esperados. El GREEN `ab6132a` dejó
+13/13 PASS y `docs:lint` sin errores sobre 27 documentos, 42 fuentes runtime y
+76 fuentes de herramientas. El delta `61 → 76` (`Δ +15`) corresponde a cuatro
+Dockerfiles y once scripts o módulos bajo `Docker/`.
+
+Los dos fixtures negativos introducen tres referencias conocidas: dos a
+nombres finales normalizados y una al reservado `dev`. El contrato R3.5b pasa
+por ello de 119 a 121 referencias finales controladas (`Δ +2`) y de 174 a 177
+consumidores conocidos (`Δ +3`), sin cambiar el radio real de 119 del cierre.
+
+Cobertura antes → después:
+
+- líneas: 98,45% → 98,08% (`Δ −0,37 pp`);
+- ramas: 84,87% → 85,26% (`Δ +0,39 pp`);
+- funciones: 97,56% → 95,35% (`Δ −2,21 pp`).
+
+Las tres métricas permanecen por encima del 80%. La ejecución prueba detección
+estática y existencia; no demuestra ejecutabilidad, dependencias ni resultado
+funcional del comando.
+
 ## Condición dura antes de R4
 
 R4 no puede arrancar hasta que existan y pasen cuatro fixtures adicionales:
@@ -83,7 +125,7 @@ R4 no puede arrancar hasta que existan y pasen cuatro fixtures adicionales:
 
 La cobertura 84,87% de ramas no sustituye estos casos. R1 conserva
 `GATE LOCAL OK` porque G-03 cubre 25/25 construcciones, pero esta deuda es un
-NO-GO de entrada a R4, no una nota diferible.
+bloqueo de entrada a R4, no una nota diferible.
 
 ## Comandos y resultados
 

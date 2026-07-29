@@ -25,6 +25,8 @@ exclusivamente con Docker para que el resultado sea reproducible.
 `DOC_NPM_SCRIPT_UNKNOWN` y `TOOL_NPM_SCRIPT_UNKNOWN` comprueban que el nombre
 citado existe en `package.json`; no demuestran que sea ejecutable en el host,
 que sus dependencias estén instaladas ni que su comportamiento sea correcto.
+El segundo recorre `tools/` y `Docker/` y reconoce shell literal,
+`CMD`/`ENTRYPOINT` exec-array y accesos literales a claves de `scripts`.
 La matriz anterior y los gates Docker cubren esa frontera. Esta limitación queda
 registrada como deuda del validador, no como capacidad implementada.
 
