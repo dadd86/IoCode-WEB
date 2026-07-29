@@ -55,7 +55,7 @@ try {
 
   if (actualUrl !== expectedUrl) {
     errors.push(
-      `logo3dPath no coincide con el SHA del GLB actual. Actual: ${actualUrl}. Esperado: ${expectedUrl}. Ejecuta npm run update:logo3d-version:6 dentro del contenedor assets.`
+      `logo3dPath no coincide con el SHA del GLB actual. Actual: ${actualUrl}. Esperado: ${expectedUrl}. Ejecuta npm run internal:update:logo3d-version:6 dentro del contenedor assets.`
     );
   }
 } catch (error) {

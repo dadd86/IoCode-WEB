@@ -60,7 +60,7 @@ Implementado:
 
     docker compose exec dev npm run check
     docker compose exec dev npm run build
-    docker compose exec dev npm run audit:prod
+    docker compose exec dev npm run internal:audit:prod
 
 ## Nota
 

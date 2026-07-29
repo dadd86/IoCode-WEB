@@ -38,7 +38,7 @@ services:
       sh -c "
       node --version &&
       npm --version &&
-      npm run qa
+      npm run internal:qa
       "
     profiles:
       - qa

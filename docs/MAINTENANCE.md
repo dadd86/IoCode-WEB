@@ -148,7 +148,7 @@ Antes de publicar:
 
     docker compose exec dev npm run check
     docker compose exec dev npm run build
-    docker compose exec dev npm run audit:prod
+    docker compose exec dev npm run internal:audit:prod
     docker compose --profile prod up --build -d web
 
 Smoke test:

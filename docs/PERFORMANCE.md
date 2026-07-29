@@ -22,7 +22,7 @@ La Fase 6 demuestra que Three.js, el GLB, las imágenes, el JavaScript y la entr
 | 6.8 Fallback | `3d-fallback-runtime-report.json` |
 | 6.9 Lighthouse | `lighthouse-summary.json` y los JSON/HTML bajo `lighthouse/` |
 | 6.10 Modos degradados | Pruebas sin WebGL, reduced motion, error de GLB y pérdida de contexto |
-| 6.11 Regresión Docker | `npm run qa:phase-6` ejecutado por `performance-qa` |
+| 6.11 Regresión Docker | `npm run internal:qa:phase-6` ejecutado por `performance-qa` |
 | 6.12 Documentación | Este documento, `docs/RUNBOOK.md` y `QA_CHECKLIST.md` |
 
 ## Flujo oficial, solo Docker
@@ -31,14 +31,14 @@ Desde la raíz del repositorio:
 
 ```powershell
 docker compose --profile assets build --no-cache assets
-docker compose --profile assets run --rm assets "npm run prepare:assets:6"
+docker compose --profile assets run --rm assets "npm run internal:prepare:assets:6"
 docker compose --profile prod --profile qa build --no-cache web performance-qa
 docker compose --profile prod --profile qa up -d web
 docker compose --profile prod --profile qa run --rm performance-qa
 docker compose --profile prod --profile qa down --remove-orphans
 ```
 
-No ejecutar Node, npm, Playwright, Lighthouse, Sharp, glTF-Transform ni glTF Validator directamente en Windows. `prepare:assets:6` modifica el GLB del workspace de forma intencionada y deja un backup recuperable dentro de `qa-artifacts/`, que está excluido del release.
+No ejecutar Node, npm, Playwright, Lighthouse, Sharp, glTF-Transform ni glTF Validator directamente en Windows. `internal:prepare:assets:6` modifica el GLB del workspace de forma intencionada y deja un backup recuperable dentro de `qa-artifacts/`, que está excluido del release.
 
 ## Presupuestos de cierre
 
@@ -59,7 +59,7 @@ No ejecutar Node, npm, Playwright, Lighthouse, Sharp, glTF-Transform ni glTF Val
 | TBT lab | 300 ms o inferior |
 
 Los límites viven en `compose.yml` y los scripts fallan si se superan. `performance-budgets.json` mide `dist/` como superficie desplegable; `public/` se usa para comprobar las fuentes requeridas sin duplicar los totales.
-- `qa:logo3d-version:6`: la query `?v=` del GLB coincide con el SHA-256 real del archivo actual.
+- `internal:qa:logo3d-version:6`: la query `?v=` del GLB coincide con el SHA-256 real del archivo actual.
 
 ### Contrato real del logo 3D
 
@@ -87,15 +87,15 @@ registrados en `lighthouse-summary.json`.
 - El runtime sustituye el material PBR importado por `MeshBasicMaterial`, desactiva tone mapping y conserva la textura canónica sin duplicarla como mapa emisivo. La perspectiva, la rotación limitada y el movimiento aportan profundidad sin deformar el logotipo.
 - En `pagehide`, error o pérdida de contexto se cancelan listeners/RAF y se liberan geometrías, materiales, texturas y renderer.
 - La pérdida de contexto activa un fallback HTML usable.
-- El GLB usa en `src/data/site.ts` los primeros 12 caracteres de su SHA-256 como versión de caché. `qa:headers:6` bloquea cualquier binario cuyo parámetro `v` no coincida.
+- El GLB usa en `src/data/site.ts` los primeros 12 caracteres de su SHA-256 como versión de caché. `internal:qa:headers:6` bloquea cualquier binario cuyo parámetro `v` no coincida.
 - En viewports de hasta 620 px, PLC y ROBOTS ocupan la franja superior, SOFTWARE permanece por debajo de la zona central y las áreas secundarias se presentan mediante el dock inferior.
 - DATA, HMI e IOT usan un dock HTML independiente del canvas, con `z-index` propio y composición WebKit mediante `translateZ(0)` y `backface-visibility`.
 - La zona central del logo se valida geométricamente en WebKit iPhone sobre las portadas ES, EN y DE.
 - Las posiciones móviles se expresan en porcentajes de píxeles CSS, por lo que el gate de layout no depende del DPR físico.
-- `qa:hero3d-ios:6` bloquea la Fase 6 si un panel invade el área del logo, el escenario genera overflow o el dock sale de sus límites.
+- `internal:qa:hero3d-ios:6` bloquea la Fase 6 si un panel invade el área del logo, el escenario genera overflow o el dock sale de sus límites.
 - El encabezado cambia a un `details/summary` tipo hamburguesa hasta 1280 px, por lo que funciona en móvil y tablet horizontal sin depender de hidratación JavaScript.
 - Los H1 internos usan `clamp()`, `text-wrap: balance`, palabras completas y columnas amplias; la prosa usa `text-wrap: pretty` sin cortes silábicos artificiales.
-- `qa:responsive-visual:6` conserva 72 capturas (24 rutas internas × móvil/tablet/escritorio) bajo `qa-artifacts/performance/phase-6/responsive-pages/`.
+- `internal:qa:responsive-visual:6` conserva 72 capturas (24 rutas internas × móvil/tablet/escritorio) bajo `qa-artifacts/performance/phase-6/responsive-pages/`.
 
 ## Estado de verificación del 27-07-2026
 
@@ -104,14 +104,14 @@ Estado de la fase: `NO CERRADA`.
 | Verificación | Estado | Evidencia |
 |---|---|---|
 | `astro check` y build de 29 rutas | PASS | Build de la imagen `web`: 93 archivos, 0 errores, 0 warnings |
-| Preparación, validación y versión del GLB | PASS | `prepare:assets:6`, `qa:assets:6`, `qa:logo3d-version:6` |
+| Preparación, validación y versión del GLB | PASS | `internal:prepare:assets:6`, `internal:qa:assets:6`, `internal:qa:logo3d-version:6` |
 | Autocarga ES/EN/DE | PASS | 12 casos sin reintentos: Chromium desktop/mobile y WebKit iPhone/iPad |
 | Composición iOS y fallback | PASS | 5 casos de `phase-6-hero-ios.spec.ts` |
 | Menú hamburguesa móvil/tablet | PASS | 25 casos Chromium y 8 casos focalizados WebKit |
 | Responsive interno ES/EN/DE | PASS | 93 casos Chromium/WebKit + 72 capturas visuales |
 | Contacto responsive y mailto | PASS | 6 casos funcionales desktop/móvil; formulario primero |
 | Fidelidad visual automatizada | PASS | Test de píxeles y capturas claro/oscuro/iPhone |
-| Pipeline completo `qa:phase-6` | PASS | Ejecución Docker encadenada finalizada con código `0` |
+| Pipeline completo `internal:qa:phase-6` | PASS | Ejecución Docker encadenada finalizada con código `0` |
 | Lighthouse completo y `summary.json` final | PASS | 10/10 mediciones; `passed`, 0 warnings y 0 errores |
 | iPhone/iPad físicos | NOT TESTED | La evidencia actual usa WebKit automatizado |
 
@@ -151,11 +151,11 @@ Lighthouse es evidencia de laboratorio y sirve como gate de regresión. No demue
 - El despliegue real no tiene HTTPS, rollback o monitorización posterior.
 - El logo 3D se renderiza fragmentado, como rectángulo, con textura rota o con partes ausentes.
 - El GLB no fue generado por `tools/repair-glb-phase-6.mjs` en modo `alpha-safe-billboard`.
-- `qa:assets:6` no valida `gltf.extras.iocodePhase6LogoMode = alpha-safe-billboard`.
+- `internal:qa:assets:6` no valida `gltf.extras.iocodePhase6LogoMode = alpha-safe-billboard`.
 - El test runtime `logo 3D no se renderiza fragmentado ni como rectángulo roto` no pasa.
 - El GLB fue regenerado pero `siteConfig.logo3dPath` conserva una query antigua.
 - El navegador puede servir un GLB roto desde caché porque la URL del modelo no cambió.
-- `qa:hero3d-ios:6` falla en WebKit iPhone sobre cualquiera de las portadas ES, EN y DE.
+- `internal:qa:hero3d-ios:6` falla en WebKit iPhone sobre cualquiera de las portadas ES, EN y DE.
 - PLC, ROBOTS o SOFTWARE invaden la región central del logo.
 - El Hero3D móvil produce overflow horizontal.
 - La proporción del escenario móvil supera `1.35`.

@@ -101,7 +101,7 @@ if (!existsSync(glbPath)) {
   errors.push(`${glbPath}: GLB final no existe.`);
 } else if (repair?.after?.sha256 !== sha256File(glbPath)) {
   errors.push(
-    "glb-repair-report.json: el SHA-256 after no coincide con el GLB final actual. Ejecuta prepare:assets:6 dentro de Docker."
+    "glb-repair-report.json: el SHA-256 after no coincide con el GLB final actual. Ejecuta internal:prepare:assets:6 dentro de Docker."
   );
 }
 

@@ -70,23 +70,23 @@ assertContains("README.md", docs["README.md"], "http://localhost:8080/health");
 
 assertContains("RUN_GUIDE.md", docs["RUN_GUIDE.md"], "docker compose exec dev npm run check");
 assertContains("RUN_GUIDE.md", docs["RUN_GUIDE.md"], "docker compose exec dev npm run build");
-assertContains("RUN_GUIDE.md", docs["RUN_GUIDE.md"], "docker compose exec dev npm run audit:prod");
+assertContains("RUN_GUIDE.md", docs["RUN_GUIDE.md"], "docker compose exec dev npm run internal:audit:prod");
 assertContains("RUN_GUIDE.md", docs["RUN_GUIDE.md"], "http://localhost:8080/no-existe/");
 
 assertContains("Docker/OPERATIONS.md", docs["Docker/OPERATIONS.md"], "/health");
 assertContains("Docker/OPERATIONS.md", docs["Docker/OPERATIONS.md"], "/no-existe/");
 assertContains("Docker/README.md", docs["Docker/README.md"], "compose.yml");
 
-if (!packageJson.scripts?.["qa:phase-1-1e"]) {
-  errors.push("package.json: falta script qa:phase-1-1e.");
+if (!packageJson.scripts?.["historical:qa:phase-1-1e"]) {
+  errors.push("package.json: falta script historical:qa:phase-1-1e.");
 }
 
-if (!packageJson.scripts?.["qa:smoke:1.1e"]) {
-  errors.push("package.json: falta script qa:smoke:1.1e.");
+if (!packageJson.scripts?.["historical:qa:smoke:1.1e"]) {
+  errors.push("package.json: falta script historical:qa:smoke:1.1e.");
 }
 
-if (!packageJson.scripts?.["summary:devops:1.1e"]) {
-  errors.push("package.json: falta script summary:devops:1.1e.");
+if (!packageJson.scripts?.["historical:summary:devops:1.1e"]) {
+  errors.push("package.json: falta script historical:summary:devops:1.1e.");
 }
 
 assertContains("compose.yml", compose, "profiles:");

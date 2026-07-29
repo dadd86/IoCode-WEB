@@ -17,7 +17,7 @@ if [ ! -f "$phase6_summary" ]; then
   echo "Ejecuta primero el flujo completo de Fase 6:"
   echo "docker compose --profile prod --profile qa --profile assets --profile release down --remove-orphans"
   echo "docker compose --profile assets build --no-cache assets"
-  echo "docker compose --profile assets run --rm assets \"npm run prepare:assets:6\""
+  echo "docker compose --profile assets run --rm assets \"npm run internal:prepare:assets:6\""
   echo "docker compose --profile prod --profile qa build --no-cache web performance-qa"
   echo "docker compose --profile prod --profile qa up -d web"
   echo "docker compose --profile prod --profile qa run --rm performance-qa"

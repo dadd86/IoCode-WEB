@@ -65,7 +65,7 @@ documentan el cierre visual de esa fase.
 ## Puerta
 
 ```text
-npm run docs:lint
+npm run internal:docs:lint
 Documentación: passed; 0 errores
 ```
 

@@ -44,4 +44,4 @@ RUN npm ci \
 
 COPY . .
 
-CMD ["npm", "run", "qa:phase-6"]
+CMD ["npm", "run", "internal:qa:phase-6"]

@@ -121,7 +121,7 @@ Write-Host "Artifact generado: $artifactPath"
 
 docker compose --profile prod --profile qa run --rm `
   -e REQUIRE_HOST_SMOKE=true `
-  browser-qa npm run summary:devops:1.1e
+  browser-qa npm run historical:summary:devops:1.1e
 
 if ($LASTEXITCODE -ne 0) {
   throw "No se pudo regenerar summary.json Fase 1.1E con host smoke."

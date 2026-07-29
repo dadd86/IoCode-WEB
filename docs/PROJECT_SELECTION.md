@@ -167,9 +167,9 @@ los enlaces públicos fueron revisados y pasan:
 
 ```text
 npm run check
-npm run typecheck:src
+npm run internal:typecheck:src
 npm run build
-npm run docs:lint
+npm run internal:docs:lint
 ```
 
 El número de líneas es un indicador de mantenibilidad, no sustituye estos

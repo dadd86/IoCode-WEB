@@ -283,7 +283,7 @@ if (!existsSync(glbPath)) {
 
     if ((gltf.cameras?.length ?? 0) > 0) {
       errors.push(
-        "El GLB contiene cámaras no usadas por el runtime. Ejecuta npm run repair:glb:6 dentro del contenedor assets."
+        "El GLB contiene cámaras no usadas por el runtime. Ejecuta npm run internal:repair:glb:6 dentro del contenedor assets."
       );
     }
 
@@ -299,7 +299,7 @@ if (!existsSync(glbPath)) {
 
       if (imageReport.status === "failed") {
         errors.push(
-          `GLB image[${imageReport.index}] no conserva transparencia alpha. Esto causa rectángulo blanco en Three.js. Ejecuta npm run repair:glb:6 dentro del contenedor assets.`
+          `GLB image[${imageReport.index}] no conserva transparencia alpha. Esto causa rectángulo blanco en Three.js. Ejecuta npm run internal:repair:glb:6 dentro del contenedor assets.`
         );
       }
 

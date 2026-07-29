@@ -13,7 +13,7 @@ Decisión permitida: `GO` únicamente cuando `qa-artifacts/performance/phase-6/s
 ## Pipeline oficial Docker
 
 ```powershell
-docker compose --profile assets run --rm assets "npm run prepare:assets:6"
+docker compose --profile assets run --rm assets "npm run internal:prepare:assets:6"
 docker compose --profile prod --profile qa down --remove-orphans
 docker compose --profile prod --profile qa build --no-cache web performance-qa
 docker compose --profile prod --profile qa up -d web
@@ -42,11 +42,11 @@ docker compose --profile prod --profile qa down --remove-orphans
 - [x] El menú hamburguesa abre y muestra enlaces en móvil, tablet vertical y tablet horizontal.
 - [x] Los H1 internos usan escala fluida, conservan palabras completas y no generan overflow en ES/EN/DE.
 - [x] Contacto presenta el formulario como acción principal y cambia a una columna legible en tablet/móvil.
-- [x] `qa:responsive-visual:6` genera 72 capturas de páginas internas en móvil, tablet y escritorio.
+- [x] `internal:qa:responsive-visual:6` genera 72 capturas de páginas internas en móvil, tablet y escritorio.
 - [x] Las rutas ES/EN/DE mantienen navegación, SEO y ausencia de overflow.
 - [x] `summary.json` agrega todos los artefactos sin ocultar warnings.
 - [x] `docs/PERFORMANCE.md` y `docs/RUNBOOK.md` coinciden con este flujo.
-- [x] `qa:logo3d-version:6`: passed.
+- [x] `internal:qa:logo3d-version:6`: passed.
 - [ ] Captura de un iPhone físico contrastada con este mismo build.
 
 ## Release

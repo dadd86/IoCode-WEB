@@ -41,7 +41,7 @@
     {
       "label": "Docker: npm audit producción",
       "type": "shell",
-      "command": "docker compose run --rm dev npm run audit:prod",
+      "command": "docker compose run --rm dev npm run internal:audit:prod",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -50,7 +50,7 @@
     {
       "label": "Docker: npm audit completo",
       "type": "shell",
-      "command": "docker compose run --rm dev npm run audit:all",
+      "command": "docker compose run --rm dev npm run internal:audit:all",
       "options": {
         "cwd": "${workspaceFolder}"
       },

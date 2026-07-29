@@ -41,7 +41,7 @@ Write-Host "Regenerando summary.json final con REQUIRE_GITLEAKS_ARTIFACT=true"
 docker compose --profile prod --profile qa run --rm `
   -e EMAIL_CONFIRMED=true `
   -e REQUIRE_GITLEAKS_ARTIFACT=true `
-  browser-qa npm run summary:security:1.1d
+  browser-qa npm run historical:summary:security:1.1d
 
 if ($LASTEXITCODE -ne 0) {
   throw "No se pudo regenerar summary.json final con Gitleaks."

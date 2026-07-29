@@ -148,4 +148,4 @@ Escaneo del corpus y runtime real: 0 errores.
 - `form action` y `formaction` no admiten allowlist.
 - `<link href>` usa lista blanca de seis valores `rel`.
 - El contrato I-03 se comprueba antes de validar documentos.
-- `npm run docs:test`, `npm run docs:coverage` y `npm run docs:lint` pasan.
+- `npm run internal:docs:test`, `npm run internal:docs:coverage` y `npm run internal:docs:lint` pasan.

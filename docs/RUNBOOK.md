@@ -55,8 +55,8 @@ Abrir `http://localhost:4321/es/`, `/en/` o `/de/`.
 
 ```powershell
 docker compose --profile qa --profile prod run --rm qa
-docker compose --profile release run --rm release-tools "npm run docs:test"
-docker compose --profile release run --rm release-tools "npm run docs:lint"
+docker compose --profile release run --rm release-tools "npm run internal:docs:test"
+docker compose --profile release run --rm release-tools "npm run internal:docs:lint"
 ```
 
 Resultado actual esperado: Astro sin diagnósticos, 29 páginas, cero vulnerabilidades de producción y validador documental en verde.
@@ -87,7 +87,7 @@ docker compose --profile prod down --remove-orphans
 La preparación modifica intencionadamente el GLB y conserva un backup en `qa-artifacts/`.
 
 ```powershell
-docker compose --profile assets run --rm assets "npm run prepare:assets:6"
+docker compose --profile assets run --rm assets "npm run internal:prepare:assets:6"
 docker compose --profile prod --profile qa down --remove-orphans
 docker compose --profile prod --profile qa build --no-cache web performance-qa
 docker compose --profile prod --profile qa up -d web
@@ -103,7 +103,7 @@ El empaquetado exige resumen verde y árbol Git limpio.
 
 ```powershell
 docker compose --profile release run --rm release-tools "sh tools/create-release-zip.sh"
-docker compose --profile release run --rm release-tools "npm run inspect:release-zip"
+docker compose --profile release run --rm release-tools "npm run internal:inspect:release-zip"
 ```
 
 El ZIP se crea desde `HEAD` y excluye `.git`, `.agents`, `.env`, `node_modules`, `dist`, `qa-artifacts` y comprimidos previos.

@@ -88,13 +88,13 @@ NO-GO de entrada a R4, no una nota diferible.
 ## Comandos y resultados
 
 ```text
-npm run docs:test
+npm run internal:docs:test
 ```
 
 Resultado: 10 pruebas, 10 PASS, 0 FAIL.
 
 ```text
-npm run docs:coverage
+npm run internal:docs:coverage
 ```
 
 Resultado:
@@ -104,7 +104,7 @@ Resultado:
 - funciones: 100%.
 
 ```text
-npm run docs:lint
+npm run internal:docs:lint
 ```
 
 Resultado inicial esperado de R1: `failed`, 71 errores sobre 19 documentos controlados y 42 archivos runtime.

@@ -30,8 +30,8 @@ Abrir `http://localhost:4321/es/`, `/en/` o `/de/`.
 
 ```powershell
 docker compose --profile qa --profile prod run --rm qa
-docker compose --profile release run --rm release-tools "npm run docs:test"
-docker compose --profile release run --rm release-tools "npm run docs:lint"
+docker compose --profile release run --rm release-tools "npm run internal:docs:test"
+docker compose --profile release run --rm release-tools "npm run internal:docs:lint"
 ```
 
 El primer comando ejecuta `astro check`, build y auditoría de dependencias de producción. El flujo completo de rendimiento y 3D está en [docs/RUNBOOK.md](docs/RUNBOOK.md).

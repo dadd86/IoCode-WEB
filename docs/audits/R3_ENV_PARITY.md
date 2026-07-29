@@ -33,10 +33,10 @@ Estado: `Done with evidence`.
 ## Resultado
 
 ```text
-npm run env:test
+npm run internal:env:test
 6 pruebas, 6 PASS, 0 FAIL
 
-npm run env:check
+npm run internal:env:check
 Paridad de entorno: passed; 6 variables; 0 errores
 ```
 
