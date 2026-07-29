@@ -80,9 +80,24 @@ function listOperationalFiles() {
     .filter((filePath) => filePath !== contractTestRelativePath);
 }
 
-async function collectOperationalInvocations() {
-  const invocations = [];
-  const commandPattern = /\bnpm\s+run\s+([a-zA-Z0-9_.:-]+)/gu;
+async function collectOperationalConsumers() {
+  const consumers = [];
+  const patterns = [
+    {
+      kind: "shell-invocation",
+      expression: /\bnpm\s+run\s+([a-zA-Z0-9_.:-]+)/gu
+    },
+    {
+      kind: "exec-array",
+      expression:
+        /["']npm["']\s*,\s*["']run["']\s*,\s*["']([a-zA-Z0-9_.:-]+)["']/gu
+    },
+    {
+      kind: "script-key-access",
+      expression:
+        /\.scripts(?:\?\.)?\[["']([a-zA-Z0-9_.:-]+)["']\]/gu
+    }
+  ];
 
   for (const filePath of listOperationalFiles()) {
     const buffer = await readFile(resolve(root, filePath));
@@ -91,16 +106,19 @@ async function collectOperationalInvocations() {
     }
 
     const content = buffer.toString("utf8");
-    for (const match of content.matchAll(commandPattern)) {
-      invocations.push({
-        file: filePath,
-        line: content.slice(0, match.index).split(/\r?\n/u).length,
-        script: match[1]
-      });
+    for (const { kind, expression } of patterns) {
+      for (const match of content.matchAll(expression)) {
+        consumers.push({
+          file: filePath,
+          line: content.slice(0, match.index).split(/\r?\n/u).length,
+          script: match[1],
+          kind
+        });
+      }
     }
   }
 
-  return invocations;
+  return consumers;
 }
 
 async function sha256(filePath) {
@@ -198,25 +216,29 @@ test("package exposes the final 90-name interface without semantic changes", asy
   assert.deepEqual(definitionMismatches, []);
 });
 
-test("114 operational consumers use only final names", async () => {
+test("119 operational consumers use only final names", async () => {
   const packageJson = JSON.parse(await readFile(packagePath, "utf8"));
   const scripts = packageJson.scripts ?? {};
-  const invocations = await collectOperationalInvocations();
+  const consumers = await collectOperationalConsumers();
   const legacyNames = new Set(renameRows.map(({ currentName }) => currentName));
   const finalNames = new Set(renameRows.map(({ proposedName }) => proposedName));
-  const legacyInvocations = invocations.filter(({ script }) =>
+  const legacyConsumers = consumers.filter(({ script }) =>
     legacyNames.has(script)
   );
-  const finalInvocations = invocations.filter(({ script }) =>
+  const finalConsumers = consumers.filter(({ script }) =>
     finalNames.has(script)
   );
-  const knownInvocations = invocations.filter(({ script }) =>
+  const knownConsumers = consumers.filter(({ script }) =>
     Object.hasOwn(scripts, script)
   );
+  const knownShellInvocations = knownConsumers.filter(
+    ({ kind }) => kind === "shell-invocation"
+  );
 
-  assert.deepEqual(legacyInvocations, []);
-  assert.equal(finalInvocations.length, 114);
-  assert.equal(knownInvocations.length, 168);
+  assert.deepEqual(legacyConsumers, []);
+  assert.equal(finalConsumers.length, 119);
+  assert.equal(knownShellInvocations.length, 168);
+  assert.equal(knownConsumers.length, 174);
 });
 
 test("archive and decision records remain byte-for-byte immutable", async () => {
