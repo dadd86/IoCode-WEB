@@ -10,6 +10,19 @@ Este documento no ejecuta renombres ni eliminaciones. Toda fila con disposición
 `eliminar` requiere una confirmación distinta de la confirmación del renombrado.
 `docs/archive/` es inmutable y queda fuera del radio operativo.
 
+## Autorización fechada y congelación — 2026-07-29
+
+El propietario autorizó después de la propuesta únicamente los 81 renombres y
+sus 114 consumidores. No autorizó eliminar los cinco scripts separados. La
+línea de estado anterior se conserva como estado de emisión de la propuesta.
+
+Desde esta autorización, este archivo es un registro de decisión congelado para
+R3.5b: no se actualizan sus nombres durante el renombrado. Las definiciones
+compuestas usan `npm&#32;run`, que se renderiza como texto pero no constituye la
+forma ejecutable que inspeccionan los validadores. Así preserva los nombres
+decididos sin convertirse en consumidor operativo ni citar comandos ejecutables
+obsoletos. Continúa sujeto a metadatos, enlaces y frescura documental.
+
 ## Resultado revisado y deltas
 
 | Magnitud | R3.5a aceptada | Estado actual | Delta | Interpretación |
@@ -21,6 +34,13 @@ Este documento no ejecuta renombres ni eliminaciones. Toda fila con disposición
 | Sitios operativos afectados por renombre | no fijado | 114 | n/a | 75 `package.json`, 24 docs, 11 `tools/`, 2 `.vscode/`, 1 compose y 1 fixture |
 | Sitios de workflows afectados | 0 | 0 | 0 | No existen workflows consumidores |
 | Sitios archivados afectados | 0 | 0 | 0 | Exclusión contractual |
+
+La referencia anterior de **166** sitios era 164 operativos + 2 archivados. El
+estado previo al renombrado es **170** = 168 operativos + 2 archivados: delta
+**+4**, compuesto exclusivamente por +2 invocaciones corregidas de
+`qa:static:1.1c` y +2 fixtures negativos B1 (`check` y `docs:lint`). No procede
+de este documento ni del informe TDD. Toda medición posterior debe publicar
+valor anterior, valor actual y delta, incluso cuando el cambio sea esperado.
 
 La aritmética del radio es: 168 referencias operativas menos 25 de `check`,
 27 de `build`, 1 de `dev`, 1 de `preview` y 0 de los cinco candidatos a

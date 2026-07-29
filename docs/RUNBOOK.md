@@ -2,9 +2,31 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| R2 | Operación reproducible de desarrollo, QA, producción local y release | Docker, Astro, QA y respuesta operativa | ES, EN, DE | `compose.yml`, `package.json`, `Docker/node-static-server.mjs` y scripts de `tools/` | 2026-07-28 |
+| R3.5b | Operación reproducible de desarrollo, QA, producción local y release | Docker, Astro, QA y respuesta operativa | ES, EN, DE | `compose.yml`, `package.json`, `Docker/node-static-server.mjs` y scripts de `tools/` | 2026-07-29 |
 
 Este es el único runbook operativo. Los comandos se ejecutan desde la raíz y usan Docker; Node.js local no forma parte del flujo soportado.
+
+## Entorno de ejecución soportado
+
+| Familia de comando | Se ejecuta en el host | Se ejecuta en contenedor |
+|---|---|---|
+| `docker compose ...` | Sí; PowerShell/terminal con Docker Desktop | No |
+| `git ...` y `curl.exe ...` | Sí, cuando el procedimiento los indique | No |
+| Astro, Node.js, npm y Playwright | No; no se presupone `node_modules` local | Sí, mediante el servicio indicado |
+| Check, build y audit de aplicación | No | Servicio `qa`, perfiles `qa` + `prod` |
+| Validador documental y contratos Node sin navegador | No | Servicio `release-tools`, perfil `release` |
+| Fase 6 y GLB | No | Servicios `performance-qa` y `assets` |
+
+Un comando npm aislado en Windows **no es un comando operativo soportado**.
+En la verificación R3.5b, el intento directo de `check` no encontró el binario
+Astro local; el mismo check pasó dentro de `qa`. Por tanto, R3.5b se valida
+exclusivamente con Docker para que el resultado sea reproducible.
+
+`DOC_NPM_SCRIPT_UNKNOWN` y `TOOL_NPM_SCRIPT_UNKNOWN` comprueban que el nombre
+citado existe en `package.json`; no demuestran que sea ejecutable en el host,
+que sus dependencias estén instaladas ni que su comportamiento sea correcto.
+La matriz anterior y los gates Docker cubren esa frontera. Esta limitación queda
+registrada como deuda del validador, no como capacidad implementada.
 
 ## Servicios y puertos
 
