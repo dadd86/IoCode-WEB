@@ -1,0 +1,4 @@
+FROM scratch
+
+CMD ["npm", "run", "missing:from-docker-cmd"]
+ENTRYPOINT ["npm", "run", "missing:from-docker-entrypoint"]

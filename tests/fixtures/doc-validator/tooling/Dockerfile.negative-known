@@ -1,0 +1,4 @@
+FROM scratch
+
+CMD ["npm", "run", "internal:qa"]
+ENTRYPOINT ["npm", "run", "dev"]

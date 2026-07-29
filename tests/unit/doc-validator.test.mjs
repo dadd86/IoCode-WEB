@@ -163,7 +163,7 @@ test("reports unknown npm scripts and broken relative links", async () => {
   assert.ok(findings.some(({ code }) => code === "DOC_RELATIVE_LINK_BROKEN"));
 });
 
-test("tool scan rejects unknown literal npm scripts in PowerShell and JavaScript", async () => {
+test("tool scan rejects unknown shell, Docker exec and programmatic script consumers", async () => {
   const report = await validateProject({
     configPath: join(fixtureRoot, "tooling.config.json"),
     now: referenceDate
@@ -173,7 +173,7 @@ test("tool scan rejects unknown literal npm scripts in PowerShell and JavaScript
   );
 
   assert.equal(report.status, "failed");
-  assert.equal(toolFindings.length, 2);
+  assert.equal(toolFindings.length, 5);
   assert.ok(
     toolFindings.some(
       ({ code, file }) =>
@@ -188,11 +188,28 @@ test("tool scan rejects unknown literal npm scripts in PowerShell and JavaScript
         file.endsWith("positive-unknown.mjs")
     )
   );
+  assert.equal(
+    toolFindings.filter(
+      ({ code, file }) =>
+        code === "TOOL_NPM_SCRIPT_UNKNOWN" &&
+        file.endsWith("Dockerfile.positive-unknown")
+    ).length,
+    2
+  );
+  assert.ok(
+    toolFindings.some(
+      ({ code, file }) =>
+        code === "TOOL_NPM_SCRIPT_UNKNOWN" &&
+        file.endsWith("positive-programmatic.mjs")
+    )
+  );
   assert.ok(
     toolFindings.every(
       ({ file }) =>
         !file.endsWith("negative-known.ps1") &&
-        !file.endsWith("negative-known.mjs")
+        !file.endsWith("negative-known.mjs") &&
+        !file.endsWith("Dockerfile.negative-known") &&
+        !file.endsWith("negative-programmatic.mjs")
     )
   );
 });
