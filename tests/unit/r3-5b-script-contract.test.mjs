@@ -216,7 +216,7 @@ test("package exposes the final 90-name interface without semantic changes", asy
   assert.deepEqual(definitionMismatches, []);
 });
 
-test("119 operational consumers use only final names", async () => {
+test("121 controlled consumers use only final names", async () => {
   const packageJson = JSON.parse(await readFile(packagePath, "utf8"));
   const scripts = packageJson.scripts ?? {};
   const consumers = await collectOperationalConsumers();
@@ -236,9 +236,9 @@ test("119 operational consumers use only final names", async () => {
   );
 
   assert.deepEqual(legacyConsumers, []);
-  assert.equal(finalConsumers.length, 119);
+  assert.equal(finalConsumers.length, 121);
   assert.equal(knownShellInvocations.length, 168);
-  assert.equal(knownConsumers.length, 174);
+  assert.equal(knownConsumers.length, 177);
 });
 
 test("archive and decision records remain byte-for-byte immutable", async () => {
