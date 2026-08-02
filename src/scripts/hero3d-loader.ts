@@ -547,3 +547,9 @@ function initializeHeroes(): void {
 }
 
 initializeHeroes();
+
+window.addEventListener("pageshow", (event: PageTransitionEvent) => {
+  if (event.persisted) {
+    initializeHeroes();
+  }
+});

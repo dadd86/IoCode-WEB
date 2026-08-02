@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| R2 | Fuente única para alternates, navegación y generación estática | Routing, SEO e internacionalización | ES, EN, DE | `src/i18n/config.ts` y `src/i18n/routes.ts` | 2026-07-28 |
+| R2 | Fuente única para alternates, navegación y generación estática | Routing, SEO e internacionalización | ES, EN, DE | `src/i18n/config.ts` y `src/i18n/routes.ts` | 2026-08-01 |
 
 Estado: Accepted.
 
@@ -12,7 +12,7 @@ Las rutas visibles difieren por idioma y deben permanecer alineadas con canonica
 
 ## Decisión
 
-Las 9 claves semánticas de `routeAlternates` son la fuente única. Cada clave define un path para ES, EN y DE, lo que produce 27 rutas localizadas.
+Las 11 claves semánticas de `routeAlternates` son la fuente única. Nueve claves comerciales producen 27 rutas y dos claves legales producen 6 rutas. En total existen 33 rutas localizadas para ES, EN y DE.
 
 ## Consecuencias
 

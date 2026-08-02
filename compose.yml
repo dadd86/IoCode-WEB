@@ -29,6 +29,20 @@ services:
     environment:
       NODE_ENV: development
       ASTRO_TELEMETRY_DISABLED: "1"
+      PUBLIC_DEPLOY_ENV: "production"
+      PUBLIC_SITE_URL: "https://iocode-solutions.com"
+      PUBLIC_LEGAL_APPROVED: "${PUBLIC_LEGAL_APPROVED:-false}"
+      PUBLIC_LEGAL_NAME: "${PUBLIC_LEGAL_NAME:-}"
+      PUBLIC_LEGAL_BUSINESS_NAME: "${PUBLIC_LEGAL_BUSINESS_NAME:-IoCode SOLUTIONS}"
+      PUBLIC_LEGAL_STREET: "${PUBLIC_LEGAL_STREET:-}"
+      PUBLIC_LEGAL_POSTAL_CODE: "${PUBLIC_LEGAL_POSTAL_CODE:-}"
+      PUBLIC_LEGAL_CITY: "${PUBLIC_LEGAL_CITY:-Aachen}"
+      PUBLIC_LEGAL_COUNTRY: "${PUBLIC_LEGAL_COUNTRY:-Germany}"
+      PUBLIC_LEGAL_EMAIL: "${PUBLIC_LEGAL_EMAIL:-contact@iocode-solutions.com}"
+      PUBLIC_LEGAL_PHONE: "${PUBLIC_LEGAL_PHONE:-}"
+      PUBLIC_LEGAL_VAT_ID: "${PUBLIC_LEGAL_VAT_ID:-}"
+      PUBLIC_LEGAL_REGISTER_NAME: "${PUBLIC_LEGAL_REGISTER_NAME:-}"
+      PUBLIC_LEGAL_REGISTER_NUMBER: "${PUBLIC_LEGAL_REGISTER_NUMBER:-}"
       CHOKIDAR_USEPOLLING: "${CHOKIDAR_USEPOLLING:-false}"
     volumes:
       - .:/app
@@ -52,6 +66,8 @@ services:
     environment:
       NODE_ENV: production
       ASTRO_TELEMETRY_DISABLED: "1"
+      PUBLIC_DEPLOY_ENV: "preview"
+      PUBLIC_SITE_URL: "${PREVIEW_SITE_URL:-https://preview.example.net}"
     ports:
       - "${ASTRO_PREVIEW_PORT:-4322}:4321"
     volumes:
@@ -62,7 +78,7 @@ services:
       sh -c "
       node --version &&
       npm --version &&
-      npm run build &&
+      npm run build:preview &&
       npm run preview -- --host 0.0.0.0 --port 4321
       "
     profiles:
@@ -73,6 +89,21 @@ services:
     build:
       context: .
       dockerfile: Docker/Dockerfile
+      args:
+        PUBLIC_DEPLOY_ENV: "${PUBLIC_DEPLOY_ENV:-production}"
+        PUBLIC_SITE_URL: "${PUBLIC_SITE_URL:-https://iocode-solutions.com}"
+        PUBLIC_LEGAL_APPROVED: "${PUBLIC_LEGAL_APPROVED:-false}"
+        PUBLIC_LEGAL_NAME: "${PUBLIC_LEGAL_NAME:-}"
+        PUBLIC_LEGAL_BUSINESS_NAME: "${PUBLIC_LEGAL_BUSINESS_NAME:-IoCode SOLUTIONS}"
+        PUBLIC_LEGAL_STREET: "${PUBLIC_LEGAL_STREET:-}"
+        PUBLIC_LEGAL_POSTAL_CODE: "${PUBLIC_LEGAL_POSTAL_CODE:-}"
+        PUBLIC_LEGAL_CITY: "${PUBLIC_LEGAL_CITY:-Aachen}"
+        PUBLIC_LEGAL_COUNTRY: "${PUBLIC_LEGAL_COUNTRY:-Germany}"
+        PUBLIC_LEGAL_EMAIL: "${PUBLIC_LEGAL_EMAIL:-contact@iocode-solutions.com}"
+        PUBLIC_LEGAL_PHONE: "${PUBLIC_LEGAL_PHONE:-}"
+        PUBLIC_LEGAL_VAT_ID: "${PUBLIC_LEGAL_VAT_ID:-}"
+        PUBLIC_LEGAL_REGISTER_NAME: "${PUBLIC_LEGAL_REGISTER_NAME:-}"
+        PUBLIC_LEGAL_REGISTER_NUMBER: "${PUBLIC_LEGAL_REGISTER_NUMBER:-}"
     init: true
     environment:
       NODE_ENV: production
@@ -90,6 +121,10 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    cpus: 0.50
+    mem_limit: 256m
+    mem_reservation: 64m
+    pids_limit: 100
     healthcheck:
       test:
         [
@@ -157,9 +192,9 @@ services:
       PERFORMANCE_BASE_URL: "http://web:8080"
       CHROME_PATH: "/usr/local/bin/chromium"
 
-      PHASE6_MAX_GLB_IDEAL_BYTES: "2000000"
-      PHASE6_MAX_GLB_ACCEPTED_BYTES: "5000000"
-      PHASE6_MAX_GLB_BLOCKER_BYTES: "8000000"
+      PHASE6_MAX_GLB_IDEAL_BYTES: "250000"
+      PHASE6_MAX_GLB_ACCEPTED_BYTES: "500000"
+      PHASE6_MAX_GLB_BLOCKER_BYTES: "500000"
 
       PHASE6_MAX_IMAGE_BYTES: "350000"
       PHASE6_MAX_CRITICAL_LOGO_BYTES: "180000"

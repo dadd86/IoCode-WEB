@@ -1,4 +1,5 @@
 import type { RouteKey } from "../i18n/routes";
+import { siteUrl } from "../config/environment";
 
 export type LocalizedText = {
   es: string;
@@ -21,7 +22,7 @@ export type OfferCatalogItem = {
 export const siteConfig = {
   name: "IoCode SOLUTIONS",
   legalName: "IoCode SOLUTIONS",
-  url: "https://iocode-solutions.com",
+  url: siteUrl,
   email: "contact@iocode-solutions.com",
   logoPath: "/logo/iocode-logo.png",
   logoWebpPath: "/logo/iocode-logo-512.webp",

@@ -8,8 +8,8 @@ Sitio estático multilingüe de IoCode SOLUTIONS para automatización industrial
 
 ## Estado comprobado
 
-- 9 claves de ruta y 27 rutas localizadas en ES, EN y DE.
-- 29 páginas producidas por el build Astro.
+- 11 claves de ruta: 27 rutas comerciales y 6 rutas legales localizadas en ES, EN y DE.
+- 35 páginas producidas por el build Astro: 33 localizadas, la entrada raíz y la página 404.
 - Sin backend, base de datos, login, sesiones ni cookies de aplicación.
 - El contacto usa `mailto:` y no almacena mensajes en infraestructura propia.
 - R0, R1, R2 y R3 están cerradas con evidencia.
@@ -55,9 +55,14 @@ Copiar `.env.example` a `.env` solo para overrides locales. Los puertos y contro
 
 - [Índice técnico](docs/index.md)
 - [Runbook único](docs/RUNBOOK.md)
+- [Perfil de producción](docs/PRODUCTION_PROFILE.md)
+- [Operación, release y rollback](docs/PRODUCTION_OPERATIONS.md)
+- [DNS y TLS](docs/DNS_TLS.md)
+- [Entrega Fase 9B](docs/PHASE_9B_DELIVERY.md)
+- [Checklist de Search Console](docs/SEARCH_CONSOLE_CHECKLIST.md)
 - [Arquitectura](docs/ARCHITECTURE.md)
 - [Rendimiento y Hero3D](docs/PERFORMANCE.md)
 - [Seguridad técnica](SECURITY.md)
 - [Checklist QA](QA_CHECKLIST.md)
 
-`master` es la rama de release. El trabajo de remediación se conserva en `codex/baseline-r0`; no se publica ni se mueve el repositorio sin una decisión explícita del propietario.
+`master` es la rama de release. Producción solo consume imágenes OCI por digest y requiere aprobación del entorno protegido `production`.

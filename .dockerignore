@@ -13,6 +13,8 @@ coverage
 .env
 .env.*
 !.env.example
+!.env.preview.example
+!.env.production.example
 !Docker/.env.example
 
 Docker/.env

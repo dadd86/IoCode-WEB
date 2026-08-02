@@ -357,7 +357,7 @@ if (!existsSync(glbPath)) {
       errors.push("El GLB no contiene scenes.");
     }
 
-    if ((stats?.size ?? 0) > Number(process.env.PHASE6_MAX_GLB_ACCEPTED_BYTES || "5000000")) {
+    if ((stats?.size ?? 0) > Number(process.env.PHASE6_MAX_GLB_ACCEPTED_BYTES || "500000")) {
       errors.push(
         `${glbPath}: ${stats.size} bytes supera presupuesto aceptable de GLB.`
       );

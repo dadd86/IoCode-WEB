@@ -15,6 +15,13 @@
 ## Operación y calidad
 
 - [RUNBOOK](RUNBOOK.md): única guía operativa.
+- [Perfil de producción](PRODUCTION_PROFILE.md): capacidad, SLO, RTO/RPO y ownership.
+- [DNS y TLS](DNS_TLS.md): zona, certificado y canonicalización.
+- [Operación de producción](PRODUCTION_OPERATIONS.md): hardening, caché, CI/CD, release y rollback.
+- [Inventario de secretos](SECRETS_ACCESS_INVENTORY.md): accesos sin valores confidenciales.
+- [Search Console](SEARCH_CONSOLE_CHECKLIST.md): propiedad, sitemap e indexación.
+- [Entrega Fase 9B](PHASE_9B_DELIVERY.md): matriz SEO/UI/i18n y gates.
+- [Entrega Fase 9C](PHASE_9C_DELIVERY.md): contrato Hero3D, WebGL y presupuestos de rendimiento.
 - [PERFORMANCE](PERFORMANCE.md): presupuestos, Hero3D y Fase 6.
 - [MAINTENANCE](MAINTENANCE.md): cambios habituales.
 - [QA_CHECKLIST](../QA_CHECKLIST.md): gate manual y automatizado.
@@ -22,6 +29,7 @@
 ## Seguridad e historial
 
 - [SECURITY](../SECURITY.md): controles técnicos y límites.
+- [ADR-0006](adr/0006-production-hosting.md): elección de VPS Docker frente a hosting administrado.
 - [CHANGELOG](../CHANGELOG.md): entregas.
 - [Migración](MIGRATION_FROM_STATIC_HTML.md): contexto histórico.
 - [Evidencia R0](audits/R0_BASELINE.md) y [evidencia R1](testing/r1-document-validator.tdd.md).
@@ -37,4 +45,4 @@
 frescura por `docs/document-control.json`. Los contratos vigentes son los
 documentos resumidos enlazados en “Entrada y arquitectura”.
 
-`COMPLIANCE.md` y las rutas legales no se publican como verificadas hasta completar X-LEGAL y R4. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.
+Las rutas legales están implementadas como draft controlado y permanecen `noindex` hasta completar X-LEGAL, la dirección postal y la aprobación del propietario. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.

@@ -1,0 +1,128 @@
+name: CI and immutable release
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - carmonita
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PUBLIC_DEPLOY_ENV: production
+      PUBLIC_SITE_URL: https://iocode-solutions.com
+      PUBLIC_LEGAL_APPROVED: ${{ vars.PUBLIC_LEGAL_APPROVED }}
+      PUBLIC_LEGAL_NAME: ${{ vars.PUBLIC_LEGAL_NAME }}
+      PUBLIC_LEGAL_BUSINESS_NAME: ${{ vars.PUBLIC_LEGAL_BUSINESS_NAME }}
+      PUBLIC_LEGAL_STREET: ${{ vars.PUBLIC_LEGAL_STREET }}
+      PUBLIC_LEGAL_POSTAL_CODE: ${{ vars.PUBLIC_LEGAL_POSTAL_CODE }}
+      PUBLIC_LEGAL_CITY: ${{ vars.PUBLIC_LEGAL_CITY }}
+      PUBLIC_LEGAL_COUNTRY: ${{ vars.PUBLIC_LEGAL_COUNTRY }}
+      PUBLIC_LEGAL_EMAIL: ${{ vars.PUBLIC_LEGAL_EMAIL }}
+      PUBLIC_LEGAL_PHONE: ${{ vars.PUBLIC_LEGAL_PHONE }}
+      PUBLIC_LEGAL_VAT_ID: ${{ vars.PUBLIC_LEGAL_VAT_ID }}
+      PUBLIC_LEGAL_REGISTER_NAME: ${{ vars.PUBLIC_LEGAL_REGISTER_NAME }}
+      PUBLIC_LEGAL_REGISTER_NUMBER: ${{ vars.PUBLIC_LEGAL_REGISTER_NUMBER }}
+      ASTRO_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+      - name: Use locked Node runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Locked install
+        run: npm ci
+      - name: Static and unit checks
+        run: |
+          npm run check
+          npm run internal:typecheck:src
+          npm run internal:typecheck:tests
+          npm run internal:env:test
+          npm run internal:docs:test
+          node --test tests/unit/phase-9a-contract.test.mjs
+      - name: Production build and leak gate
+        run: |
+          npm run build
+          npm run internal:qa:config:prod
+          npm run internal:qa:phase-9b:static
+          npm run internal:qa:phase-9c:static
+          npm run internal:validate:dist-sitemap
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Responsive, SEO and WCAG browser gate
+        run: |
+          npm run internal:qa:phase-9b:e2e
+          npm run internal:qa:phase-9c:e2e
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Package static artifact
+        run: |
+          source_date_epoch="$(git show -s --format=%ct HEAD)"
+          tar --sort=name --mtime="@${source_date_epoch}" --owner=0 --group=0 --numeric-owner -C dist -czf "iocode-dist-${GITHUB_SHA}.tar.gz" .
+          echo "ARTIFACT_SHA256=$(sha256sum "iocode-dist-${GITHUB_SHA}.tar.gz" | cut -d' ' -f1)" >> "$GITHUB_ENV"
+      - name: Build immutable OCI image
+        run: |
+          release_version="$(node -p "require('./package.json').version")"
+          docker build \
+            --build-arg PUBLIC_DEPLOY_ENV=production \
+            --build-arg PUBLIC_SITE_URL=https://iocode-solutions.com \
+            --build-arg PUBLIC_LEGAL_APPROVED="${PUBLIC_LEGAL_APPROVED}" \
+            --build-arg PUBLIC_LEGAL_NAME="${PUBLIC_LEGAL_NAME}" \
+            --build-arg PUBLIC_LEGAL_BUSINESS_NAME="${PUBLIC_LEGAL_BUSINESS_NAME}" \
+            --build-arg PUBLIC_LEGAL_STREET="${PUBLIC_LEGAL_STREET}" \
+            --build-arg PUBLIC_LEGAL_POSTAL_CODE="${PUBLIC_LEGAL_POSTAL_CODE}" \
+            --build-arg PUBLIC_LEGAL_CITY="${PUBLIC_LEGAL_CITY}" \
+            --build-arg PUBLIC_LEGAL_COUNTRY="${PUBLIC_LEGAL_COUNTRY}" \
+            --build-arg PUBLIC_LEGAL_EMAIL="${PUBLIC_LEGAL_EMAIL}" \
+            --build-arg PUBLIC_LEGAL_PHONE="${PUBLIC_LEGAL_PHONE}" \
+            --build-arg PUBLIC_LEGAL_VAT_ID="${PUBLIC_LEGAL_VAT_ID}" \
+            --build-arg PUBLIC_LEGAL_REGISTER_NAME="${PUBLIC_LEGAL_REGISTER_NAME}" \
+            --build-arg PUBLIC_LEGAL_REGISTER_NUMBER="${PUBLIC_LEGAL_REGISTER_NUMBER}" \
+            --build-arg RELEASE_VERSION="${release_version}" \
+            --build-arg VCS_REF="${GITHUB_SHA}" \
+            --build-arg BUILD_DATE="$(git show -s --format=%cI HEAD)" \
+            --build-arg ARTIFACT_NAME="iocode-dist-${GITHUB_SHA}.tar.gz" \
+            --build-arg ARTIFACT_SHA256="${ARTIFACT_SHA256}" \
+            --tag "ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/iocode-solutions:${GITHUB_SHA}" \
+            --file Docker/Dockerfile .
+      - name: Log in to GHCR
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push release image and capture digest
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/iocode-solutions:${GITHUB_SHA}"
+          docker push "$image"
+          digest="$(docker inspect --format='{{index .RepoDigests 0}}' "$image" | cut -d@ -f2)"
+          test -n "$digest"
+          echo "IMAGE_DIGEST=$digest" >> "$GITHUB_ENV"
+      - name: Create traceability manifest
+        run: node tools/create-release-manifest.mjs --artifact "iocode-dist-${GITHUB_SHA}.tar.gz" --artifact-sha256 "${ARTIFACT_SHA256}" --image-digest "${IMAGE_DIGEST:-}" --output release-manifest.json
+      - name: Upload immutable release evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: iocode-release-${{ github.sha }}
+          path: |
+            iocode-dist-${{ github.sha }}.tar.gz
+            release-manifest.json
+          if-no-files-found: error
+          retention-days: 30

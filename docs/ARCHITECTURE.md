@@ -74,7 +74,7 @@ Comando:
 
 ## Rutas principales
 
-La fuente `src/i18n/routes.ts` declara exactamente **9 claves de ruta**. Cada clave tiene una variante en los 3 locales, por lo que existen **27 rutas localizadas**. El build comprobado genera **29 páginas HTML**: las 27 localizadas, la entrada raíz y la página 404.
+La fuente `src/i18n/routes.ts` declara **11 claves de ruta**: 9 comerciales y 2 legales. Cada clave tiene una variante en los 3 locales, por lo que existen **33 rutas localizadas**: 27 comerciales y 6 legales. El build comprobado genera **35 páginas HTML**: las 33 localizadas, la entrada raíz y la página 404.
 
 Español:
 

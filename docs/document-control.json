@@ -80,6 +80,43 @@
       "maxAgeDays": 180
     },
     {
+      "path": "PRODUCTION_PROFILE.md",
+      "type": "architecture",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "DNS_TLS.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "SECRETS_ACCESS_INVENTORY.md",
+      "type": "security",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "PRODUCTION_OPERATIONS.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "PHASE_9A_DELIVERY.md",
+      "type": "historical"
+    },
+    {
+      "path": "SEARCH_CONSOLE_CHECKLIST.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "PHASE_9B_DELIVERY.md",
+      "type": "historical"
+    },
+    {
+      "path": "PHASE_9C_DELIVERY.md",
+      "type": "historical"
+    },
+    {
       "path": "QA_PHASE_1_1C.md",
       "type": "historical"
     },
@@ -101,6 +138,10 @@
     },
     {
       "path": "adr/0005-ai-crawler-policy.md",
+      "type": "adr"
+    },
+    {
+      "path": "adr/0006-production-hosting.md",
       "type": "adr"
     },
     {

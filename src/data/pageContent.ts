@@ -235,6 +235,22 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
       heading: "Hablemos de máquinas, datos, software o procesos.",
       intro:
         "Contacta con IoCode SOLUTIONS para proyectos técnicos de automatización, robótica, software industrial, integración de datos o sistemas Industria 4.0. En esta página también puedes verificar la persona técnica responsable mediante LinkedIn y GitHub."
+    },
+    imprint: {
+      title: "Aviso legal | IoCode SOLUTIONS",
+      description:
+        "Información legal, identificación del proveedor y datos de contacto de IoCode SOLUTIONS conforme al § 5 DDG alemán.",
+      eyebrow: "Información legal",
+      heading: "Aviso legal",
+      intro: "Identificación permanente del responsable de este servicio digital."
+    },
+    privacy: {
+      title: "Política de privacidad | IoCode SOLUTIONS",
+      description:
+        "Información sobre el tratamiento de datos personales, registros técnicos, contacto y derechos conforme al artículo 13 del RGPD.",
+      eyebrow: "Protección de datos",
+      heading: "Política de privacidad",
+      intro: "Información transparente sobre los datos tratados al visitar o contactar este sitio."
     }
   },
 
@@ -405,6 +421,22 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
       heading: "Let us talk about machines, data, software or processes.",
       intro:
         "Contact IoCode SOLUTIONS for technical projects involving automation, robotics, industrial software, data integration or Industry 4.0 systems. This page also lets you verify the technical contact person through LinkedIn and GitHub."
+    },
+    imprint: {
+      title: "Legal notice | IoCode SOLUTIONS",
+      description:
+        "Provider identification, legal information and contact details for IoCode SOLUTIONS under section 5 of the German DDG.",
+      eyebrow: "Legal information",
+      heading: "Legal notice",
+      intro: "Permanent identification of the person responsible for this digital service."
+    },
+    privacy: {
+      title: "Privacy policy | IoCode SOLUTIONS",
+      description:
+        "Information about personal-data processing, technical logs, contact and data-subject rights under Article 13 GDPR.",
+      eyebrow: "Data protection",
+      heading: "Privacy policy",
+      intro: "Transparent information about data processed when visiting or contacting this website."
     }
   },
 
@@ -575,6 +607,22 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
       heading: "Sprechen wir über Maschinen, Daten, Software oder Prozesse.",
       intro:
         "Kontakt zu IoCode SOLUTIONS für technische Projekte in Automatisierung, Robotik, Industriesoftware, Datenintegration oder Industrie-4.0-Systemen. Auf dieser Seite kann die technische Kontaktperson über LinkedIn und GitHub geprüft werden."
+    },
+    imprint: {
+      title: "Impressum | IoCode SOLUTIONS",
+      description:
+        "Anbieterkennzeichnung, Pflichtangaben und Kontaktinformationen von IoCode SOLUTIONS gemäß § 5 DDG.",
+      eyebrow: "Rechtliche Angaben",
+      heading: "Impressum",
+      intro: "Ständig verfügbare Anbieterkennzeichnung für diesen digitalen Dienst."
+    },
+    privacy: {
+      title: "Datenschutzerklärung | IoCode SOLUTIONS",
+      description:
+        "Informationen zur Verarbeitung personenbezogener Daten, Server-Protokollen, Kontaktaufnahme und Betroffenenrechten gemäß Artikel 13 DSGVO.",
+      eyebrow: "Datenschutz",
+      heading: "Datenschutzerklärung",
+      intro: "Transparente Informationen zur Datenverarbeitung beim Besuch und bei der Kontaktaufnahme."
     }
   }
 };

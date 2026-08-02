@@ -14,10 +14,10 @@ const errors = [];
 const warnings = [];
 
 const budgets = {
-  maxGlbIdealBytes: Number(process.env.PHASE6_MAX_GLB_IDEAL_BYTES || "2000000"),
-  maxGlbAcceptedBytes: Number(process.env.PHASE6_MAX_GLB_ACCEPTED_BYTES || "5000000"),
-  maxGlbBlockerBytes: Number(process.env.PHASE6_MAX_GLB_BLOCKER_BYTES || "8000000"),
-  maxImageBytes: Number(process.env.PHASE6_MAX_IMAGE_BYTES || "2000000"),
+  maxGlbIdealBytes: Number(process.env.PHASE6_MAX_GLB_IDEAL_BYTES || "250000"),
+  maxGlbAcceptedBytes: Number(process.env.PHASE6_MAX_GLB_ACCEPTED_BYTES || "500000"),
+  maxGlbBlockerBytes: Number(process.env.PHASE6_MAX_GLB_BLOCKER_BYTES || "500000"),
+  maxImageBytes: Number(process.env.PHASE6_MAX_IMAGE_BYTES || "350000"),
   maxJsInitialBytes: Number(process.env.PHASE6_MAX_JS_INITIAL_BYTES || "250000"),
   maxJsTotalBytes: Number(process.env.PHASE6_MAX_JS_TOTAL_BYTES || "700000"),
   maxCssTotalBytes: Number(process.env.PHASE6_MAX_CSS_TOTAL_BYTES || "120000"),

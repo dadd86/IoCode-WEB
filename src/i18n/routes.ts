@@ -9,7 +9,9 @@ export type RouteKey =
   | "projects"
   | "skills"
   | "process"
-  | "contact";
+  | "contact"
+  | "imprint"
+  | "privacy";
 
 export type LocalizedRoute = {
   key: RouteKey;
@@ -72,6 +74,18 @@ export const routeAlternates: Record<RouteKey, LocalizedRoute> = {
     label: { es: "Contacto", en: "Contact", de: "Kontakt" },
     slug: { es: "contacto", en: "contact", de: "kontakt" },
     path: { es: "/es/contacto/", en: "/en/contact/", de: "/de/kontakt/" }
+  },
+  imprint: {
+    key: "imprint",
+    label: { es: "Aviso legal", en: "Legal notice", de: "Impressum" },
+    slug: { es: "aviso-legal", en: "legal-notice", de: "impressum" },
+    path: { es: "/es/aviso-legal/", en: "/en/legal-notice/", de: "/de/impressum/" }
+  },
+  privacy: {
+    key: "privacy",
+    label: { es: "Privacidad", en: "Privacy", de: "Datenschutz" },
+    slug: { es: "privacidad", en: "privacy", de: "datenschutz" },
+    path: { es: "/es/privacidad/", en: "/en/privacy/", de: "/de/datenschutz/" }
   }
 };
 

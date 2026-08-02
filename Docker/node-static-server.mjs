@@ -202,9 +202,12 @@ function chooseCompression(request, contentType, statusCode) {
   return null;
 }
 
-function getCacheControl(pathname, statusCode) {
+function getCacheControl(requestUrl, statusCode) {
+  const url = new URL(requestUrl, `http://localhost:${port}`);
+  const { pathname } = url;
+
   if (statusCode !== 200) {
-    return "no-cache";
+    return "no-cache, max-age=0, must-revalidate";
   }
 
   if (pathname === "/health") {
@@ -215,11 +218,21 @@ function getCacheControl(pathname, statusCode) {
     return "public, max-age=3600";
   }
 
-  if (pathname.startsWith("/_astro/") || isAssetPath(pathname)) {
+  if (pathname.startsWith("/_astro/")) {
     return "public, max-age=31536000, immutable";
   }
 
-  return "no-cache";
+  if (/\.glb$/iu.test(pathname)) {
+    return /^[a-f0-9]{12,64}$/iu.test(url.searchParams.get("v") || "")
+      ? "public, max-age=31536000, immutable"
+      : "public, max-age=3600, must-revalidate";
+  }
+
+  if (isAssetPath(pathname)) {
+    return "public, max-age=604800, stale-while-revalidate=86400";
+  }
+
+  return "no-cache, max-age=0, must-revalidate";
 }
 
 function buildWeakEtag(stats) {
@@ -388,7 +401,6 @@ const server = createServer((request, response) => {
   const compression = chooseCompression(request, contentType, statusCode);
   const etag = buildWeakEtag(stats);
   const lastModified = stats.mtime.toUTCString();
-  const pathname = new URL(request.url, `http://localhost:${port}`).pathname;
   const isHtml = contentType.startsWith("text/html");
 
   let html = "";
@@ -401,7 +413,7 @@ const server = createServer((request, response) => {
 
   setSecurityHeaders(response, html);
 
-  response.setHeader("Cache-Control", getCacheControl(pathname, statusCode));
+  response.setHeader("Cache-Control", getCacheControl(request.url, statusCode));
   response.setHeader("Vary", "Accept-Encoding");
   response.setHeader("ETag", etag);
   response.setHeader("Last-Modified", lastModified);

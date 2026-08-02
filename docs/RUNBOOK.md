@@ -61,7 +61,7 @@ docker compose --profile release run --rm release-tools "npm run internal:docs:t
 docker compose --profile release run --rm release-tools "npm run internal:docs:lint"
 ```
 
-Resultado actual esperado: Astro sin diagnósticos, 29 páginas, cero vulnerabilidades de producción y validador documental en verde.
+Resultado actual esperado: Astro sin diagnósticos, 35 páginas, cero vulnerabilidades de producción y validador documental en verde.
 
 ## Producción local y smoke test
 
@@ -128,7 +128,7 @@ El laboratorio usa HTTP. En producción, el proxy, CDN o plataforma debe proporc
 
 ## Rollback
 
-En local no existe un registro remoto de imágenes ni datos persistentes. El rollback reproducible consiste en volver al commit o artefacto previamente firmado, reconstruir `web` y repetir los smoke tests. En staging, R7 deberá registrar el identificador anterior y demostrar una recuperación en 15 minutos o menos.
+En local no existe un registro remoto ni datos persistentes. En producción está prohibido recompilar durante un rollback: el runner protegido ejecuta `sh tools/rollback-release.sh`, recupera el directorio señalado por `previous`, reutiliza sus digests OCI y repite el smoke test antes de intercambiar los punteros. El objetivo RTO es 15 minutos. El procedimiento completo está en [PRODUCTION_OPERATIONS.md](PRODUCTION_OPERATIONS.md).
 
 ## Limpieza acotada
 

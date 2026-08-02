@@ -101,12 +101,14 @@ const checks = [
   },
   {
     id: "webgl-context-loss",
-    requirement: "La pérdida de contexto WebGL se captura y activa fallback.",
+    requirement: "La pérdida y restauración del contexto WebGL se capturan sin crear otro canvas.",
     evidence: runtimePath,
     passed:
       runtime.includes('"webglcontextlost"') &&
+      runtime.includes('"webglcontextrestored"') &&
       runtime.includes("event.preventDefault()") &&
-      runtime.includes('"webgl-context-lost"')
+      runtime.includes('"webgl-context-lost"') &&
+      runtime.includes("state.contextLost = false")
   },
   {
     id: "resource-disposal",
@@ -120,9 +122,13 @@ const checks = [
   },
   {
     id: "page-lifecycle-cleanup",
-    requirement: "El runtime se desmonta en pagehide.",
+    requirement: "El runtime se desmonta en pagehide y se rearma al volver desde bfcache.",
     evidence: runtimePath,
-    passed: runtime.includes('"pagehide"') && runtime.includes("disposeRuntime(")
+    passed:
+      runtime.includes('"pagehide"') &&
+      runtime.includes("disposeRuntime(") &&
+      loader.includes('window.addEventListener("pageshow"') &&
+      loader.includes("event.persisted")
   },
   {
     id: "panel-hover-description",

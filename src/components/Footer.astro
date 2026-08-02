@@ -2,6 +2,7 @@
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import LogoImage from "./LogoImage.astro";
+import { getLocalizedPath } from "../i18n/routes";
 type Props = { locale: Locale };
 const { locale } = Astro.props;
 
@@ -15,6 +16,18 @@ const footerLabel: Record<Locale, string> = {
   es: "Información del sitio y marca IoCode SOLUTIONS",
   en: "Site information and IoCode SOLUTIONS brand",
   de: "Website-Informationen und Marke IoCode SOLUTIONS"
+};
+
+const legalLabel: Record<Locale, string> = {
+  es: "Información legal",
+  en: "Legal information",
+  de: "Rechtliche Informationen"
+};
+
+const legalLinks: Record<Locale, { imprint: string; privacy: string }> = {
+  es: { imprint: "Aviso legal", privacy: "Política de privacidad" },
+  en: { imprint: "Legal notice", privacy: "Privacy policy" },
+  de: { imprint: "Impressum", privacy: "Datenschutzerklärung" }
 };
 ---
 
@@ -31,6 +44,12 @@ const footerLabel: Record<Locale, string> = {
         height={128}
       />
     </a>
-    <p>© {new Date().getFullYear()} {siteConfig.name}. {text[locale]}</p>
+    <div class="footerText">
+      <p>© {new Date().getFullYear()} {siteConfig.name}. {text[locale]}</p>
+      <nav class="footerLegal" aria-label={legalLabel[locale]}>
+        <a href={getLocalizedPath("imprint", locale)}>{legalLinks[locale].imprint}</a>
+        <a href={getLocalizedPath("privacy", locale)}>{legalLinks[locale].privacy}</a>
+      </nav>
+    </div>
   </div>
 </footer>

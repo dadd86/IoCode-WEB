@@ -314,7 +314,7 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     await expect(hero).toHaveAttribute("data-hero3d-animation-state", "running");
   });
 
-  test("la pérdida de contexto WebGL activa fallback y libera el canvas", async ({ page }) => {
+  test("la pérdida de contexto WebGL activa fallback y la restauración reutiliza el canvas", async ({ page }) => {
     test.setTimeout(90_000);
 
     await page.emulateMedia({
@@ -351,10 +351,20 @@ test.describe("Fase 6 - Performance Hero3D", () => {
     );
     await expect(hero).toHaveAttribute(
       "data-hero3d-animation-state",
-      "disposed"
+      "paused-context-lost"
     );
-    await expect(canvas).toHaveCount(0);
+    await expect(canvas).toHaveCount(1);
     await expect(page.locator("h1")).toBeVisible();
+
+    await canvas.dispatchEvent("webglcontextrestored");
+
+    await expect(hero).toHaveAttribute("data-hero3d-state", "ready");
+    await expect(hero).toHaveAttribute("data-fallback", "false");
+    await expect(hero).not.toHaveAttribute(
+      "data-hero3d-fallback-reason",
+      "webgl-context-lost"
+    );
+    await expect(canvas).toHaveCount(1);
   });
 
   test("mobile dock usa nombres accesibles que contienen el texto visible", async ({ page }) => {

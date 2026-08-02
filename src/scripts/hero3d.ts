@@ -35,6 +35,7 @@ type RuntimeState = {
   renderer: THREE.WebGLRenderer | null;
   isVisible: boolean;
   isDocumentVisible: boolean;
+  contextLost: boolean;
   disposed: boolean;
 };
 
@@ -697,6 +698,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
     renderer: null,
     isVisible: true,
     isDocumentVisible: document.visibilityState === "visible",
+    contextLost: false,
     disposed: false
   };
 
@@ -861,6 +863,11 @@ export async function initHero(host: HTMLElement): Promise<void> {
         return;
       }
 
+      if (state.contextLost) {
+        stopAnimation("paused-context-lost");
+        return;
+      }
+
       if (runtime.reducedMotion) {
         stopAnimation("paused-reduced-motion");
         runtime.renderer.render(runtime.scene, runtime.camera);
@@ -899,6 +906,11 @@ export async function initHero(host: HTMLElement): Promise<void> {
       state.renderer?.dispose();
 
       viewer?.replaceChildren();
+      delete host.dataset.hero3dInitialized;
+      delete host.dataset.hero3dRequested;
+      delete host.dataset.hero3dLoadDuration;
+      host.dataset.hero3dState = "deferred";
+      host.classList.remove("is-loading", "is-three-ready");
     }
 
     document.addEventListener(
@@ -961,12 +973,37 @@ export async function initHero(host: HTMLElement): Promise<void> {
       "webglcontextlost",
       (event: Event) => {
         event.preventDefault();
-        disposeRuntime("webgl-context-lost");
+        state.contextLost = true;
+        stopAnimation("paused-context-lost");
         showFallback(
           host,
           "webgl-context-lost",
           "El contexto WebGL se perdió. Se activa el fallback visual."
         );
+      },
+      {
+        signal: state.abortController.signal
+      }
+    );
+
+    renderer.domElement.addEventListener(
+      "webglcontextrestored",
+      () => {
+        if (state.disposed) {
+          return;
+        }
+
+        state.contextLost = false;
+        applyTheme(host);
+        resizeRuntime(runtime);
+
+        host.dataset.fallback = "false";
+        host.dataset.hero3dState = "ready";
+        delete host.dataset.hero3dFallbackReason;
+        host.classList.remove("is-loading", "is-fallback");
+        host.classList.add("is-three-ready");
+
+        syncAnimationState();
       },
       {
         signal: state.abortController.signal

@@ -528,6 +528,29 @@
   color: var(--color-text-muted);
 }
 
+.footerText {
+  display: grid;
+  justify-items: end;
+  gap: 0.7rem;
+  min-width: 0;
+  text-align: right;
+}
+
+.footerLegal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem 1rem;
+}
+
+.footerLegal a {
+  color: var(--color-primary);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.22em;
+}
+
 .footerLogo {
   display: block;
   width: clamp(5.5rem, 8vw, 7.25rem);
@@ -600,6 +623,15 @@ textarea.input {
   .footerContent {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .footerText {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .footerLegal {
+    justify-content: flex-start;
   }
 
   .buttonGroup,

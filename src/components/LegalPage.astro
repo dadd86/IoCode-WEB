@@ -1,0 +1,99 @@
+---
+import type { Locale } from "../i18n/config";
+import { legalCopy } from "../data/legal";
+import {
+  legalConfig,
+  legalProfileComplete,
+  missingRequiredLegalFields
+} from "../config/legal";
+
+type Props = {
+  locale: Locale;
+  kind: "imprint" | "privacy";
+};
+
+const { locale, kind } = Astro.props as Props;
+const copy = legalCopy[locale];
+const address = [
+  legalConfig.street,
+  `${legalConfig.postalCode} ${legalConfig.city}`.trim(),
+  legalConfig.country
+].filter(Boolean);
+---
+
+<article class="legalPage" data-legal-status={legalProfileComplete ? "complete" : "draft"}>
+  <div class="container legalPage__content">
+    {!legalProfileComplete && (
+      <aside class="legalNotice" role="status" aria-labelledby="legal-draft-title">
+        <h2 id="legal-draft-title">{copy.incompleteTitle}</h2>
+        <p>{copy.incompleteText}</p>
+        <p><code>{missingRequiredLegalFields.join(", ")}</code></p>
+      </aside>
+    )}
+
+    {kind === "imprint" ? (
+      <>
+        <section>
+          <h2>{copy.providerTitle}</h2>
+          <dl class="legalDetails">
+            <div>
+              <dt>{copy.representedBy}</dt>
+              <dd>{legalConfig.providerName}<br />{legalConfig.businessName}</dd>
+            </div>
+            <div>
+              <dt>{copy.address}</dt>
+              <dd>{address.length > 0 ? address.map((line) => <>{line}<br /></>) : "—"}</dd>
+            </div>
+            <div>
+              <dt>{copy.contact}</dt>
+              <dd>
+                <a href={`mailto:${legalConfig.email}`}>{legalConfig.email}</a>
+                {legalConfig.phone && <><br /><a href={`tel:${legalConfig.phone}`}>{legalConfig.phone}</a></>}
+              </dd>
+            </div>
+            {(legalConfig.vatId || legalConfig.registerName || legalConfig.registerNumber) && (
+              <div>
+                <dt>{copy.optionalRegistration}</dt>
+                <dd>
+                  {legalConfig.vatId && <span>VAT ID: {legalConfig.vatId}<br /></span>}
+                  {legalConfig.registerName && <span>{legalConfig.registerName} </span>}
+                  {legalConfig.registerNumber && <span>{legalConfig.registerNumber}</span>}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </section>
+        <section>
+          <h2>{copy.contentResponsibleTitle}</h2>
+          <p>{copy.contentResponsibleText}</p>
+        </section>
+        <section>
+          <h2>{copy.disputeTitle}</h2>
+          <p>{copy.disputeText}</p>
+        </section>
+      </>
+    ) : (
+      <>
+        <section>
+          <h2>{copy.providerTitle}</h2>
+          <p>{legalConfig.providerName}, {legalConfig.businessName}</p>
+          {address.map((line) => <p>{line}</p>)}
+          <p><a href={`mailto:${legalConfig.email}`}>{legalConfig.email}</a></p>
+        </section>
+        {copy.privacySections.map((section) => (
+          <section>
+            <h2>{section.title}</h2>
+            {section.paragraphs?.map((paragraph) => <p>{paragraph}</p>)}
+            {section.items && <ul>{section.items.map((item) => <li>{item}</li>)}</ul>}
+          </section>
+        ))}
+        <section>
+          <h2>LDI Nordrhein-Westfalen</h2>
+          <p><a href="https://www.ldi.nrw.de/kontakt/ihre-beschwerde" rel="external">www.ldi.nrw.de/kontakt/ihre-beschwerde</a></p>
+        </section>
+      </>
+    )}
+
+    <p class="legalPage__updated">{copy.lastUpdated}</p>
+  </div>
+</article>

@@ -1,0 +1,71 @@
+name: Production deploy or rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Operation to execute
+        required: true
+        type: choice
+        options:
+          - deploy
+          - rollback
+      release_id:
+        description: Full Git commit SHA used as immutable release id
+        required: false
+        type: string
+      app_image:
+        description: Full GHCR reference ending in @sha256:<64 hex>
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: iocode-production
+  cancel-in-progress: false
+
+jobs:
+  operate:
+    runs-on:
+      - self-hosted
+      - linux
+      - production
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - name: Validate immutable inputs
+        if: inputs.operation == 'deploy'
+        shell: bash
+        run: |
+          [[ "${{ inputs.release_id }}" =~ ^[a-f0-9]{40}$ ]]
+          [[ "${{ inputs.app_image }}" =~ ^ghcr\.io/dadd86/iocode-solutions@sha256:[a-f0-9]{64}$ ]]
+      - name: Checkout exact release configuration
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.operation == 'deploy' && inputs.release_id || github.sha }}
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy prebuilt release
+        if: inputs.operation == 'deploy'
+        shell: bash
+        env:
+          APP_IMAGE: ${{ inputs.app_image }}
+          NGINX_IMAGE: ${{ vars.NGINX_IMAGE }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          RELEASE_ROOT: ${{ vars.RELEASE_ROOT }}
+          TLS_FULLCHAIN_PATH: ${{ vars.TLS_FULLCHAIN_PATH }}
+          TLS_PRIVKEY_PATH: ${{ vars.TLS_PRIVKEY_PATH }}
+        run: sh tools/deploy-release.sh
+      - name: Roll back to previous prebuilt release
+        if: inputs.operation == 'rollback'
+        shell: bash
+        env:
+          RELEASE_ROOT: ${{ vars.RELEASE_ROOT }}
+        run: sh tools/rollback-release.sh

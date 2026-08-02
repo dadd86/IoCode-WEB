@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| R2 | Contratos medibles de rendimiento, entrega y fidelidad del Hero3D | Astro, Three.js, GLB, HTTP y Lighthouse | ES, EN, DE | `compose.yml`, scripts Fase 6, GLB actual y artefactos QA locales | 2026-07-28 |
+| R2 | Contratos medibles de rendimiento, entrega y fidelidad del Hero3D | Astro, Three.js, GLB, HTTP y Lighthouse | ES, EN, DE | `compose.yml`, scripts Fase 6/9C, GLB actual y artefactos QA locales | 2026-08-02 |
 
 Estado: `Current`. Esta fase solo se considera cerrada cuando el pipeline oficial Docker genera `qa-artifacts/performance/phase-6/summary.json` con `status: passed`, cero errores, cero warnings y cero tests flaky.
 
@@ -44,9 +44,9 @@ No ejecutar Node, npm, Playwright, Lighthouse, Sharp, glTF-Transform ni glTF Val
 
 | Medida | Límite |
 |---|---:|
-| GLB ideal | 2.000.000 bytes |
-| GLB aceptable | 5.000.000 bytes |
-| GLB bloqueante | más de 8.000.000 bytes |
+| GLB objetivo | 250.000 bytes o inferior |
+| GLB aceptable | 500.000 bytes o inferior |
+| GLB bloqueante | más de 500.000 bytes |
 | JS inicial por HTML | 250.000 bytes |
 | Loader inicial del Hero3D | 12.000 bytes; 5.000 bytes gzip |
 | Chunk Three.js | 190.000 bytes gzip |
