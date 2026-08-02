@@ -146,6 +146,29 @@
       "type": "historical"
     },
     {
+      "path": "ROPA_INVENTORY.md",
+      "type": "security",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "PROCESSOR_DPA_REGISTER.md",
+      "type": "security",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "PRIVACY_OPERATIONS.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "LEGAL_CHANGELOG.md",
+      "type": "changelog"
+    },
+    {
+      "path": "PHASE_9F_DELIVERY.md",
+      "type": "historical"
+    },
+    {
       "path": "QA_PHASE_1_1C.md",
       "type": "historical"
     },

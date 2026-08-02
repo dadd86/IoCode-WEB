@@ -77,9 +77,9 @@ export const routeAlternates: Record<RouteKey, LocalizedRoute> = {
   },
   imprint: {
     key: "imprint",
-    label: { es: "Aviso legal", en: "Legal notice", de: "Impressum" },
-    slug: { es: "aviso-legal", en: "legal-notice", de: "impressum" },
-    path: { es: "/es/aviso-legal/", en: "/en/legal-notice/", de: "/de/impressum/" }
+    label: { es: "Aviso legal", en: "Imprint", de: "Impressum" },
+    slug: { es: "aviso-legal", en: "imprint", de: "impressum" },
+    path: { es: "/es/aviso-legal/", en: "/en/imprint/", de: "/de/impressum/" }
   },
   privacy: {
     key: "privacy",

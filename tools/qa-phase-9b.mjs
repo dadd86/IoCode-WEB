@@ -16,7 +16,7 @@ const marketingGroups = [
   ["contact", "/es/contacto/", "/en/contact/", "/de/kontakt/"]
 ];
 const legalGroups = [
-  ["imprint", "/es/aviso-legal/", "/en/legal-notice/", "/de/impressum/"],
+  ["imprint", "/es/aviso-legal/", "/en/imprint/", "/de/impressum/"],
   ["privacy", "/es/privacidad/", "/en/privacy/", "/de/datenschutz/"]
 ];
 const allGroups = [...marketingGroups, ...legalGroups];

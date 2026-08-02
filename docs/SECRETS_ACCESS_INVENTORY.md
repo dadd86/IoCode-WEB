@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| A | Catálogo sin valores de credenciales de producción | DNS, VPS, CI, registro, TLS y alertas | ES, EN, DE | GitHub Environments y gestor privado de secretos | 2026-08-01 |
+| A | Catálogo sin valores de credenciales de producción | DNS, VPS, CI, registro, TLS, privacidad y alertas | ES, EN, DE | GitHub Environments y gestor privado de secretos | 2026-08-02 |
 
 Nunca se escriben valores reales en Git, variables no protegidas, artefactos, logs ni tickets. El responsable técnico revisa accesos trimestralmente y tras cada baja.
 
@@ -19,3 +19,5 @@ Nunca se escriben valores reales en Git, variables no protegidas, artefactos, lo
 | SEC-09 | Canal de alertas | GitHub Environment `production` | Publicar solo en canal operativo | Propietario | 90 días |
 
 Las variables `NGINX_IMAGE`, `RELEASE_ROOT`, `TLS_FULLCHAIN_PATH` y `TLS_PRIVKEY_PATH` son configuración sensible por contexto, pero no contienen el secreto. Se guardan como variables protegidas del Environment. La clave TLS nunca entra en GitHub Actions: permanece en el host y se monta read-only mediante Compose.
+
+Los valores `PUBLIC_LEGAL_*`, `PUBLIC_PRIVACY_*` y los disclosures públicos de hosting, email, DNS/CDN y registrar no son secretos, pero requieren control de cambios y aprobación del propietario en GitHub Environment. Los DPA, anexos, TIA, firmas, contactos privados y evidencias de identidad sí son confidenciales y permanecen en el repositorio privado de cumplimiento, nunca en Git ni en artefactos CI.

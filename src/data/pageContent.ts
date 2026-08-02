@@ -423,11 +423,11 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         "Contact IoCode SOLUTIONS for technical projects involving automation, robotics, industrial software, data integration or Industry 4.0 systems. This page also lets you verify the technical contact person through LinkedIn and GitHub."
     },
     imprint: {
-      title: "Legal notice | IoCode SOLUTIONS",
+      title: "Imprint | IoCode SOLUTIONS",
       description:
         "Provider identification, legal information and contact details for IoCode SOLUTIONS under section 5 of the German DDG.",
       eyebrow: "Legal information",
-      heading: "Legal notice",
+      heading: "Imprint",
       intro: "Permanent identification of the person responsible for this digital service."
     },
     privacy: {

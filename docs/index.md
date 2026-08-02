@@ -28,6 +28,11 @@
 - [Runbook de incidentes](INCIDENT_RUNBOOK.md): detección, contención, diagnóstico, rollback y comunicación.
 - [Disaster Recovery](DISASTER_RECOVERY.md): restauración de releases, TLS y DNS con RTO/RPO.
 - [Entrega Fase 9E](PHASE_9E_DELIVERY.md): matriz de cobertura y evidencia operativa 9.33–9.40.
+- [RAT / ROPA](ROPA_INVENTORY.md): actividades, bases, destinatarios y conservación.
+- [Proveedores y DPA](PROCESSOR_DPA_REGISTER.md): Art. 28, ubicaciones y transferencias.
+- [Operaciones de privacidad](PRIVACY_OPERATIONS.md): cookies, consentimiento y DSAR.
+- [Historial legal](LEGAL_CHANGELOG.md): versiones, responsables y aprobación.
+- [Entrega Fase 9F](PHASE_9F_DELIVERY.md): cobertura y bloqueantes 9.41–9.50.
 - [PERFORMANCE](PERFORMANCE.md): presupuestos, Hero3D y Fase 6.
 - [MAINTENANCE](MAINTENANCE.md): cambios habituales.
 - [QA_CHECKLIST](../QA_CHECKLIST.md): gate manual y automatizado.
@@ -51,4 +56,4 @@
 frescura por `docs/document-control.json`. Los contratos vigentes son los
 documentos resumidos enlazados en “Entrada y arquitectura”.
 
-Las rutas legales están implementadas como draft controlado y permanecen `noindex` hasta completar X-LEGAL, la dirección postal y la aprobación del propietario. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.
+Las rutas legales están implementadas como draft controlado y permanecen `noindex` hasta completar identidad, forma jurídica, representación, dirección, proveedores/DPA/transferencias y aprobación del propietario. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.

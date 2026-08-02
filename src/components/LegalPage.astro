@@ -4,7 +4,8 @@ import { legalCopy } from "../data/legal";
 import {
   legalConfig,
   legalProfileComplete,
-  missingRequiredLegalFields
+  missingRequiredLegalFields,
+  publicProviderDisclosures
 } from "../config/legal";
 
 type Props = {
@@ -37,8 +38,20 @@ const address = [
           <h2>{copy.providerTitle}</h2>
           <dl class="legalDetails">
             <div>
+              <dt>{copy.providerName}</dt>
+              <dd>{legalConfig.providerName}</dd>
+            </div>
+            <div>
+              <dt>{copy.businessName}</dt>
+              <dd>{legalConfig.businessName}</dd>
+            </div>
+            <div>
+              <dt>{copy.legalForm}</dt>
+              <dd>{legalConfig.legalForm || "—"}</dd>
+            </div>
+            <div>
               <dt>{copy.representedBy}</dt>
-              <dd>{legalConfig.providerName}<br />{legalConfig.businessName}</dd>
+              <dd>{legalConfig.legalRepresentative || "—"}</dd>
             </div>
             <div>
               <dt>{copy.address}</dt>
@@ -50,6 +63,10 @@ const address = [
                 <a href={`mailto:${legalConfig.email}`}>{legalConfig.email}</a>
                 {legalConfig.phone && <><br /><a href={`tel:${legalConfig.phone}`}>{legalConfig.phone}</a></>}
               </dd>
+            </div>
+            <div>
+              <dt>{copy.privacyContact}</dt>
+              <dd><a href={`mailto:${legalConfig.privacyEmail}`}>{legalConfig.privacyEmail}</a></dd>
             </div>
             {(legalConfig.vatId || legalConfig.registerName || legalConfig.registerNumber) && (
               <div>
@@ -88,8 +105,43 @@ const address = [
           </section>
         ))}
         <section>
-          <h2>LDI Nordrhein-Westfalen</h2>
-          <p><a href="https://www.ldi.nrw.de/kontakt/ihre-beschwerde" rel="external">www.ldi.nrw.de/kontakt/ihre-beschwerde</a></p>
+          <h2>{copy.providerLabels.title}</h2>
+          <div class="legalTableWrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">{copy.providerLabels.service}</th>
+                  <th scope="col">{copy.providerLabels.provider}</th>
+                  <th scope="col">{copy.providerLabels.location}</th>
+                  <th scope="col">{copy.providerLabels.safeguard}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {publicProviderDisclosures.map((provider) => (
+                  <tr>
+                    <th scope="row">{copy.providerLabels.services[provider.service]}</th>
+                    <td>{provider.provider || copy.providerLabels.pending}</td>
+                    <td>{provider.processingLocation || copy.providerLabels.pending}</td>
+                    <td>{provider.transferSafeguard || copy.providerLabels.pending}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2>{copy.authorityTitle}</h2>
+          <p>{copy.authorityText}</p>
+          <p>
+            <a href={legalConfig.supervisoryAuthorityUrl} rel="external">
+              {legalConfig.supervisoryAuthorityName}
+            </a>
+          </p>
+        </section>
+        <section>
+          <h2>{copy.versionTitle}</h2>
+          <p><strong>{legalConfig.legalVersion}</strong></p>
+          <p>{copy.versionSummary}</p>
         </section>
       </>
     )}

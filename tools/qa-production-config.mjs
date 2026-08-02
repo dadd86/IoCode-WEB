@@ -12,12 +12,29 @@ const textExtensions = new Set([".html", ".css", ".js", ".mjs", ".json", ".xml",
 const findings = [];
 const requiredLegalVariables = [
   "PUBLIC_LEGAL_APPROVED",
+  "PUBLIC_PRIVACY_APPROVED",
   "PUBLIC_LEGAL_NAME",
+  "PUBLIC_LEGAL_BUSINESS_NAME",
+  "PUBLIC_LEGAL_FORM",
+  "PUBLIC_LEGAL_REPRESENTATIVE",
   "PUBLIC_LEGAL_STREET",
   "PUBLIC_LEGAL_POSTAL_CODE",
   "PUBLIC_LEGAL_CITY",
   "PUBLIC_LEGAL_COUNTRY",
-  "PUBLIC_LEGAL_EMAIL"
+  "PUBLIC_LEGAL_EMAIL",
+  "PUBLIC_PRIVACY_EMAIL",
+  "PUBLIC_HOSTING_PROVIDER",
+  "PUBLIC_HOSTING_LOCATION",
+  "PUBLIC_HOSTING_TRANSFER_SAFEGUARD",
+  "PUBLIC_EMAIL_PROVIDER",
+  "PUBLIC_EMAIL_LOCATION",
+  "PUBLIC_EMAIL_TRANSFER_SAFEGUARD",
+  "PUBLIC_DNS_PROVIDER",
+  "PUBLIC_DNS_LOCATION",
+  "PUBLIC_DNS_TRANSFER_SAFEGUARD",
+  "PUBLIC_REGISTRAR_PROVIDER",
+  "PUBLIC_REGISTRAR_LOCATION",
+  "PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD"
 ];
 
 async function walk(directory) {
@@ -46,11 +63,35 @@ for (const variable of requiredLegalVariables) {
   const configuredValue = process.env[variable]?.trim() || "";
   if (
     !configuredValue ||
-    /REPLACE_WITH|DRAFT|PENDING/iu.test(configuredValue) ||
-    (variable === "PUBLIC_LEGAL_APPROVED" && configuredValue !== "true")
+    /REPLACE_WITH|DRAFT|PENDING|EXAMPLE|\bQA\b|\bTEST\b/iu.test(configuredValue) ||
+    ((variable === "PUBLIC_LEGAL_APPROVED" || variable === "PUBLIC_PRIVACY_APPROVED") &&
+      configuredValue !== "true")
   ) {
     findings.push(`${variable} debe contener el dato legal aprobado para producción.`);
   }
+}
+
+try {
+  const governance = JSON.parse(
+    await readFile(resolve("config/privacy-governance.json"), "utf8")
+  );
+
+  if (governance.controllerApproval !== "approved") {
+    findings.push("La gobernanza de privacidad requiere aprobación formal del responsable.");
+  }
+
+  for (const provider of governance.providers || []) {
+    if (provider.productionGate === "feature-disabled") continue;
+    if (
+      provider.productionGate !== "ready" ||
+      provider.dpaStatus === "pending" ||
+      /PENDING/iu.test(`${provider.provider} ${provider.processingLocation} ${provider.transferMechanism}`)
+    ) {
+      findings.push(`${provider.service}: DPA, ubicación o transferencia sin verificar.`);
+    }
+  }
+} catch (error) {
+  findings.push(`No se pudo validar config/privacy-governance.json: ${error.message}`);
 }
 
 const siteUrl = process.env.PUBLIC_SITE_URL || "";
@@ -68,7 +109,7 @@ await walk(root);
 
 for (const legalPath of [
   "es/aviso-legal/index.html",
-  "en/legal-notice/index.html",
+  "en/imprint/index.html",
   "de/impressum/index.html",
   "es/privacidad/index.html",
   "en/privacy/index.html",

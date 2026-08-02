@@ -10,6 +10,8 @@
 
 El código candidato puede continuar por revisión técnica, pero no existe evidencia externa suficiente para autorizar producción. A 2026-08-02, `iocode-solutions.com` y `www.iocode-solutions.com` no resuelven por DNS desde el entorno de verificación. Por tanto no se pueden certificar TLS, HSTS, redirecciones públicas, cabeceras del edge ni Lighthouse sobre producción.
 
+La Fase 9F añade un segundo bloqueo formal: faltan la dirección postal, forma jurídica, representación y aprobación del responsable, además de los nombres/ubicaciones reales de hosting, email, DNS/CDN y registrar, sus DPA y las garantías de transferencia. El gate conserva las páginas legales en `noindex` y estado draft hasta completar esta evidencia.
+
 ## Matriz 9.26–9.32
 
 | ID | Gate | Estado actual | Evidencia o bloqueo |
@@ -31,6 +33,9 @@ El código candidato puede continuar por revisión técnica, pero no existe evid
 5. Ejecutar Lighthouse móvil/desktop para ES, EN, DE y `/es/impressum/` con todos los presupuestos en verde.
 6. Completar y firmar la matriz física iPhone, iPad y Android sobre el mismo SHA.
 7. Confirmar cero incidentes P0/P1, cero CSP violations y rollback disponible al digest anterior.
+8. Completar y aprobar todas las variables `PUBLIC_LEGAL_*` y `PUBLIC_PRIVACY_*` sin valores de ejemplo.
+9. Identificar proveedores reales, firmar o evaluar DPA Art. 28, revisar subencargados y verificar EEE/adecuación/DPF/SCC+TIA.
+10. Ejecutar `npm run internal:qa:phase-9f` y `npm run internal:qa:config:prod` sobre el mismo artefacto aprobado.
 
 ## Evidencia ejecutada sobre el candidato local
 

@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-08-02",
+  "controllerApproval": "pending",
+  "treatments": [
+    {
+      "id": "web-delivery",
+      "status": "active",
+      "dataSubjects": ["website visitors"],
+      "data": ["IP address in transit", "timestamp", "protocol and connection metadata"],
+      "retainedByApplication": ["timestamp", "HTTP status", "response bytes", "request duration", "upstream duration"],
+      "purpose": ["content delivery", "availability", "security", "incident diagnosis"],
+      "legalBasis": "GDPR Article 6(1)(f)",
+      "legitimateInterest": "secure and reliable operation of the commercial website",
+      "recipients": ["hosting provider", "DNS/CDN provider if selected"],
+      "retention": "application logs maximum 14 days; provider logs subject to verified contract",
+      "internationalTransfer": "blocked until provider location and safeguard are verified"
+    },
+    {
+      "id": "email-enquiries",
+      "status": "active-on-user-action",
+      "dataSubjects": ["prospects", "customers", "supplier and business contacts"],
+      "data": ["name", "email", "optional company", "message", "email metadata"],
+      "purpose": ["answer enquiries", "pre-contract steps", "contract performance", "business communication"],
+      "legalBasis": "GDPR Article 6(1)(b) or Article 6(1)(f), depending on context",
+      "legitimateInterest": "responding to legitimate business communications",
+      "recipients": ["email provider", "authorised IoCode personnel"],
+      "retention": "six months after closure when no contract follows; statutory periods for contractual records",
+      "internationalTransfer": "blocked until email provider location and safeguard are verified"
+    },
+    {
+      "id": "search-console",
+      "status": "disabled-until-domain-verification-and-provider-review",
+      "dataSubjects": ["website visitors represented in provider aggregates", "authorised account users"],
+      "data": ["aggregated search and index metrics", "aggregated Core Web Vitals", "account identifiers"],
+      "purpose": ["indexing control", "SEO diagnostics", "field performance monitoring"],
+      "legalBasis": "GDPR Article 6(1)(f), subject to final legitimate-interest assessment",
+      "legitimateInterest": "maintaining discoverability and technical quality",
+      "recipients": ["Google provider entity after activation"],
+      "retention": "provider account retention; export only when necessary",
+      "internationalTransfer": "verify entity, DPF participation or SCCs and transfer assessment before activation"
+    },
+    {
+      "id": "external-links",
+      "status": "active-on-user-action",
+      "dataSubjects": ["visitors who click an external link"],
+      "data": ["connection data transmitted by the browser after click"],
+      "purpose": ["access to professional profiles and public code"],
+      "legalBasis": "user-requested navigation; external provider acts under its own notice",
+      "recipients": ["GitHub", "LinkedIn"],
+      "retention": "not controlled by IoCode after navigation",
+      "internationalTransfer": "no embedded resource or pre-click transfer from the website"
+    },
+    {
+      "id": "data-subject-requests",
+      "status": "active-on-request",
+      "dataSubjects": ["requesters and authorised representatives"],
+      "data": ["identity and contact data", "request scope", "verification evidence", "response history"],
+      "purpose": ["verify, fulfil and demonstrate handling of GDPR rights"],
+      "legalBasis": "GDPR Article 6(1)(c) in conjunction with Articles 12-22",
+      "recipients": ["controller", "legal or privacy adviser when necessary"],
+      "retention": "three years after closure, subject to controller and legal review",
+      "internationalTransfer": "none unless an approved provider is required"
+    }
+  ],
+  "providers": [
+    {
+      "service": "hosting",
+      "provider": "PENDING",
+      "role": "processor expected",
+      "dpaRequired": true,
+      "dpaStatus": "pending",
+      "processingLocation": "PENDING",
+      "subprocessorsReviewed": false,
+      "transferMechanism": "PENDING",
+      "productionGate": "blocked"
+    },
+    {
+      "service": "email",
+      "provider": "PENDING",
+      "role": "processor expected",
+      "dpaRequired": true,
+      "dpaStatus": "pending",
+      "processingLocation": "PENDING",
+      "subprocessorsReviewed": false,
+      "transferMechanism": "PENDING",
+      "productionGate": "blocked"
+    },
+    {
+      "service": "DNS/CDN",
+      "provider": "PENDING",
+      "role": "processor or independent controller; assessment required",
+      "dpaRequired": "assessment-required",
+      "dpaStatus": "pending",
+      "processingLocation": "PENDING",
+      "subprocessorsReviewed": false,
+      "transferMechanism": "PENDING",
+      "productionGate": "blocked"
+    },
+    {
+      "service": "domain registrar",
+      "provider": "PENDING",
+      "role": "processor or independent controller; assessment required",
+      "dpaRequired": "assessment-required",
+      "dpaStatus": "pending",
+      "processingLocation": "PENDING",
+      "subprocessorsReviewed": false,
+      "transferMechanism": "PENDING",
+      "productionGate": "blocked"
+    },
+    {
+      "service": "Google Search Console",
+      "provider": "PENDING GOOGLE CONTRACTING ENTITY",
+      "role": "assessment required",
+      "dpaRequired": "assessment-required",
+      "dpaStatus": "pending",
+      "processingLocation": "PENDING",
+      "subprocessorsReviewed": false,
+      "transferMechanism": "PENDING DPF/SCC VERIFICATION",
+      "productionGate": "feature-disabled"
+    }
+  ],
+  "terminalTechnologies": [
+    { "technology": "HTTP cookies", "used": false, "purpose": "none", "consentRequired": false },
+    { "technology": "localStorage", "used": false, "purpose": "none", "consentRequired": false },
+    { "technology": "sessionStorage", "used": false, "purpose": "none", "consentRequired": false },
+    { "technology": "IndexedDB", "used": false, "purpose": "none", "consentRequired": false },
+    { "technology": "persistent service worker/cache", "used": false, "purpose": "none", "consentRequired": false },
+    { "technology": "analytics/advertising identifier", "used": false, "purpose": "none", "consentRequired": false },
+    { "technology": "Clipboard API", "used": true, "purpose": "copy the public contact email only after an explicit button action", "consentRequired": false },
+    { "technology": "WebGL capability detection", "used": true, "purpose": "select resilient visual fallback; result is not stored or transmitted", "consentRequired": false },
+    { "technology": "prefers-reduced-motion media query", "used": true, "purpose": "respect operating-system accessibility preference; result is not stored or transmitted", "consentRequired": false }
+  ],
+  "consentBanner": {
+    "required": false,
+    "reason": "No information is stored in or read from the terminal for non-essential purposes and no third-party tracking is embedded.",
+    "reassessmentTriggers": [
+      "analytics or RUM",
+      "embedded third-party media or widgets",
+      "A/B testing",
+      "marketing pixels",
+      "persistent preferences",
+      "new service worker or browser storage"
+    ]
+  }
+}

@@ -24,13 +24,13 @@ const responsiveRoutes = [
   "/en/services/",
   "/de/prozess/",
   "/es/contacto/",
-  "/en/legal-notice/",
+  "/en/imprint/",
   "/de/datenschutz/"
 ];
 
 const legalByLocale = {
   es: ["/es/aviso-legal/", "/es/privacidad/"],
-  en: ["/en/legal-notice/", "/en/privacy/"],
+  en: ["/en/imprint/", "/en/privacy/"],
   de: ["/de/impressum/", "/de/datenschutz/"]
 } as const;
 
@@ -150,8 +150,8 @@ test.describe("Fase 9B - responsive, interacción y WCAG 2.1 AA", () => {
   test("Axe WCAG 2.1 AA, foco y reduced motion", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-desktop", "Gate Axe completo en desktop.");
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.addInitScript({ content: axe.source });
     await page.goto("/de/datenschutz/", { waitUntil: "domcontentloaded" });
-    await page.addScriptTag({ content: axe.source });
     const violations = await page.evaluate(async () => {
       const result = await (window as typeof window & { axe: typeof axe }).axe.run(document, {
         runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }

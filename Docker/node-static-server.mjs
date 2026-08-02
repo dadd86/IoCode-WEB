@@ -35,7 +35,8 @@ const mimeTypes = {
 };
 
 const canonicalRedirects = new Map([
-  ["/es/impressum/", "/es/aviso-legal/"]
+  ["/es/impressum/", "/es/aviso-legal/"],
+  ["/en/legal-notice/", "/en/imprint/"]
 ]);
 
 function createSha256Source(value) {

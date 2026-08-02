@@ -25,17 +25,33 @@ jobs:
       PUBLIC_DEPLOY_ENV: production
       PUBLIC_SITE_URL: https://iocode-solutions.com
       PUBLIC_LEGAL_APPROVED: ${{ vars.PUBLIC_LEGAL_APPROVED }}
+      PUBLIC_PRIVACY_APPROVED: ${{ vars.PUBLIC_PRIVACY_APPROVED }}
       PUBLIC_LEGAL_NAME: ${{ vars.PUBLIC_LEGAL_NAME }}
       PUBLIC_LEGAL_BUSINESS_NAME: ${{ vars.PUBLIC_LEGAL_BUSINESS_NAME }}
+      PUBLIC_LEGAL_FORM: ${{ vars.PUBLIC_LEGAL_FORM }}
+      PUBLIC_LEGAL_REPRESENTATIVE: ${{ vars.PUBLIC_LEGAL_REPRESENTATIVE }}
       PUBLIC_LEGAL_STREET: ${{ vars.PUBLIC_LEGAL_STREET }}
       PUBLIC_LEGAL_POSTAL_CODE: ${{ vars.PUBLIC_LEGAL_POSTAL_CODE }}
       PUBLIC_LEGAL_CITY: ${{ vars.PUBLIC_LEGAL_CITY }}
       PUBLIC_LEGAL_COUNTRY: ${{ vars.PUBLIC_LEGAL_COUNTRY }}
       PUBLIC_LEGAL_EMAIL: ${{ vars.PUBLIC_LEGAL_EMAIL }}
+      PUBLIC_PRIVACY_EMAIL: ${{ vars.PUBLIC_PRIVACY_EMAIL }}
       PUBLIC_LEGAL_PHONE: ${{ vars.PUBLIC_LEGAL_PHONE }}
       PUBLIC_LEGAL_VAT_ID: ${{ vars.PUBLIC_LEGAL_VAT_ID }}
       PUBLIC_LEGAL_REGISTER_NAME: ${{ vars.PUBLIC_LEGAL_REGISTER_NAME }}
       PUBLIC_LEGAL_REGISTER_NUMBER: ${{ vars.PUBLIC_LEGAL_REGISTER_NUMBER }}
+      PUBLIC_HOSTING_PROVIDER: ${{ vars.PUBLIC_HOSTING_PROVIDER }}
+      PUBLIC_HOSTING_LOCATION: ${{ vars.PUBLIC_HOSTING_LOCATION }}
+      PUBLIC_HOSTING_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_HOSTING_TRANSFER_SAFEGUARD }}
+      PUBLIC_EMAIL_PROVIDER: ${{ vars.PUBLIC_EMAIL_PROVIDER }}
+      PUBLIC_EMAIL_LOCATION: ${{ vars.PUBLIC_EMAIL_LOCATION }}
+      PUBLIC_EMAIL_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_EMAIL_TRANSFER_SAFEGUARD }}
+      PUBLIC_DNS_PROVIDER: ${{ vars.PUBLIC_DNS_PROVIDER }}
+      PUBLIC_DNS_LOCATION: ${{ vars.PUBLIC_DNS_LOCATION }}
+      PUBLIC_DNS_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_DNS_TRANSFER_SAFEGUARD }}
+      PUBLIC_REGISTRAR_PROVIDER: ${{ vars.PUBLIC_REGISTRAR_PROVIDER }}
+      PUBLIC_REGISTRAR_LOCATION: ${{ vars.PUBLIC_REGISTRAR_LOCATION }}
+      PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD }}
       ASTRO_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout exact commit
@@ -61,6 +77,7 @@ jobs:
           npm run internal:qa:config:prod
           npm run internal:qa:phase-9b:static
           npm run internal:qa:phase-9c:static
+          npm run internal:qa:phase-9f:static
           npm run internal:validate:dist-sitemap
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
@@ -69,6 +86,7 @@ jobs:
           npm run internal:qa:phase-9b:e2e
           npm run internal:qa:phase-9c:e2e
           npm run internal:qa:phase-9d:flaky
+          npm run internal:qa:phase-9f:e2e
       - name: Production HTTP contract gate
         run: npm run internal:qa:phase-9d:http
       - name: Production dependency audit
@@ -85,17 +103,33 @@ jobs:
             --build-arg PUBLIC_DEPLOY_ENV=production \
             --build-arg PUBLIC_SITE_URL=https://iocode-solutions.com \
             --build-arg PUBLIC_LEGAL_APPROVED="${PUBLIC_LEGAL_APPROVED}" \
+            --build-arg PUBLIC_PRIVACY_APPROVED="${PUBLIC_PRIVACY_APPROVED}" \
             --build-arg PUBLIC_LEGAL_NAME="${PUBLIC_LEGAL_NAME}" \
             --build-arg PUBLIC_LEGAL_BUSINESS_NAME="${PUBLIC_LEGAL_BUSINESS_NAME}" \
+            --build-arg PUBLIC_LEGAL_FORM="${PUBLIC_LEGAL_FORM}" \
+            --build-arg PUBLIC_LEGAL_REPRESENTATIVE="${PUBLIC_LEGAL_REPRESENTATIVE}" \
             --build-arg PUBLIC_LEGAL_STREET="${PUBLIC_LEGAL_STREET}" \
             --build-arg PUBLIC_LEGAL_POSTAL_CODE="${PUBLIC_LEGAL_POSTAL_CODE}" \
             --build-arg PUBLIC_LEGAL_CITY="${PUBLIC_LEGAL_CITY}" \
             --build-arg PUBLIC_LEGAL_COUNTRY="${PUBLIC_LEGAL_COUNTRY}" \
             --build-arg PUBLIC_LEGAL_EMAIL="${PUBLIC_LEGAL_EMAIL}" \
+            --build-arg PUBLIC_PRIVACY_EMAIL="${PUBLIC_PRIVACY_EMAIL}" \
             --build-arg PUBLIC_LEGAL_PHONE="${PUBLIC_LEGAL_PHONE}" \
             --build-arg PUBLIC_LEGAL_VAT_ID="${PUBLIC_LEGAL_VAT_ID}" \
             --build-arg PUBLIC_LEGAL_REGISTER_NAME="${PUBLIC_LEGAL_REGISTER_NAME}" \
             --build-arg PUBLIC_LEGAL_REGISTER_NUMBER="${PUBLIC_LEGAL_REGISTER_NUMBER}" \
+            --build-arg PUBLIC_HOSTING_PROVIDER="${PUBLIC_HOSTING_PROVIDER}" \
+            --build-arg PUBLIC_HOSTING_LOCATION="${PUBLIC_HOSTING_LOCATION}" \
+            --build-arg PUBLIC_HOSTING_TRANSFER_SAFEGUARD="${PUBLIC_HOSTING_TRANSFER_SAFEGUARD}" \
+            --build-arg PUBLIC_EMAIL_PROVIDER="${PUBLIC_EMAIL_PROVIDER}" \
+            --build-arg PUBLIC_EMAIL_LOCATION="${PUBLIC_EMAIL_LOCATION}" \
+            --build-arg PUBLIC_EMAIL_TRANSFER_SAFEGUARD="${PUBLIC_EMAIL_TRANSFER_SAFEGUARD}" \
+            --build-arg PUBLIC_DNS_PROVIDER="${PUBLIC_DNS_PROVIDER}" \
+            --build-arg PUBLIC_DNS_LOCATION="${PUBLIC_DNS_LOCATION}" \
+            --build-arg PUBLIC_DNS_TRANSFER_SAFEGUARD="${PUBLIC_DNS_TRANSFER_SAFEGUARD}" \
+            --build-arg PUBLIC_REGISTRAR_PROVIDER="${PUBLIC_REGISTRAR_PROVIDER}" \
+            --build-arg PUBLIC_REGISTRAR_LOCATION="${PUBLIC_REGISTRAR_LOCATION}" \
+            --build-arg PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD="${PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD}" \
             --build-arg RELEASE_VERSION="${release_version}" \
             --build-arg VCS_REF="${GITHUB_SHA}" \
             --build-arg BUILD_DATE="$(git show -s --format=%cI HEAD)" \
