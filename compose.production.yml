@@ -37,6 +37,12 @@ services:
       retries: 3
       start_period: 15s
     restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
     networks:
       - origin
 
@@ -77,6 +83,12 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
     networks:
       - origin
 

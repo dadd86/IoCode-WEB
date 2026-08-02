@@ -33,6 +33,8 @@
     "internal:qa:phase-9d:flaky": "node tools/run-phase-9d-e2e.mjs --project=chromium-desktop --project=webkit-iphone --repeat-each=3 --workers=1 && node tools/qa-flaky-phase-9d.mjs",
     "internal:qa:phase-9d:lighthouse": "node tools/run-phase-9d-lighthouse.mjs",
     "internal:qa:phase-9d": "npm run internal:qa:phase-9d:predeploy && npm run internal:qa:phase-9d:http && npm run internal:qa:phase-9d:smoke && npm run internal:qa:phase-9d:flaky && npm run internal:qa:phase-9d:lighthouse",
+    "internal:monitor:production": "node tools/monitor-production.mjs",
+    "internal:qa:phase-9e": "npm run build && node --test tests/unit/phase-9e-contract.test.mjs && node tools/qa-phase-9e.mjs && node tools/qa-monitor-simulation-phase-9e.mjs",
     "internal:release:manifest": "node tools/create-release-manifest.mjs",
     "internal:typecheck:tests": "tsc -p tests/e2e/tsconfig.json --noEmit",
     "historical:clean:visual:1.1b": "node tools/clean-phase-1-1b.mjs",

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily IoCode observability retention enforcement
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=15m
+Unit=iocode-observability-prune.service
+
+[Install]
+WantedBy=timers.target

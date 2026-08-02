@@ -1,0 +1,53 @@
+name: Production availability monitor
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: iocode-production-monitor
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout monitor configuration
+        uses: actions/checkout@v4
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Run HTTP, DNS and TLS checks
+        id: monitor
+        continue-on-error: true
+        run: node tools/monitor-production.mjs
+
+      - name: Preserve sanitized monitor evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-monitor-${{ github.run_id }}
+          path: qa-artifacts/phase-9e/monitor-report.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Notify on failure
+        if: steps.monitor.outcome == 'failure'
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          ALERT_SEVERITY: P1
+          ALERT_EVENT: production-monitor-failure
+          ALERT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node tools/send-operational-alert.mjs
+
+      - name: Enforce monitor gate
+        if: steps.monitor.outcome == 'failure'
+        run: exit 1

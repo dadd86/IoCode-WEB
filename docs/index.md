@@ -24,6 +24,10 @@
 - [Entrega Fase 9C](PHASE_9C_DELIVERY.md): contrato Hero3D, WebGL y presupuestos de rendimiento.
 - [Plan de dispositivos reales](REAL_DEVICE_TEST_PLAN.md): matriz física iOS/iPadOS/Android y criterios de evidencia.
 - [Release sign-off](RELEASE_SIGNOFF.md): decisión Go/No-Go y bloqueantes de publicación.
+- [Observabilidad](OBSERVABILITY.md): uptime, TLS/DNS, logs mínimos, retención, alertas y CWV de campo.
+- [Runbook de incidentes](INCIDENT_RUNBOOK.md): detección, contención, diagnóstico, rollback y comunicación.
+- [Disaster Recovery](DISASTER_RECOVERY.md): restauración de releases, TLS y DNS con RTO/RPO.
+- [Entrega Fase 9E](PHASE_9E_DELIVERY.md): matriz de cobertura y evidencia operativa 9.33–9.40.
 - [PERFORMANCE](PERFORMANCE.md): presupuestos, Hero3D y Fase 6.
 - [MAINTENANCE](MAINTENANCE.md): cambios habituales.
 - [QA_CHECKLIST](../QA_CHECKLIST.md): gate manual y automatizado.

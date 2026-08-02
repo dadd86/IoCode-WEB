@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "origin": "https://iocode-solutions.com",
+  "http": {
+    "intervalSeconds": 60,
+    "timeoutMs": 10000,
+    "failureThreshold": 2,
+    "latencyWarningMs": 2000,
+    "targets": [
+      { "path": "/health", "contentType": "application/json" },
+      { "path": "/es/", "contentType": "text/html" },
+      { "path": "/en/", "contentType": "text/html" },
+      { "path": "/de/", "contentType": "text/html" }
+    ]
+  },
+  "tls": {
+    "hostname": "iocode-solutions.com",
+    "port": 443,
+    "criticalDaysRemaining": 14,
+    "warningDaysRemaining": 30,
+    "requiredNames": [
+      "iocode-solutions.com",
+      "www.iocode-solutions.com"
+    ]
+  },
+  "dns": {
+    "apex": "iocode-solutions.com",
+    "www": "www.iocode-solutions.com",
+    "requireA": true,
+    "requireAAAA": true,
+    "requiredWwwCname": "iocode-solutions.com"
+  },
+  "alerts": {
+    "availability": { "severity": "P1", "consecutiveFailures": 2 },
+    "tlsCritical": { "severity": "P1", "daysRemaining": 14 },
+    "dnsResolution": { "severity": "P1", "consecutiveFailures": 2 },
+    "http5xx": { "severity": "P1", "ratePercent": 2, "minimumRequests": 20, "windowMinutes": 5 },
+    "http4xx": { "severity": "P2", "ratePercent": 15, "minimumRequests": 100, "windowMinutes": 15 },
+    "deploymentFailure": { "severity": "P1", "consecutiveFailures": 1 }
+  },
+  "retention": {
+    "rawLogsDays": 14,
+    "monitorArtifactsDays": 14,
+    "aggregatedMetricsDays": 90
+  }
+}

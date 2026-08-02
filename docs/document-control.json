@@ -127,6 +127,25 @@
       "maxAgeDays": 30
     },
     {
+      "path": "OBSERVABILITY.md",
+      "type": "architecture",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "INCIDENT_RUNBOOK.md",
+      "type": "runbook",
+      "maxAgeDays": 30
+    },
+    {
+      "path": "DISASTER_RECOVERY.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "PHASE_9E_DELIVERY.md",
+      "type": "historical"
+    },
+    {
       "path": "QA_PHASE_1_1C.md",
       "type": "historical"
     },

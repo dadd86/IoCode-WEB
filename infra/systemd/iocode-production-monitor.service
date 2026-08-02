@@ -1,0 +1,21 @@
+[Unit]
+Description=IoCode production HTTP, DNS and TLS monitor
+Documentation=file:///srv/iocode/current/docs/OBSERVABILITY.md
+After=network-online.target
+Wants=network-online.target
+OnFailure=iocode-production-alert.service
+
+[Service]
+Type=oneshot
+DynamicUser=true
+WorkingDirectory=/srv/iocode/current
+Environment=NODE_ENV=production
+Environment=MONITOR_ARTIFACT=/var/log/iocode-observability/monitor-report.json
+ExecStart=/usr/bin/node /srv/iocode/current/tools/monitor-production.mjs
+LogsDirectory=iocode-observability
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/iocode-observability

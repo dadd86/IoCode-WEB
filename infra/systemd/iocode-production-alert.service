@@ -1,0 +1,16 @@
+[Unit]
+Description=Send a privacy-minimal IoCode production alert
+Documentation=file:///srv/iocode/current/docs/INCIDENT_RUNBOOK.md
+
+[Service]
+Type=oneshot
+DynamicUser=true
+WorkingDirectory=/srv/iocode/current
+EnvironmentFile=-/etc/iocode/observability.env
+Environment=ALERT_SEVERITY=P1
+Environment=ALERT_EVENT=production-monitor-failure
+ExecStart=/usr/bin/node /srv/iocode/current/tools/send-operational-alert.mjs
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
