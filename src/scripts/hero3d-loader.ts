@@ -31,11 +31,6 @@ type KnownFallbackReason =
   | "webgl-unavailable"
   | "fallback";
 
-type FallbackMessages = Record<
-  LanguageKey,
-  Record<KnownFallbackReason, string>
->;
-
 type IdleScheduler = {
   requestIdleCallback?: (
     callback: IdleRequestCallback,
@@ -58,33 +53,6 @@ const hosts = [
 const reducedMotionQuery = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
 );
-
-const fallbackMessages: FallbackMessages = {
-  es: {
-    "prefers-reduced-motion":
-      "La animación 3D está desactivada porque tu navegador o sistema tiene activada la reducción de movimiento. Los enlaces del hero siguen disponibles.",
-    "webgl-unavailable":
-      "WebGL no está disponible en este navegador. La navegación sigue disponible mediante los enlaces del hero.",
-    fallback:
-      "La escena 3D no se pudo cargar. La navegación sigue disponible mediante los enlaces del hero."
-  },
-  en: {
-    "prefers-reduced-motion":
-      "The 3D animation is disabled because your browser or system has reduced motion enabled. Hero links remain available.",
-    "webgl-unavailable":
-      "WebGL is not available in this browser. Navigation remains available through the hero links.",
-    fallback:
-      "The 3D scene could not be loaded. Navigation remains available through the hero links."
-  },
-  de: {
-    "prefers-reduced-motion":
-      "Die 3D-Animation ist deaktiviert, weil dein Browser oder System reduzierte Bewegung aktiviert hat. Die Hero-Links bleiben verfügbar.",
-    "webgl-unavailable":
-      "WebGL ist in diesem Browser nicht verfügbar. Die Navigation bleibt über die Hero-Links verfügbar.",
-    fallback:
-      "Die 3D-Szene konnte nicht geladen werden. Die Navigation bleibt über die Hero-Links verfügbar."
-  }
-};
 
 /**
  * Propósito:
@@ -145,10 +113,18 @@ function getFallbackMessage(
   host: HTMLElement,
   reason: string
 ): string {
-  const messages = fallbackMessages[getLanguage(host)];
+  const messages = ui[getLanguage(host)];
   const normalizedReason = normalizeFallbackReason(reason);
 
-  return messages[normalizedReason];
+  if (normalizedReason === "prefers-reduced-motion") {
+    return messages.heroReducedMotion;
+  }
+
+  if (normalizedReason === "webgl-unavailable") {
+    return messages.heroWebglUnavailable;
+  }
+
+  return messages.heroFallback;
 }
 
 /**
@@ -553,3 +529,4 @@ window.addEventListener("pageshow", (event: PageTransitionEvent) => {
     initializeHeroes();
   }
 });
+import { ui } from "../i18n/ui";

@@ -36,18 +36,6 @@ type Props = {
 const { locale, content } = Astro.props as Props;
 const labels = ui[locale];
 
-const actionGroupLabel: Record<Locale, string> = {
-  es: "Acciones principales",
-  en: "Main actions",
-  de: "Hauptaktionen"
-};
-
-const proofPointsLabel: Record<Locale, string> = {
-  es: "Capacidades técnicas principales",
-  en: "Main technical capabilities",
-  de: "Wichtigste technische Schwerpunkte"
-};
-
 const headingParts = content.heroHeading;
 const headingAccessibleText = headingParts
   ? `${headingParts.lead} ${headingParts.highlight} ${headingParts.tail}`
@@ -97,8 +85,8 @@ const actions: HeroAction[] = [
     <div class="hero3d__visualStack">
       <Hero3D locale={locale} />
 
-      <div class="hero3d__summary" aria-label={proofPointsLabel[locale]}>
-        <p class="hero3d__summaryKicker">IT/OT · Diagnóstico · Trazabilidad</p>
+      <div class="hero3d__summary" aria-label={labels.homeProofPointsLabel}>
+        <p class="hero3d__summaryKicker">{labels.homeSummaryKicker}</p>
         <p class="hero3d__text">{content.intro}</p>
 
         {content.proofPoints && content.proofPoints.length > 0 && (
@@ -110,7 +98,7 @@ const actions: HeroAction[] = [
         )}
 
         {actions.length > 0 && (
-          <div class="buttonGroup hero3d__actions" aria-label={actionGroupLabel[locale]}>
+          <div class="buttonGroup hero3d__actions" aria-label={labels.homeActionGroupLabel}>
             {actions.map((action) => (
               <Button
                 href={action.href}

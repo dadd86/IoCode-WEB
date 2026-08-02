@@ -2,43 +2,21 @@
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
 import { getAlternatePaths } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 
 type Props = { locale: Locale; activeKey: RouteKey };
 const { locale, activeKey } = Astro.props;
 const paths = getAlternatePaths(activeKey);
-
-const label: Record<Locale, string> = {
-  es: "Selector de idioma",
-  en: "Language selector",
-  de: "Sprachauswahl"
-};
-
-const linkLabels: Record<Locale, Record<Locale, string>> = {
-  es: {
-    es: "ES — Ver esta página en español",
-    en: "EN — Ver esta página en inglés",
-    de: "DE — Ver esta página en alemán"
-  },
-  en: {
-    es: "ES — View this page in Spanish",
-    en: "EN — View this page in English",
-    de: "DE — View this page in German"
-  },
-  de: {
-    es: "ES — Diese Seite auf Spanisch anzeigen",
-    en: "EN — Diese Seite auf Englisch anzeigen",
-    de: "DE — Diese Seite auf Deutsch anzeigen"
-  }
-};
+const labels = ui[locale];
 ---
 
-<div class="languageSwitcher" aria-label={label[locale]}>
+<div class="languageSwitcher" aria-label={labels.languageSelectorLabel}>
   <a
     class:list={{ "is-active": locale === "es" }}
     href={paths.es}
     hreflang="es"
     lang="es"
-    aria-label={linkLabels[locale].es}
+    aria-label={labels.languageLinkEs}
     aria-current={locale === "es" ? "true" : undefined}
   >
     ES
@@ -48,7 +26,7 @@ const linkLabels: Record<Locale, Record<Locale, string>> = {
     href={paths.en}
     hreflang="en"
     lang="en"
-    aria-label={linkLabels[locale].en}
+    aria-label={labels.languageLinkEn}
     aria-current={locale === "en" ? "true" : undefined}
   >
     EN
@@ -58,7 +36,7 @@ const linkLabels: Record<Locale, Record<Locale, string>> = {
     href={paths.de}
     hreflang="de"
     lang="de"
-    aria-label={linkLabels[locale].de}
+    aria-label={labels.languageLinkDe}
     aria-current={locale === "de" ? "true" : undefined}
   >
     DE

@@ -20,6 +20,8 @@ const legalGroups = [
   ["privacy", "/es/privacidad/", "/en/privacy/", "/de/datenschutz/"]
 ];
 const allGroups = [...marketingGroups, ...legalGroups];
+const localizedNotFoundPaths = ["/es/404/", "/en/404/", "/de/404/"];
+const spanishLeakPattern = /\b(?:diagnóstico|trazabilidad|automatización|robótica|solución|página|navegación|privacidad|política|aviso legal|volver al inicio|solicitar propuesta|ver proyectos|preparar correo|selecciona una opción)\b/iu;
 const errors = [];
 const evidence = [];
 
@@ -78,6 +80,16 @@ function pathsFor(key, locale) {
   return group?.[locales.indexOf(locale) + 1] || "";
 }
 
+function renderedText(html) {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/giu, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/giu, " ")
+    .replace(/<[^>]+>/gu, " ")
+    .replace(/&(?:nbsp|copy|amp|lt|gt|quot|#39);/giu, " ")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
 for (const [groupKey, ...paths] of allGroups) {
   for (const [index, path] of paths.entries()) {
     try {
@@ -91,6 +103,21 @@ for (const [groupKey, ...paths] of allGroups) {
     } catch (error) {
       fail(`${path}: no se pudo leer ${htmlPath(path)} (${error.message}).`);
     }
+  }
+}
+
+for (const [locale, path] of [
+  ...allGroups.flatMap(([, ...paths]) => paths.map((path, index) => [locales[index], path])),
+  ...localizedNotFoundPaths.map((path, index) => [locales[index], path])
+]) {
+  if (locale === "es") continue;
+
+  try {
+    const html = await readFile(htmlPath(path), "utf8");
+    const leak = renderedText(html).match(spanishLeakPattern)?.[0];
+    if (leak) fail(`${path}: texto español filtrado en ${locale}: «${leak}».`);
+  } catch (error) {
+    fail(`${path}: auditoría i18n no pudo leer la ruta (${error.message}).`);
   }
 }
 
@@ -126,6 +153,7 @@ const report = {
   status: errors.length === 0 ? "passed" : "failed",
   marketingRoutesChecked: evidence.filter(({ group }) => marketingGroups.some(([key]) => key === group)).length,
   legalRoutesChecked: evidence.filter(({ group }) => legalGroups.some(([key]) => key === group)).length,
+  localizedRoutesLanguageChecked: allGroups.length * locales.length + localizedNotFoundPaths.length,
   errors,
   evidence
 };

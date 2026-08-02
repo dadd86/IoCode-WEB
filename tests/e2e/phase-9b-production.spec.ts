@@ -19,6 +19,18 @@ const localizedRoutes = routeGroups.flatMap((paths) =>
   paths.map((path, index) => ({ path, locale: locales[index]!, alternates: paths }))
 );
 
+const languageAuditRoutes = [
+  ...localizedRoutes,
+  { path: "/en/imprint/", locale: "en" as const },
+  { path: "/en/privacy/", locale: "en" as const },
+  { path: "/de/impressum/", locale: "de" as const },
+  { path: "/de/datenschutz/", locale: "de" as const },
+  { path: "/en/404/", locale: "en" as const },
+  { path: "/de/404/", locale: "de" as const }
+].filter(({ locale }) => locale !== "es");
+
+const spanishLeakPattern = /\b(?:diagnóstico|trazabilidad|automatización|robótica|solución|página|navegación|privacidad|política|aviso legal|volver al inicio|solicitar propuesta|ver proyectos|preparar correo|selecciona una opción)\b/iu;
+
 const responsiveRoutes = [
   "/es/",
   "/en/services/",
@@ -33,6 +45,14 @@ const legalByLocale = {
   en: ["/en/imprint/", "/en/privacy/"],
   de: ["/de/impressum/", "/de/datenschutz/"]
 } as const;
+
+const allAccessibleRoutes = [
+  ...localizedRoutes.map(({ path }) => path),
+  ...Object.values(legalByLocale).flat(),
+  "/es/404/",
+  "/en/404/",
+  "/de/404/"
+];
 
 test.describe("Fase 9B - SEO técnico recíproco en 27 rutas", () => {
   for (const route of localizedRoutes) {
@@ -88,7 +108,36 @@ test.describe("Fase 9B - SEO técnico recíproco en 27 rutas", () => {
   });
 });
 
+test.describe("Fase 9B - integridad lingüística EN/DE", () => {
+  for (const route of languageAuditRoutes) {
+    test(`${route.path} no contiene microcopy en español`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== "chromium-desktop", "Gate lingüístico único en Chromium desktop.");
+      await page.goto(route.path, { waitUntil: "domcontentloaded" });
+      await expect(page.locator("html")).toHaveAttribute("lang", route.locale);
+      const visibleText = await page.locator("body").innerText();
+      expect(visibleText).not.toMatch(spanishLeakPattern);
+    });
+  }
+});
+
 test.describe("Fase 9B - responsive, interacción y WCAG 2.1 AA", () => {
+  test("Axe WCAG 2.1 AA cubre las 36 rutas localizadas", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium-desktop", "Gate Axe completo en Chromium desktop.");
+    test.setTimeout(180_000);
+    await page.addInitScript({ content: axe.source });
+
+    for (const route of allAccessibleRoutes) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      const violations = await page.evaluate(async () => {
+        const result = await (window as typeof window & { axe: typeof axe }).axe.run(document, {
+          runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }
+        });
+        return result.violations.filter((violation) => ["critical", "serious"].includes(violation.impact || ""));
+      });
+      expect(violations, `${route}: ${JSON.stringify(violations, null, 2)}`).toEqual([]);
+    }
+  });
+
   for (const route of responsiveRoutes) {
     test(`${route} sin overflow y con landmarks`, async ({ page }) => {
       await page.goto(route, { waitUntil: "domcontentloaded" });

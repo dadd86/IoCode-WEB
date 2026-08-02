@@ -5,6 +5,7 @@ import LogoImage from "./LogoImage.astro";
 import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 
 /**
  * Propósito:
@@ -33,41 +34,18 @@ type Props = {
 
 const { locale, activeKey } =
   Astro.props as Props;
-
-const navLabel: Record<Locale, string> = {
-  es: "Navegación principal",
-  en: "Main navigation",
-  de: "Hauptnavigation"
-};
-
-const brandLabel: Record<Locale, string> = {
-  es: "Ir al inicio de IoCode SOLUTIONS",
-  en: "Go to IoCode SOLUTIONS home",
-  de: "Zur Startseite von IoCode SOLUTIONS"
-};
-
-const menuLabel: Record<Locale, string> = {
-  es: "Abrir o cerrar el menú principal",
-  en: "Open or close the main menu",
-  de: "Hauptmenü öffnen oder schließen"
-};
-
-const menuText: Record<Locale, string> = {
-  es: "Menú",
-  en: "Menu",
-  de: "Menü"
-};
+const labels = ui[locale];
 ---
 
 <header class="siteHeader">
   <nav
     class="navbar container"
-    aria-label={navLabel[locale]}
+    aria-label={labels.headerNavLabel}
   >
     <a
       class="brand"
       href={`/${locale}/`}
-      aria-label={brandLabel[locale]}
+      aria-label={labels.headerBrandLabel}
     >
       <LogoImage
         imgClass="brand__logo"
@@ -96,7 +74,7 @@ const menuText: Record<Locale, string> = {
     <details class="mobileMenu">
       <summary
         class="mobileMenu__toggle"
-        aria-label={menuLabel[locale]}
+        aria-label={labels.headerMenuLabel}
       >
         <span class="mobileMenu__icon" aria-hidden="true">
           <span></span>
@@ -105,7 +83,7 @@ const menuText: Record<Locale, string> = {
         </span>
 
         <span class="mobileMenu__label">
-          {menuText[locale]}
+          {labels.headerMenuText}
         </span>
       </summary>
 

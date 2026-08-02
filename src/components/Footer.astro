@@ -3,35 +3,13 @@ import { siteConfig } from "../data/site";
 import type { Locale } from "../i18n/config";
 import LogoImage from "./LogoImage.astro";
 import { getLocalizedPath } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 type Props = { locale: Locale };
 const { locale } = Astro.props;
-
-const text: Record<Locale, string> = {
-  es: "Automatización industrial, PLC, robótica, software e Industria 4.0.",
-  en: "Industrial automation, PLC, robotics, software and Industry 4.0.",
-  de: "Industrielle Automatisierung, SPS, Robotik, Software und Industrie 4.0."
-};
-
-const footerLabel: Record<Locale, string> = {
-  es: "Información del sitio y marca IoCode SOLUTIONS",
-  en: "Site information and IoCode SOLUTIONS brand",
-  de: "Website-Informationen und Marke IoCode SOLUTIONS"
-};
-
-const legalLabel: Record<Locale, string> = {
-  es: "Información legal",
-  en: "Legal information",
-  de: "Rechtliche Informationen"
-};
-
-const legalLinks: Record<Locale, { imprint: string; privacy: string }> = {
-  es: { imprint: "Aviso legal", privacy: "Política de privacidad" },
-  en: { imprint: "Imprint", privacy: "Privacy policy" },
-  de: { imprint: "Impressum", privacy: "Datenschutzerklärung" }
-};
+const labels = ui[locale];
 ---
 
-<footer class="siteFooter" aria-label={footerLabel[locale]}>
+<footer class="siteFooter" aria-label={labels.footerLabel}>
   <div class="container footerContent">
     <a href={`/${locale}/`} aria-label={siteConfig.name}>
       <LogoImage
@@ -45,10 +23,10 @@ const legalLinks: Record<Locale, { imprint: string; privacy: string }> = {
       />
     </a>
     <div class="footerText">
-      <p>© {new Date().getFullYear()} {siteConfig.name}. {text[locale]}</p>
-      <nav class="footerLegal" aria-label={legalLabel[locale]}>
-        <a href={getLocalizedPath("imprint", locale)}>{legalLinks[locale].imprint}</a>
-        <a href={getLocalizedPath("privacy", locale)}>{legalLinks[locale].privacy}</a>
+      <p>© {new Date().getFullYear()} {siteConfig.name}. {labels.footerText}</p>
+      <nav class="footerLegal" aria-label={labels.footerLegalLabel}>
+        <a href={getLocalizedPath("imprint", locale)}>{labels.footerImprint}</a>
+        <a href={getLocalizedPath("privacy", locale)}>{labels.footerPrivacy}</a>
       </nav>
     </div>
   </div>

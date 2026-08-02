@@ -8,6 +8,7 @@ import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
 import { getAlternatePaths, getLocalizedPath, routeAlternates } from "../i18n/routes";
 import { defaultRobotsDirective } from "../config/environment";
+import { ui } from "../i18n/ui";
 
 type Props = {
   locale: Locale;
@@ -31,12 +32,7 @@ const {
 const alternatePaths = getAlternatePaths(routeKey);
 const canonicalPath = getLocalizedPath(routeKey, locale);
 const canonicalUrl = `${siteConfig.url}${canonicalPath}`;
-
-const skipText: Record<Locale, string> = {
-  es: "Saltar al contenido principal",
-  en: "Skip to main content",
-  de: "Zum Hauptinhalt springen"
-};
+const labels = ui[locale];
 
 const ogLocale: Record<Locale, string> = {
   es: "es_ES",
@@ -327,7 +323,7 @@ const structuredData = {
     <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
-    <a class="skipLink" href="#contenido">{skipText[locale]}</a>
+    <a class="skipLink" href="#contenido">{labels.skipToContent}</a>
     <Header locale={locale} activeKey={routeKey} />
     <main id="contenido">
       {routeKey !== "home" && <Breadcrumbs locale={locale} routeKey={routeKey} />}

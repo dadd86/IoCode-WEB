@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { ui } from "../i18n/ui";
+import type { Locale } from "../i18n/config";
 
 
 
@@ -87,6 +89,13 @@ function showFallback(
   host.dataset.hero3dFallbackReason = reason;
   host.classList.remove("is-loading", "is-three-ready");
   host.classList.add("is-fallback");
+}
+
+function getHeroLabels(host: HTMLElement) {
+  const language = host.dataset.language || document.documentElement.lang;
+  const locale: Locale = language === "en" || language === "de" ? language : "es";
+
+  return ui[locale];
 }
 
 function getStageSize(stage: HTMLElement): { width: number; height: number } {
@@ -673,19 +682,21 @@ export async function initHero(host: HTMLElement): Promise<void> {
   const modelUrl = host.dataset.modelUrl;
 
   if (!stage || !viewer || !panelsWrapper || panels.length === 0 || !modelUrl) {
+    const labels = getHeroLabels(host);
     showFallback(
       host,
       "missing-elements",
-      "Faltan elementos obligatorios para inicializar el hero 3D."
+      labels.heroMissingElementsLog
     );
     return;
   }
 
   if (!hasWebGL()) {
+    const labels = getHeroLabels(host);
     showFallback(
       host,
       "webgl-unavailable",
-      "WebGL no está disponible. Se activa fallback visual y enlaces HTML."
+      labels.heroWebglUnavailableLog
     );
     return;
   }
@@ -972,13 +983,14 @@ export async function initHero(host: HTMLElement): Promise<void> {
     renderer.domElement.addEventListener(
       "webglcontextlost",
       (event: Event) => {
+        const labels = getHeroLabels(host);
         event.preventDefault();
         state.contextLost = true;
         stopAnimation("paused-context-lost");
         showFallback(
           host,
           "webgl-context-lost",
-          "El contexto WebGL se perdió. Se activa el fallback visual."
+          labels.heroContextLostLog
         );
       },
       {
@@ -1052,7 +1064,7 @@ export async function initHero(host: HTMLElement): Promise<void> {
     showFallback(
       host,
       "runtime-error",
-      error instanceof Error ? error.message : "Error inesperado en el hero 3D."
+      error instanceof Error ? error.message : getHeroLabels(host).heroUnexpectedErrorLog
     );
   
   }

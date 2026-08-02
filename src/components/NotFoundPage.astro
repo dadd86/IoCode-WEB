@@ -1,61 +1,31 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import type { Locale } from "../i18n/config";
+import { ui } from "../i18n/ui";
 
 type Props = {
   locale: Locale;
 };
 
 const { locale } = Astro.props as Props;
-
-const content: Record<Locale, {
-  title: string;
-  description: string;
-  heading: string;
-  message: string;
-  action: string;
-}> = {
-  es: {
-    title: "Página no encontrada | IoCode SOLUTIONS",
-    description: "La página solicitada no existe o ha cambiado de ubicación.",
-    heading: "Página no encontrada",
-    message: "La página solicitada no existe o ha cambiado de ubicación.",
-    action: "Volver al inicio"
-  },
-  en: {
-    title: "Page not found | IoCode SOLUTIONS",
-    description: "The requested page does not exist or has moved.",
-    heading: "Page not found",
-    message: "The requested page does not exist or has moved.",
-    action: "Return home"
-  },
-  de: {
-    title: "Seite nicht gefunden | IoCode SOLUTIONS",
-    description: "Die angeforderte Seite existiert nicht oder wurde verschoben.",
-    heading: "Seite nicht gefunden",
-    message: "Die angeforderte Seite existiert nicht oder wurde verschoben.",
-    action: "Zur Startseite"
-  }
-};
-
-const copy = content[locale];
+const copy = ui[locale];
 ---
 
 <BaseLayout
   locale={locale}
   routeKey="home"
-  title={copy.title}
-  description={copy.description}
+  title={copy.notFoundTitle}
+  description={copy.notFoundDescription}
   robots="noindex, follow"
 >
   <section class="pageHero" data-localized-404={locale}>
     <div class="container pageHero__content">
       <p class="eyebrow">404</p>
-      <h1>{copy.heading}</h1>
-      <p>{copy.message}</p>
+      <h1>{copy.notFoundHeading}</h1>
+      <p>{copy.notFoundMessage}</p>
       <p>
         <a class="button button--primary" href={`/${locale}/`}>
-          {copy.action}
+          {copy.notFoundAction}
         </a>
       </p>
     </div>
