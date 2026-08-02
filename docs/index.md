@@ -22,6 +22,8 @@
 - [Search Console](SEARCH_CONSOLE_CHECKLIST.md): propiedad, sitemap e indexación.
 - [Entrega Fase 9B](PHASE_9B_DELIVERY.md): matriz SEO/UI/i18n y gates.
 - [Entrega Fase 9C](PHASE_9C_DELIVERY.md): contrato Hero3D, WebGL y presupuestos de rendimiento.
+- [Plan de dispositivos reales](REAL_DEVICE_TEST_PLAN.md): matriz física iOS/iPadOS/Android y criterios de evidencia.
+- [Release sign-off](RELEASE_SIGNOFF.md): decisión Go/No-Go y bloqueantes de publicación.
 - [PERFORMANCE](PERFORMANCE.md): presupuestos, Hero3D y Fase 6.
 - [MAINTENANCE](MAINTENANCE.md): cambios habituales.
 - [QA_CHECKLIST](../QA_CHECKLIST.md): gate manual y automatizado.

@@ -117,6 +117,16 @@
       "type": "historical"
     },
     {
+      "path": "REAL_DEVICE_TEST_PLAN.md",
+      "type": "runbook",
+      "maxAgeDays": 90
+    },
+    {
+      "path": "RELEASE_SIGNOFF.md",
+      "type": "runbook",
+      "maxAgeDays": 30
+    },
+    {
       "path": "QA_PHASE_1_1C.md",
       "type": "historical"
     },

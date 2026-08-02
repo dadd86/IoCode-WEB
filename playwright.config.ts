@@ -22,7 +22,8 @@ export default defineConfig({
   },
 
   fullyParallel: false,
-  retries: process.env.CI ? 1 : 0,
+  forbidOnly: Boolean(process.env.CI),
+  retries: 0,
 
   reporter: [
     ["list"],
@@ -43,7 +44,7 @@ export default defineConfig({
 
   use: {
     baseURL,
-    bypassCSP: true,
+    bypassCSP: false,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure"

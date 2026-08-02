@@ -61,7 +61,7 @@ docker compose --profile release run --rm release-tools "npm run internal:docs:t
 docker compose --profile release run --rm release-tools "npm run internal:docs:lint"
 ```
 
-Resultado actual esperado: Astro sin diagnósticos, 35 páginas, cero vulnerabilidades de producción y validador documental en verde.
+Resultado actual esperado: Astro sin diagnósticos, 38 páginas, cero vulnerabilidades de producción y validador documental en verde.
 
 ## Producción local y smoke test
 

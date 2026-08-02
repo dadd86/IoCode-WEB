@@ -9,21 +9,21 @@ import lighthouse from "lighthouse";
 import * as chromeLauncher from "chrome-launcher";
 import { ReportGenerator } from "lighthouse/report/generator/report-generator.js";
 
-const artifactRoot = "qa-artifacts/performance/phase-6";
+const artifactRoot =
+  process.env.LIGHTHOUSE_ARTIFACT_ROOT || "qa-artifacts/performance/phase-6";
 const lighthouseRoot = join(artifactRoot, "lighthouse");
 const baseURL = process.env.LIGHTHOUSE_BASE_URL || "http://web:8080";
 
-const routes = [
-  "/es/",
-  "/en/",
-  "/de/",
-  "/es/servicios/",
-  "/es/contacto/"
-];
+const routes = process.env.LIGHTHOUSE_ROUTES
+  ? process.env.LIGHTHOUSE_ROUTES.split(",").map((route) => route.trim()).filter(Boolean)
+  : ["/es/", "/en/", "/de/", "/es/servicios/", "/es/contacto/"];
 
 const thresholds = {
   desktopPerformance: Number(process.env.PHASE6_MIN_LIGHTHOUSE_DESKTOP || "0.90"),
   mobilePerformance: Number(process.env.PHASE6_MIN_LIGHTHOUSE_MOBILE || "0.75"),
+  minAccessibility: Number(process.env.LIGHTHOUSE_MIN_ACCESSIBILITY || "1"),
+  minBestPractices: Number(process.env.LIGHTHOUSE_MIN_BEST_PRACTICES || "0.95"),
+  minSeo: Number(process.env.LIGHTHOUSE_MIN_SEO || "1"),
   maxLcpMs: Number(process.env.PHASE6_MAX_LCP_MS || "2500"),
   maxCls: Number(process.env.PHASE6_MAX_CLS || "0.1"),
   maxTbtMs: Number(process.env.PHASE6_MAX_TBT_MS || "300")
@@ -175,6 +175,19 @@ function getValidationErrors(result) {
     resultErrors.push(
       `${profile} ${route}: performance ${performance} menor que presupuesto ${minPerformance}.`
     );
+  }
+
+  for (const category of [
+    ["accessibility", result.accessibility, thresholds.minAccessibility],
+    ["best-practices", result.bestPractices, thresholds.minBestPractices],
+    ["seo", result.seo, thresholds.minSeo]
+  ]) {
+    const [label, score, minimum] = category;
+    if (score === null || score < minimum) {
+      resultErrors.push(
+        `${profile} ${route}: ${label} ${score} menor que presupuesto ${minimum}.`
+      );
+    }
   }
 
   if (largestContentfulPaint !== null && largestContentfulPaint > thresholds.maxLcpMs) {
@@ -409,8 +422,8 @@ writeFileSync(
   join(artifactRoot, "lighthouse-summary.json"),
   JSON.stringify(
     {
-      phase: "6",
-      check: "lighthouse",
+      phase: process.env.LIGHTHOUSE_PHASE || "6",
+      check: process.env.LIGHTHOUSE_CHECK || "lighthouse",
       status,
       baseURL,
       thresholds,

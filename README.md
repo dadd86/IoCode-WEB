@@ -9,7 +9,7 @@ Sitio estático multilingüe de IoCode SOLUTIONS para automatización industrial
 ## Estado comprobado
 
 - 11 claves de ruta: 27 rutas comerciales y 6 rutas legales localizadas en ES, EN y DE.
-- 35 páginas producidas por el build Astro: 33 localizadas, la entrada raíz y la página 404.
+- 38 páginas producidas por el build Astro: 33 de contenido, 3 errores 404 localizados, la entrada raíz y el fallback 404 global.
 - Sin backend, base de datos, login, sesiones ni cookies de aplicación.
 - El contacto usa `mailto:` y no almacena mensajes en infraestructura propia.
 - R0, R1, R2 y R3 están cerradas con evidencia.

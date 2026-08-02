@@ -68,6 +68,9 @@ jobs:
         run: |
           npm run internal:qa:phase-9b:e2e
           npm run internal:qa:phase-9c:e2e
+          npm run internal:qa:phase-9d:flaky
+      - name: Production HTTP contract gate
+        run: npm run internal:qa:phase-9d:http
       - name: Production dependency audit
         run: npm audit --omit=dev --audit-level=high
       - name: Package static artifact

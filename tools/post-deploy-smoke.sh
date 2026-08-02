@@ -21,13 +21,36 @@ assert_status() {
 assert_status "/es/" 200
 assert_status "/en/" 200
 assert_status "/de/" 200
+assert_status "/es/servicios/" 200
+assert_status "/en/services/" 200
+assert_status "/de/leistungen/" 200
+assert_status "/es/contacto/" 200
+assert_status "/en/contact/" 200
+assert_status "/de/kontakt/" 200
+assert_status "/sitemap-index.xml" 200
 assert_status "/sitemap.xml" 200
 assert_status "/robots.txt" 200
+assert_status "/es/no-existe-9d/" 404
+assert_status "/en/not-found-9d/" 404
+assert_status "/de/nicht-gefunden-9d/" 404
 
 headers="$(curl --silent --show-error --head "${base_url}/es/")"
 printf '%s\n' "$headers" | grep -qi '^strict-transport-security: max-age=31536000; includeSubDomains' || { echo "ERROR: HSTS ausente." >&2; exit 1; }
 printf '%s\n' "$headers" | grep -qi '^content-security-policy:' || { echo "ERROR: CSP ausente." >&2; exit 1; }
 printf '%s\n' "$headers" | grep -qi '^x-content-type-options: nosniff' || { echo "ERROR: nosniff ausente." >&2; exit 1; }
+
+compression="$(curl --silent --show-error --head --header 'Accept-Encoding: br, gzip' "${base_url}/es/")"
+printf '%s\n' "$compression" | grep -Eqi '^content-encoding: (br|gzip)' || { echo "ERROR: compresión Brotli/Gzip ausente." >&2; exit 1; }
+
+glb_headers="$(curl --silent --show-error --head "${base_url}/logo/3d/iocode_solutions_logo_extruded_3d.glb?v=572076acb6cb")"
+printf '%s\n' "$glb_headers" | grep -qi '^content-type: model/gltf-binary' || { echo "ERROR: MIME GLB incorrecto." >&2; exit 1; }
+printf '%s\n' "$glb_headers" | grep -qi '^cache-control: public, max-age=31536000, immutable' || { echo "ERROR: caché GLB incorrecta." >&2; exit 1; }
+
+impressum_redirect="$(curl --silent --show-error --output /dev/null --write-out '%{http_code} %{redirect_url}' "${base_url}/es/impressum/")"
+case "$impressum_redirect" in
+  "308 ${base_url}/es/aviso-legal/") ;;
+  *) echo "ERROR: alias Impressum inesperado: ${impressum_redirect}." >&2; exit 1 ;;
+esac
 
 redirect="$(curl --silent --show-error --output /dev/null --write-out '%{http_code} %{redirect_url}' "http://iocode-solutions.com/es/")"
 case "$redirect" in

@@ -34,6 +34,10 @@ const mimeTypes = {
   ".txt": "text/plain; charset=utf-8"
 };
 
+const canonicalRedirects = new Map([
+  ["/es/impressum/", "/es/aviso-legal/"]
+]);
+
 function createSha256Source(value) {
   const hash = createHash("sha256").update(value, "utf8").digest("base64");
 
@@ -281,6 +285,15 @@ function resolveRequestPath(requestUrl) {
 
   const { url, safePath } = parsed;
 
+  const canonicalRedirect = canonicalRedirects.get(url.pathname);
+
+  if (canonicalRedirect) {
+    return {
+      redirectUrl: `${canonicalRedirect}${url.search}`,
+      statusCode: 308
+    };
+  }
+
   let filePath = resolve(join(rootDir, safePath));
   let statusCode = 200;
 
@@ -305,7 +318,14 @@ function resolveRequestPath(requestUrl) {
 
   if (!existsSync(filePath)) {
     statusCode = 404;
-    filePath = resolve(join(rootDir, "404.html"));
+    const requestedLocale = url.pathname.split("/").filter(Boolean)[0];
+    const localized404 = ["es", "en", "de"].includes(requestedLocale)
+      ? resolve(join(rootDir, requestedLocale, "404", "index.html"))
+      : null;
+
+    filePath = localized404 && existsSync(localized404)
+      ? localized404
+      : resolve(join(rootDir, "404.html"));
   }
 
   if (!existsSync(filePath) || !isInsideRoot(filePath)) {
