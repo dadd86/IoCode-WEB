@@ -73,7 +73,7 @@ export const ui = {
     pageControlSkillsNavigation: "Navegación por habilidades técnicas",
     pageControlProjectsViewport: "Proyectos destacados deslizables",
     pageControlSkillsViewport: "Categorías de habilidades técnicas deslizables",
-    pageControlPageLabel: "Ir a página {current} de {total}"
+    pageControlPageLabel: "Ir a la página {current} de {total}"
   },
   en: {
     skipToContent: "Skip to main content",

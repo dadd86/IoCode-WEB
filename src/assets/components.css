@@ -474,7 +474,7 @@
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scroll-behavior: smooth;
-  scroll-snap-type: inline mandatory;
+  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   touch-action: pan-x pan-y;
   -webkit-overflow-scrolling: touch;
@@ -544,6 +544,11 @@
   border-color: #22d3ee;
   background: #22d3ee;
   box-shadow: 0 0 0.75rem rgba(34, 211, 238, 0.88);
+}
+
+.pageControl__tab:active::before {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: 0 0 0.5rem rgba(34, 211, 238, 0.55);
 }
 
 .pageControl__tab:focus-visible {

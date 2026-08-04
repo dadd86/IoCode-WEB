@@ -17,6 +17,7 @@
 | Estado | Evidencia | Resultado |
 |---|---|---|
 | RED | `35d8249264d3cbdab4cad6a7a3e8c65caf7bba68` | 0/2: faltaban `PageControl.astro` y `page-control.ts` |
+| RED de endurecimiento | `fa5b1326707b9eeae1ebda1bebf7fd6410b92db9` | 0/2: la etiqueta ES no incluía «la», el eje de `scroll-snap-type` no era `x` y faltaba el estado visual pulsado |
 | GREEN contractual | `node --test tests/unit/page-control-contract.test.mjs` | 2/2 |
 | GREEN Astro/TypeScript | `npm run check`, `npm run internal:typecheck:src`, `npm run internal:typecheck:tests` en Docker | 0 errores, 0 advertencias |
 | GREEN build y documentación | `npm run build`, `npm run internal:docs:lint` en Docker | 38 páginas; documentación sin errores |
@@ -27,7 +28,7 @@
 
 1. Ocho controles y ocho paneles en cada vista localizada.
 2. `tablist`, `tab`, `tabpanel`, `aria-selected`, `aria-controls` y nombres accesibles localizados.
-3. Navegación con flechas, Inicio, Fin, Enter, clic y toque.
+3. Navegación con Tab, flechas, Inicio, Fin, Enter, Espacio, clic y toque.
 4. Sincronización del punto activo después del desplazamiento táctil nativo.
 5. Movimiento suave desactivado con `prefers-reduced-motion: reduce`.
 6. Sin desbordamiento horizontal del documento.
