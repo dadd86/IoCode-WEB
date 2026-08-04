@@ -13,6 +13,7 @@ const routeCases = [
 test.describe("PageControl accesible y localizado", () => {
   for (const { route, label } of routeCases) {
     test(`${route} expone ocho páginas y pasa Axe`, async ({ page }) => {
+      await page.addInitScript({ content: axe.source });
       await page.goto(route, { waitUntil: "domcontentloaded" });
 
       const control = page.locator("[data-page-control]");
@@ -25,7 +26,6 @@ test.describe("PageControl accesible y localizado", () => {
       await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
       await expect(tabs.first()).toHaveAttribute("aria-label", new RegExp(`^${label}`));
 
-      await page.addScriptTag({ content: axe.source });
       const violations = await page.evaluate(async () => {
         const result = await window.axe.run(document, {
           runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }
@@ -60,7 +60,26 @@ test.describe("PageControl accesible y localizado", () => {
 
     const viewport = page.locator("[data-page-control-viewport]");
     const tabs = page.getByRole("tab");
-    await viewport.evaluate((element) => element.scrollBy({ left: element.clientWidth, behavior: "auto" }));
+    await viewport.scrollIntoViewIfNeeded();
+    const box = await viewport.boundingBox();
+    expect(box).not.toBeNull();
+    if (!box) return;
+
+    const session = await page.context().newCDPSession(page);
+    const startX = box.x + box.width * 0.8;
+    const endX = box.x + box.width * 0.2;
+    const y = Math.min(700, Math.max(160, box.y + 220));
+    await session.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: startX, y }]
+    });
+    for (let step = 1; step <= 5; step += 1) {
+      await session.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [{ x: startX + ((endX - startX) * step) / 5, y }]
+      });
+    }
+    await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
     await tabs.nth(2).tap();
     await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");

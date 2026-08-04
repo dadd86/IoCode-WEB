@@ -4,12 +4,23 @@ import type { Project } from "../data/projects";
 type Props = {
   project: Project;
   labels: Record<string, string>;
+  tabId?: string;
+  active?: boolean;
 };
 
-const { project, labels } = Astro.props;
+const { project, labels, tabId, active = false } = Astro.props;
 ---
 
-<article class="projectCard" id={project.slug}>
+<article
+  class="projectCard"
+  id={project.slug}
+  role={tabId ? "tabpanel" : undefined}
+  aria-labelledby={tabId}
+  aria-hidden={tabId ? !active : undefined}
+  tabindex={tabId ? (active ? 0 : -1) : undefined}
+  inert={tabId && !active ? true : undefined}
+  data-page-control-panel={tabId ? "" : undefined}
+>
   <div class="projectCard__top">
     <span class="projectCard__type">{project.type}</span>
     <span class="projectCard__status">{project.status}</span>

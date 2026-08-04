@@ -68,7 +68,12 @@ export const ui = {
     skillTechnologies: "Tecnologías",
     skillUseCases: "Casos de uso",
     skillRelatedServices: "Servicios relacionados",
-    skillRelatedProjects: "Proyectos relacionados"
+    skillRelatedProjects: "Proyectos relacionados",
+    pageControlProjectsNavigation: "Navegación por proyectos",
+    pageControlSkillsNavigation: "Navegación por habilidades técnicas",
+    pageControlProjectsViewport: "Proyectos destacados deslizables",
+    pageControlSkillsViewport: "Categorías de habilidades técnicas deslizables",
+    pageControlPageLabel: "Ir a página {current} de {total}"
   },
   en: {
     skipToContent: "Skip to main content",
@@ -137,7 +142,12 @@ export const ui = {
     skillTechnologies: "Technologies",
     skillUseCases: "Use cases",
     skillRelatedServices: "Related services",
-    skillRelatedProjects: "Related projects"
+    skillRelatedProjects: "Related projects",
+    pageControlProjectsNavigation: "Project navigation",
+    pageControlSkillsNavigation: "Technical skills navigation",
+    pageControlProjectsViewport: "Scrollable featured projects",
+    pageControlSkillsViewport: "Scrollable technical skill categories",
+    pageControlPageLabel: "Go to page {current} of {total}"
   },
   de: {
     skipToContent: "Zum Hauptinhalt springen",
@@ -206,6 +216,11 @@ export const ui = {
     skillTechnologies: "Technologien",
     skillUseCases: "Anwendungsfälle",
     skillRelatedServices: "Verwandte Leistungen",
-    skillRelatedProjects: "Verwandte Projekte"
+    skillRelatedProjects: "Verwandte Projekte",
+    pageControlProjectsNavigation: "Projektnavigation",
+    pageControlSkillsNavigation: "Navigation durch technische Fähigkeiten",
+    pageControlProjectsViewport: "Horizontal scrollbare ausgewählte Projekte",
+    pageControlSkillsViewport: "Horizontal scrollbare technische Kategorien",
+    pageControlPageLabel: "Zu Seite {current} von {total} gehen"
   }
 } satisfies Record<Locale, Record<string, string>>;

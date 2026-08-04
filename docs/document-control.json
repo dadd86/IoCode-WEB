@@ -231,6 +231,10 @@
     {
       "path": "testing/seo-geo-rag.tdd.md",
       "type": "historical"
+    },
+    {
+      "path": "testing/page-control.tdd.md",
+      "type": "historical"
     }
   ],
   "runtimeSources": [

@@ -5,6 +5,7 @@ import PageHero from "../../components/PageHero.astro";
 import CardGrid from "../../components/CardGrid.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 import SkillCard from "../../components/SkillCard.astro";
+import PageControl from "../../components/PageControl.astro";
 import ContactForm from "../../components/ContactForm.astro";
 import BusinessValueSections from "../../components/BusinessValueSections.astro";
 import ProcessMethod from "../../components/ProcessMethod.astro";
@@ -109,8 +110,21 @@ const skillStructuredData =
 
   {routeKey === "projects" ? (
     <section class="section">
-      <div class="container projectGrid">
-        {projects[locale].map((project) => <ProjectCard project={project} labels={labels} />)}
+      <div class="container">
+        <PageControl
+          locale={locale}
+          kind="projects"
+          items={projects[locale].map(({ slug, title }) => ({ id: slug, label: title }))}
+        >
+          {projects[locale].map((project, index) => (
+            <ProjectCard
+              project={project}
+              labels={labels}
+              tabId={`projects-page-tab-${project.slug}`}
+              active={index === 0}
+            />
+          ))}
+        </PageControl>
       </div>
     </section>
   ) : null}
@@ -125,10 +139,22 @@ const skillStructuredData =
 
   {routeKey === "skills" ? (
     <section class="section">
-      <div class="container skillMatrix">
-        {skillGroups[locale].map((skill) => (
-          <SkillCard skill={skill} labels={labels} locale={locale} />
-        ))}
+      <div class="container">
+        <PageControl
+          locale={locale}
+          kind="skills"
+          items={skillGroups[locale].map(({ slug, title }) => ({ id: slug, label: title }))}
+        >
+          {skillGroups[locale].map((skill, index) => (
+            <SkillCard
+              skill={skill}
+              labels={labels}
+              locale={locale}
+              tabId={`skills-page-tab-${skill.slug}`}
+              active={index === 0}
+            />
+          ))}
+        </PageControl>
       </div>
     </section>
   ) : null}

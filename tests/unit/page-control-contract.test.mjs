@@ -21,8 +21,8 @@ test("PageControl expone el contrato ARIA e i18n en las seis rutas", async () =>
   assert.match(component, /role="tab"/);
   assert.match(component, /aria-selected/);
   assert.match(component, /aria-controls/);
-  assert.match(projects, /role="tabpanel"/);
-  assert.match(skills, /role="tabpanel"/);
+  assert.match(projects, /"tabpanel"/);
+  assert.match(skills, /"tabpanel"/);
   assert.match(route, /kind="projects"/);
   assert.match(route, /kind="skills"/);
   assert.match(ui, /Ir a página \{current\} de \{total\}/);
@@ -36,7 +36,8 @@ test("la interacción es nativa, ligera y respeta movimiento reducido", async ()
     source("src/assets/components.css")
   ]);
 
-  assert.ok(Buffer.byteLength(script, "utf8") < 2_048, "el script fuente debe pesar menos de 2 KB");
+  const normalizedScript = script.replaceAll("\r\n", "\n");
+  assert.ok(Buffer.byteLength(normalizedScript, "utf8") < 2_048, "el script fuente debe pesar menos de 2 KB");
   assert.match(script, /ArrowLeft/);
   assert.match(script, /ArrowRight/);
   assert.match(script, /Home/);
