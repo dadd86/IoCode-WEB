@@ -95,6 +95,8 @@ test("master success deploys the immutable image through the protected productio
   assert.match(deployWorkflow, /workflow_run:/u);
   assert.match(deployWorkflow, /head_branch == 'master'/u);
   assert.match(deployWorkflow, /environment: production/u);
+  assert.match(deployWorkflow, /actions\/setup-node@v4/u);
+  assert.match(deployWorkflow, /node-version: 24/u);
   assert.match(deployWorkflow, /tools\/deploy-release\.sh/u);
   assert.match(deployWorkflow, /docker image prune -f/u);
 });
@@ -112,4 +114,3 @@ test("production Compose retains non-root hardening, health and bounded logs", a
     assert.ok(compose.includes(contract), `missing ${contract}`);
   }
 });
-

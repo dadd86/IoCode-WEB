@@ -24,8 +24,6 @@ type HeroModule = {
   initHero: (host: HTMLElement) => Promise<void>;
 };
 
-type LanguageKey = "es" | "en" | "de";
-
 type KnownFallbackReason =
   | "prefers-reduced-motion"
   | "webgl-unavailable"
@@ -53,27 +51,6 @@ const hosts = [
 const reducedMotionQuery = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
 );
-
-/**
- * Propósito:
- * Obtener el idioma válido del componente.
- *
- * Parámetros:
- * - host: elemento raíz del Hero3D.
- *
- * Retorno:
- * `es`, `en` o `de`.
- */
-function getLanguage(host: HTMLElement): LanguageKey {
-  const language =
-    host.dataset.language ||
-    document.documentElement.lang ||
-    "es";
-
-  return language === "en" || language === "de"
-    ? language
-    : "es";
-}
 
 /**
  * Propósito:
@@ -113,18 +90,17 @@ function getFallbackMessage(
   host: HTMLElement,
   reason: string
 ): string {
-  const messages = ui[getLanguage(host)];
   const normalizedReason = normalizeFallbackReason(reason);
 
   if (normalizedReason === "prefers-reduced-motion") {
-    return messages.heroReducedMotion;
+    return host.dataset.reducedMotionMessage || "";
   }
 
   if (normalizedReason === "webgl-unavailable") {
-    return messages.heroWebglUnavailable;
+    return host.dataset.webglUnavailableMessage || "";
   }
 
-  return messages.heroFallback;
+  return host.dataset.fallbackMessage || "";
 }
 
 /**
@@ -529,4 +505,3 @@ window.addEventListener("pageshow", (event: PageTransitionEvent) => {
     initializeHeroes();
   }
 });
-import { ui } from "../i18n/ui";
