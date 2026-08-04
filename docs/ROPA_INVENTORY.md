@@ -28,7 +28,7 @@ Responsable: pendiente de aprobación final en `PUBLIC_LEGAL_NAME`, dirección y
 | Campo | Contenido |
 |---|---|
 | Interesados | Prospectos, clientes, proveedores y contactos profesionales |
-| Datos | Nombre, email, empresa opcional, mensaje y metadatos del correo |
+| Datos | Nombre, email, tipo de proyecto, mensaje y metadatos del correo |
 | Finalidad | Respuesta, medidas precontractuales, contrato y comunicación empresarial |
 | Base | Art. 6.1.b o 6.1.f RGPD según contexto |
 | Destinatarios | Proveedor de email y personal autorizado |

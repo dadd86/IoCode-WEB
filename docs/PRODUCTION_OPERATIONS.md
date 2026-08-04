@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| A | Contrato ejecutable de hardening, caché, pipeline y recuperación | Contenedores, HTTP, CI/CD y releases | ES, EN, DE | `compose.production.yml`, `.github/workflows/`, `infra/nginx/` y `tools/` | 2026-08-01 |
+| A | Contrato ejecutable de hardening, caché, pipeline y recuperación | Contenedores, HTTP, CI/CD y releases | ES, EN, DE | `compose.production.yml`, `.github/workflows/`, `infra/nginx/` y `tools/` | 2026-08-04 |
 
 ## Entornos
 
@@ -41,9 +41,11 @@ El build de producción falla si la URL no es HTTPS pública. `qa-production-con
 
 ## Pipeline y release inmutable
 
-`ci-release.yml` ejecuta checkout del SHA, `npm ci`, Astro check, TypeScript, unit tests, build, gate anti-leaks, sitemap, audit, archivo reproducible, imagen OCI y manifiesto. Un tag `v*` publica GHCR con etiqueta SHA y obtiene su digest. `release-manifest.json` registra versión, SHA completo, fecha del commit, nombre/tamaño/SHA-256 del artefacto y digest OCI.
+`ci-release.yml` ejecuta checkout del SHA, `npm ci`, Astro check, TypeScript, unit tests, build, gate anti-leaks, sitemap, audit, archivo reproducible, imagen OCI y manifiesto. Un tag `v*` o un push verificado a `master` publica GHCR con etiqueta SHA y obtiene su digest. `release-manifest.json` registra versión, SHA completo, fecha del commit, nombre/tamaño/SHA-256 del artefacto y digest OCI.
 
-Producción acepta únicamente `APP_IMAGE` y `NGINX_IMAGE` con `@sha256`. `production-operation.yml` requiere aprobación del Environment y un runner autoalojado etiquetado `production`. El directorio de cada release conserva Compose, Nginx, manifest y referencias; no contiene claves TLS.
+Producción acepta únicamente `APP_IMAGE` y `NGINX_IMAGE` con `@sha256`. `deploy.yml` se activa solamente cuando termina en verde el workflow de release para un push a `master`; descarga el manifiesto de esa ejecución y comprueba SHA y digest antes de invocar el despliegue. Tanto el automático como `production-operation.yml` usan el Environment protegido y un runner autoalojado etiquetado `production`. El directorio de cada release conserva Compose, Nginx, manifest y referencias; no contiene claves TLS.
+
+Tras un despliegue correcto, el flujo elimina únicamente imágenes Docker colgantes de más de siete días. Las imágenes referenciadas por los releases `current` y `previous` conservan sus tags/digests para que el rollback siga disponible.
 
 ## Despliegue y rollback
 

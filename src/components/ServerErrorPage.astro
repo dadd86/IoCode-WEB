@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { Locale } from "../i18n/config";
+import { ui } from "../i18n/ui";
+
+type Props = {
+  locale: Locale;
+};
+
+const { locale } = Astro.props as Props;
+const copy = ui[locale];
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="home"
+  title={copy.serverErrorTitle}
+  description={copy.serverErrorDescription}
+  robots="noindex, nofollow"
+>
+  <section class="pageHero" data-localized-500={locale}>
+    <div class="container pageHero__content">
+      <p class="eyebrow">500</p>
+      <h1>{copy.serverErrorHeading}</h1>
+      <p>{copy.serverErrorMessage}</p>
+      <p>
+        <a class="button button--primary" href={`/${locale}/`}>
+          {copy.serverErrorAction}
+        </a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

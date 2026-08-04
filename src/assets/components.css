@@ -594,6 +594,34 @@
   gap: 0.9rem;
 }
 
+.contactTrap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.formStatus {
+  min-height: 1.5em;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.formStatus[data-state="prepared"] {
+  color: var(--color-primary);
+}
+
+.formStatus[data-state="error"] {
+  color: #fca5a5;
+}
+
+.contactForm button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 .formNote {
   color: var(--color-text-muted);
 }

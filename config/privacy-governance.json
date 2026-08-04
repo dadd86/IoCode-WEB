@@ -20,7 +20,7 @@
       "id": "email-enquiries",
       "status": "active-on-user-action",
       "dataSubjects": ["prospects", "customers", "supplier and business contacts"],
-      "data": ["name", "email", "optional company", "message", "email metadata"],
+      "data": ["name", "email", "project type", "message", "email metadata"],
       "purpose": ["answer enquiries", "pre-contract steps", "contract performance", "business communication"],
       "legalBasis": "GDPR Article 6(1)(b) or Article 6(1)(f), depending on context",
       "legitimateInterest": "responding to legitimate business communications",
@@ -66,13 +66,13 @@
   "providers": [
     {
       "service": "hosting",
-      "provider": "PENDING",
+      "provider": "Hetzner Online GmbH",
       "role": "processor expected",
       "dpaRequired": true,
       "dpaStatus": "pending",
-      "processingLocation": "PENDING",
+      "processingLocation": "Germany (EEA)",
       "subprocessorsReviewed": false,
-      "transferMechanism": "PENDING",
+      "transferMechanism": "EEA processing; Article 28 DPA verification pending",
       "productionGate": "blocked"
     },
     {

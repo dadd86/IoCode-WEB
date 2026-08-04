@@ -20,6 +20,7 @@ const topics = contactTopics[locale];
 
 const contactPersonTitleId = `contact-person-title-${locale}`;
 const noteId = `contact-note-${locale}`;
+const formStatusId = `contact-form-status-${locale}`;
 const copyStatusId = `copy-status-${locale}`;
 ---
 
@@ -36,10 +37,25 @@ const copyStatusId = `copy-status-${locale}`;
     data-body-label-project-type={content.mailtoBodyLabels.projectType}
     data-body-label-message={content.mailtoBodyLabels.message}
     data-body-label-language={content.mailtoBodyLabels.language}
+    data-state-sending={labels.contactSending}
+    data-state-prepared={labels.contactPrepared}
+    data-state-error={labels.contactError}
     data-locale={locale}
-    aria-describedby={noteId}
+    aria-describedby={`${noteId} ${formStatusId}`}
   >
     <p class="formNote" id={noteId}>{labels.contactNote}</p>
+
+    <div class="contactTrap" aria-hidden="true">
+      <label for={`website-${locale}`}>Website</label>
+      <input
+        id={`website-${locale}`}
+        type="text"
+        name="website"
+        tabindex="-1"
+        autocomplete="off"
+        data-contact-honeypot
+      />
+    </div>
 
     <label for={`nombre-${locale}`}>{labels.contactName}</label>
     <input
@@ -81,9 +97,16 @@ const copyStatusId = `copy-status-${locale}`;
       required
     ></textarea>
 
-    <button class="button button--primary button--full" type="submit">
+    <button class="button button--primary button--full" type="submit" data-contact-submit>
       {labels.contactSubmit}
     </button>
+    <p
+      class="formStatus"
+      id={formStatusId}
+      data-contact-status
+      role="status"
+      aria-live="polite"
+    ></p>
   </form>
 
   <aside class="contactPanel">
@@ -184,6 +207,8 @@ const copyStatusId = `copy-status-${locale}`;
 
 <script>
   const form = document.querySelector<HTMLFormElement>("[data-contact-email]");
+  const formStatus = document.querySelector<HTMLElement>("[data-contact-status]");
+  const submitButton = document.querySelector<HTMLButtonElement>("[data-contact-submit]");
   const copyButton = document.querySelector<HTMLButtonElement>("[data-contact-copy]");
   const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]");
 
@@ -230,15 +255,41 @@ const copyStatusId = `copy-status-${locale}`;
         return;
       }
 
+      const honeypot = form.querySelector<HTMLInputElement>("[data-contact-honeypot]");
+
+      if (honeypot?.value.trim()) {
+        if (formStatus) {
+          formStatus.textContent = form.dataset.stateError || "Unable to prepare email.";
+          formStatus.dataset.state = "error";
+        }
+        return;
+      }
+
+      if (formStatus) {
+        formStatus.textContent = form.dataset.stateSending || "Preparing email…";
+        formStatus.dataset.state = "sending";
+      }
+      if (submitButton) submitButton.disabled = true;
+
       const mailto = buildMailto(form);
 
       if (!mailto) {
         console.error("Contact email is not configured.");
+        if (formStatus) {
+          formStatus.textContent = form.dataset.stateError || "Unable to prepare email.";
+          formStatus.dataset.state = "error";
+        }
+        if (submitButton) submitButton.disabled = false;
         return;
       }
 
       form.dataset.lastMailto = mailto;
-      window.location.href = mailto;
+      if (formStatus) {
+        formStatus.textContent = form.dataset.statePrepared || "Email prepared. Confirm it in your email client.";
+        formStatus.dataset.state = "prepared";
+      }
+      if (submitButton) submitButton.disabled = false;
+      window.location.assign(mailto);
     });
   }
 

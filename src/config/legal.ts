@@ -19,10 +19,14 @@ export const legalConfig = {
   businessName: value(environment.PUBLIC_LEGAL_BUSINESS_NAME) || "IoCode SOLUTIONS",
   legalForm: value(environment.PUBLIC_LEGAL_FORM),
   legalRepresentative:
-    value(environment.PUBLIC_LEGAL_REPRESENTATIVE) || value(environment.PUBLIC_LEGAL_NAME),
-  street: value(environment.PUBLIC_LEGAL_STREET),
-  postalCode: value(environment.PUBLIC_LEGAL_POSTAL_CODE),
-  city: value(environment.PUBLIC_LEGAL_CITY) || "Aachen",
+    value(environment.PUBLIC_LEGAL_REPRESENTATIVE) ||
+    value(environment.PUBLIC_LEGAL_NAME) ||
+    "Diego Armando Diaz Devia",
+  street:
+    value(environment.PUBLIC_LEGAL_STREET) ||
+    "c/o IP-Management #11289, Ludwig-Erhard-Straße 18",
+  postalCode: value(environment.PUBLIC_LEGAL_POSTAL_CODE) || "20459",
+  city: value(environment.PUBLIC_LEGAL_CITY) || "Hamburg",
   country: value(environment.PUBLIC_LEGAL_COUNTRY) || "Germany",
   email: value(environment.PUBLIC_LEGAL_EMAIL) || "contact@iocode-solutions.com",
   privacyEmail:
@@ -30,24 +34,26 @@ export const legalConfig = {
     value(environment.PUBLIC_LEGAL_EMAIL) ||
     "contact@iocode-solutions.com",
   phone: value(environment.PUBLIC_LEGAL_PHONE),
-  vatId: value(environment.PUBLIC_LEGAL_VAT_ID),
+  vatId: value(environment.PUBLIC_LEGAL_VAT_ID) || "DE461105535",
   registerName: value(environment.PUBLIC_LEGAL_REGISTER_NAME),
   registerNumber: value(environment.PUBLIC_LEGAL_REGISTER_NUMBER),
   supervisoryAuthorityName:
     value(environment.PUBLIC_PRIVACY_AUTHORITY_NAME) ||
-    "Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen",
+    "Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit",
   supervisoryAuthorityUrl:
     value(environment.PUBLIC_PRIVACY_AUTHORITY_URL) ||
-    "https://www.ldi.nrw.de/kontakt/ihre-beschwerde",
-  legalVersion: "2026-08-02.1"
+    "https://datenschutz-hamburg.de/service-information/beschwerde-oder-hinweis-einreichen",
+  legalVersion: "2026-08-04.1"
 };
 
 export const publicProviderDisclosures: PublicProviderDisclosure[] = [
   {
     service: "hosting",
-    provider: value(environment.PUBLIC_HOSTING_PROVIDER),
-    processingLocation: value(environment.PUBLIC_HOSTING_LOCATION),
-    transferSafeguard: value(environment.PUBLIC_HOSTING_TRANSFER_SAFEGUARD)
+    provider: value(environment.PUBLIC_HOSTING_PROVIDER) || "Hetzner Online GmbH",
+    processingLocation: value(environment.PUBLIC_HOSTING_LOCATION) || "Germany (EEA)",
+    transferSafeguard:
+      value(environment.PUBLIC_HOSTING_TRANSFER_SAFEGUARD) ||
+      "EEA processing; Article 28 DPA verification required"
   },
   {
     service: "email",
@@ -81,7 +87,8 @@ const requiredLegalValues: Array<[string, string]> = [
   ["PUBLIC_LEGAL_CITY", value(environment.PUBLIC_LEGAL_CITY)],
   ["PUBLIC_LEGAL_COUNTRY", value(environment.PUBLIC_LEGAL_COUNTRY)],
   ["PUBLIC_LEGAL_EMAIL", value(environment.PUBLIC_LEGAL_EMAIL)],
-  ["PUBLIC_PRIVACY_EMAIL", legalConfig.privacyEmail]
+  ["PUBLIC_PRIVACY_EMAIL", legalConfig.privacyEmail],
+  ["PUBLIC_LEGAL_VAT_ID", legalConfig.vatId]
 ];
 
 for (const provider of publicProviderDisclosures) {

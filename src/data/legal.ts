@@ -93,7 +93,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         title: "3. Contacto por correo electrónico",
         paragraphs: [
           "El formulario no transmite datos a un backend de IoCode SOLUTIONS. Genera localmente un enlace mailto; el envío comienza únicamente cuando la persona confirma la acción en su cliente de correo.",
-          "Se tratan nombre, dirección de correo, empresa si se facilita, contenido y metadatos del mensaje para responder consultas y, cuando proceda, preparar o ejecutar un contrato (art. 6.1.b RGPD) o atender comunicaciones empresariales legítimas (art. 6.1.f RGPD). Las consultas sin contrato se eliminan normalmente seis meses después de cerrarse; la documentación contractual o legal se conserva durante los plazos obligatorios aplicables."
+          "Tras la recepción del correo se tratan nombre, dirección de correo, tipo de proyecto, mensaje y metadatos del correo para responder consultas y, cuando proceda, preparar o ejecutar un contrato (art. 6.1.b RGPD) o atender comunicaciones empresariales legítimas (art. 6.1.f RGPD). Las consultas sin contrato se eliminan normalmente seis meses después de cerrarse; la documentación contractual o legal se conserva durante los plazos obligatorios aplicables."
         ]
       },
       {
@@ -106,7 +106,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "5. Cookies y almacenamiento del terminal",
         paragraphs: [
-          "El sitio no establece cookies, no usa localStorage, sessionStorage, IndexedDB, service workers persistentes, fingerprinting ni identificadores publicitarios. Por ello no se presenta banner de consentimiento. Esta evaluación debe repetirse antes de añadir cualquier tecnología que almacene o lea información del dispositivo."
+          "El sitio no establece cookies, no usa localStorage, sessionStorage, IndexedDB, service workers persistentes, fingerprinting ni identificadores publicitarios. Por ello no se presenta banner de consentimiento. Esta evaluación debe repetirse antes de añadir cualquier tecnología que almacene o lea información del dispositivo.",
+          "El botón para copiar la dirección pública ejecuta navigator.clipboard.writeText únicamente después de una acción explícita. No lee el portapapeles, no conserva el resultado y no transmite esa interacción a IoCode SOLUTIONS."
         ]
       },
       {
@@ -148,8 +149,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     authorityText: "Las reclamaciones pueden dirigirse a la autoridad competente del domicilio del responsable, en particular:",
     versionTitle: "Versión e historial legal",
     versionSummary:
-      "Versión 2026-08-02.1 — IoCode SOLUTIONS — consolidación de transparencia RGPD, proveedores, cookies, DSAR y transferencias internacionales.",
-    lastUpdated: "Última actualización: 2 de agosto de 2026."
+      "Versión 2026-08-04.1 — IoCode SOLUTIONS — identidad de Hamburg, hosting Hetzner y transparencia del flujo local de contacto.",
+    lastUpdated: "Última actualización: 4 de agosto de 2026."
   },
   en: {
     incompleteTitle: "Legal information awaiting approval",
@@ -202,7 +203,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         title: "3. Contact by email",
         paragraphs: [
           "The form sends nothing to an IoCode SOLUTIONS backend. It generates a mailto link locally; transmission begins only after the person confirms the action in their email client.",
-          "Name, email address, company if supplied, message and email metadata are processed to answer enquiries and, where applicable, take steps before or perform a contract (Article 6(1)(b) GDPR), or under the legitimate interest in business communication (Article 6(1)(f) GDPR). Enquiries without a contract are normally erased six months after closure; contractual or legally required records are retained for the applicable statutory periods."
+          "After the email is received, name, email address, project type, message and email metadata are processed to answer enquiries and, where applicable, take steps before or perform a contract (Article 6(1)(b) GDPR), or under the legitimate interest in business communication (Article 6(1)(f) GDPR). Enquiries without a contract are normally erased six months after closure; contractual or legally required records are retained for the applicable statutory periods."
         ]
       },
       {
@@ -215,7 +216,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "5. Cookies and terminal storage",
         paragraphs: [
-          "The site sets no cookies and uses no localStorage, sessionStorage, IndexedDB, persistent service worker, fingerprinting or advertising identifier. No consent banner is therefore displayed. This assessment must be repeated before adding technology that stores or reads information on a device."
+          "The site sets no cookies and uses no localStorage, sessionStorage, IndexedDB, persistent service worker, fingerprinting or advertising identifier. No consent banner is therefore displayed. This assessment must be repeated before adding technology that stores or reads information on a device.",
+          "The public-email copy button runs navigator.clipboard.writeText only after an explicit action. It does not read the clipboard, retain the result or transmit that interaction to IoCode SOLUTIONS."
         ]
       },
       {
@@ -257,8 +259,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     authorityText: "Complaints may be submitted to the authority competent for the controller's establishment, in particular:",
     versionTitle: "Version and legal history",
     versionSummary:
-      "Version 2026-08-02.1 — IoCode SOLUTIONS — consolidated GDPR transparency, providers, cookies, DSAR and international transfers.",
-    lastUpdated: "Last updated: 2 August 2026."
+      "Version 2026-08-04.1 — IoCode SOLUTIONS — Hamburg identity, Hetzner hosting and transparency of the local contact flow.",
+    lastUpdated: "Last updated: 4 August 2026."
   },
   de: {
     incompleteTitle: "Rechtliche Angaben noch nicht freigegeben",
@@ -311,7 +313,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         title: "3. Kontakt per E-Mail",
         paragraphs: [
           "Das Formular übermittelt nichts an ein Backend von IoCode SOLUTIONS. Es erzeugt lokal einen mailto-Link; die Übermittlung beginnt erst nach Bestätigung im E-Mail-Programm der Person.",
-          "Name, E-Mail-Adresse, freiwillig angegebene Firma, Nachricht und E-Mail-Metadaten werden zur Beantwortung und gegebenenfalls zur Vertragsanbahnung oder -durchführung (Art. 6 Abs. 1 lit. b DSGVO) oder aufgrund des berechtigten Interesses an geschäftlicher Kommunikation (Art. 6 Abs. 1 lit. f DSGVO) verarbeitet. Anfragen ohne Vertrag werden regelmäßig sechs Monate nach Abschluss gelöscht; Vertragsunterlagen oder gesetzlich erforderliche Nachweise gelten nach den einschlägigen Fristen."
+          "Nach Eingang der E-Mail werden Name, E-Mail-Adresse, Projekttyp, Nachricht und E-Mail-Metadaten zur Beantwortung und gegebenenfalls zur Vertragsanbahnung oder -durchführung (Art. 6 Abs. 1 lit. b DSGVO) oder aufgrund des berechtigten Interesses an geschäftlicher Kommunikation (Art. 6 Abs. 1 lit. f DSGVO) verarbeitet. Anfragen ohne Vertrag werden regelmäßig sechs Monate nach Abschluss gelöscht; Vertragsunterlagen oder gesetzlich erforderliche Nachweise gelten nach den einschlägigen Fristen."
         ]
       },
       {
@@ -324,7 +326,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "5. Cookies und Endgerätespeicher",
         paragraphs: [
-          "Die Website setzt keine Cookies und nutzt weder localStorage, sessionStorage, IndexedDB, persistente Service Worker, Fingerprinting noch Werbe-IDs. Deshalb wird kein Einwilligungsbanner angezeigt. Vor jeder Technik, die Informationen im Endgerät speichert oder ausliest, ist diese Bewertung erneut durchzuführen."
+          "Die Website setzt keine Cookies und nutzt weder localStorage, sessionStorage, IndexedDB, persistente Service Worker, Fingerprinting noch Werbe-IDs. Deshalb wird kein Einwilligungsbanner angezeigt. Vor jeder Technik, die Informationen im Endgerät speichert oder ausliest, ist diese Bewertung erneut durchzuführen.",
+          "Die Schaltfläche zum Kopieren der öffentlichen E-Mail-Adresse führt navigator.clipboard.writeText nur nach einer ausdrücklichen Aktion aus. Sie liest die Zwischenablage nicht, speichert das Ergebnis nicht und übermittelt diese Interaktion nicht an IoCode SOLUTIONS."
         ]
       },
       {
@@ -366,7 +369,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     authorityText: "Beschwerden können an die für den Sitz des Verantwortlichen zuständige Behörde gerichtet werden, insbesondere:",
     versionTitle: "Version und rechtliche Änderungshistorie",
     versionSummary:
-      "Version 2026-08-02.1 — IoCode SOLUTIONS — konsolidierte DSGVO-Transparenz, Anbieter, Cookies, Betroffenenanfragen und internationale Übermittlungen.",
-    lastUpdated: "Stand: 2. August 2026."
+      "Version 2026-08-04.1 — IoCode SOLUTIONS — Identität in Hamburg, Hosting bei Hetzner und Transparenz des lokalen Kontaktflusses.",
+    lastUpdated: "Stand: 4. August 2026."
   }
 };

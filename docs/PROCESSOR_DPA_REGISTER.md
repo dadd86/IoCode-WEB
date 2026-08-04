@@ -2,19 +2,19 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-02 |
+| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-04 |
 
 ## Estado actual
 
 | Servicio | Proveedor | Rol/DPA | Ubicación | Transferencia | Gate |
 |---|---|---|---|---|---|
-| Hosting | PENDIENTE | Encargado esperado; DPA obligatorio | PENDIENTE | PENDIENTE | Bloqueado |
+| Hosting | Hetzner Online GmbH | Encargado esperado; aceptación del DPA Art. 28 pendiente | Alemania (EEE) | Tratamiento EEE; revisar subencargados y soporte | Bloqueado hasta evidencia contractual |
 | Email | PENDIENTE | Encargado esperado; DPA obligatorio | PENDIENTE | PENDIENTE | Bloqueado |
 | DNS/CDN | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
 | Registrar | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
 | Search Console | PENDIENTE entidad contractual | Evaluar términos/DPA | PENDIENTE | DPF o SCC/TIA por verificar | Desactivado |
 
-No se marca ningún DPA como firmado ni una ubicación como europea sin evidencia contractual. Los nombres reales se guardan en variables públicas aprobadas; contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
+La selección de Hetzner y la región alemana proceden del contrato técnico aprobado en este lote; no se marca el DPA como aceptado ni la revisión de subencargados como terminada sin evidencia contractual. Los contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
 
 ## Checklist Art. 28
 

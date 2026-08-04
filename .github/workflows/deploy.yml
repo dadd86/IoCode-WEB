@@ -1,0 +1,92 @@
+name: Deploy verified master to production
+
+on:
+  workflow_run:
+    workflows:
+      - CI and immutable release
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+  packages: read
+
+concurrency:
+  group: iocode-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'master' &&
+      github.event.workflow_run.event == 'push'
+    runs-on:
+      - self-hosted
+      - linux
+      - production
+    environment: production
+    timeout-minutes: 20
+    steps:
+      - name: Checkout the verified commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Download immutable release evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: iocode-release-${{ github.event.workflow_run.head_sha }}
+          path: release-evidence
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Validate manifest and select immutable image
+        id: release
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+          IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/iocode-solutions
+        run: |
+          set -euo pipefail
+          manifest="release-evidence/release-manifest.json"
+          test -f "$manifest"
+          commit_sha="$(node -p "JSON.parse(require('node:fs').readFileSync('$manifest','utf8')).commitSha")"
+          image_digest="$(node -p "JSON.parse(require('node:fs').readFileSync('$manifest','utf8')).imageDigest")"
+          test "$commit_sha" = "$EXPECTED_SHA"
+          [[ "$image_digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          image_repository="$(printf '%s' "$IMAGE_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          printf 'app_image=%s@%s\n' "$image_repository" "$image_digest" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy prebuilt image with rollback protection
+        shell: bash
+        env:
+          APP_IMAGE: ${{ steps.release.outputs.app_image }}
+          NGINX_IMAGE: ${{ vars.NGINX_IMAGE }}
+          RELEASE_ID: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_ROOT: ${{ vars.RELEASE_ROOT }}
+          TLS_FULLCHAIN_PATH: ${{ vars.TLS_FULLCHAIN_PATH }}
+          TLS_PRIVKEY_PATH: ${{ vars.TLS_PRIVKEY_PATH }}
+        run: sh tools/deploy-release.sh
+
+      - name: Remove dangling images older than seven days
+        if: success()
+        shell: bash
+        run: docker image prune -f --filter "until=168h"
+
+      - name: Notify operational failure
+        if: failure()
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          ALERT_SEVERITY: P1
+          ALERT_EVENT: production-automatic-deploy-failure
+          ALERT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node tools/send-operational-alert.mjs
