@@ -25,7 +25,7 @@ test("PageControl expone el contrato ARIA e i18n en las seis rutas", async () =>
   assert.match(skills, /"tabpanel"/);
   assert.match(route, /kind="projects"/);
   assert.match(route, /kind="skills"/);
-  assert.match(ui, /Ir a página \{current\} de \{total\}/);
+  assert.match(ui, /Ir a la página \{current\} de \{total\}/);
   assert.match(ui, /Go to page \{current\} of \{total\}/);
   assert.match(ui, /Zu Seite \{current\} von \{total\} gehen/);
 });
@@ -43,10 +43,11 @@ test("la interacción es nativa, ligera y respeta movimiento reducido", async ()
   assert.match(script, /Home/);
   assert.match(script, /End/);
   assert.match(script, /prefers-reduced-motion/);
-  assert.match(styles, /scroll-snap-type:\s*inline mandatory/);
+  assert.match(styles, /scroll-snap-type:\s*x mandatory/);
   assert.match(styles, /touch-action:\s*pan-x pan-y/);
   assert.match(styles, /min-width:\s*2\.75rem/);
   assert.match(styles, /min-height:\s*2\.75rem/);
   assert.match(styles, /#22d3ee/);
+  assert.match(styles, /\.pageControl__tab:active::before/);
   assert.match(styles, /prefers-reduced-motion:\s*reduce/);
 });

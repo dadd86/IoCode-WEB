@@ -2,10 +2,10 @@ import { expect, test } from "@playwright/test";
 import axe from "axe-core";
 
 const routeCases = [
-  { route: "/es/proyectos/", label: "Ir a página 1 de 8" },
+  { route: "/es/proyectos/", label: "Ir a la página 1 de 8" },
   { route: "/en/projects/", label: "Go to page 1 of 8" },
   { route: "/de/projekte/", label: "Zu Seite 1 von 8 gehen" },
-  { route: "/es/habilidades/", label: "Ir a página 1 de 8" },
+  { route: "/es/habilidades/", label: "Ir a la página 1 de 8" },
   { route: "/en/skills/", label: "Go to page 1 of 8" },
   { route: "/de/faehigkeiten/", label: "Zu Seite 1 von 8 gehen" }
 ];
@@ -52,6 +52,11 @@ test.describe("PageControl accesible y localizado", () => {
     await tabs.nth(2).press("Enter");
     await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");
     await expect(page.getByRole("tabpanel").first()).toHaveAttribute("id", "maceta-inteligente");
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("tabpanel")).toBeFocused();
+    await tabs.nth(3).focus();
+    await page.keyboard.press("Space");
+    await expect(tabs.nth(3)).toHaveAttribute("aria-selected", "true");
   });
 
   test("scroll táctil nativo actualiza el punto activo sin desbordar la página", async ({ page }, testInfo) => {
