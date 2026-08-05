@@ -51,16 +51,21 @@ test("Hetzner disclosure attributes ISO evidence to the provider without bypassi
 });
 
 test("Hamburg supervisory authority replaces the stale Nordrhein-Westfalen wording", async () => {
-  const [legalCopy, ropa] = await Promise.all([
+  const [legalCopy, ropa, site, delivery] = await Promise.all([
     read("src/data/legal.ts"),
-    read("docs/ROPA_INVENTORY.md")
+    read("docs/ROPA_INVENTORY.md"),
+    read("src/data/site.ts"),
+    read("docs/PHASE_9B_DELIVERY.md")
   ]);
 
-  assert.doesNotMatch(`${legalCopy}\n${ropa}`, /Nordrhein-Westfalen|Aachen/iu);
+  assert.doesNotMatch(`${legalCopy}\n${ropa}\n${site}\n${delivery}`, /Nordrhein-Westfalen|Aachen/iu);
   assert.ok(
     (legalCopy.match(/Hamburg/gu) || []).length >= 3,
     "all three locale copies must point to Hamburg"
   );
+  assert.match(site, /legalName: "Diego Armando Diaz Devia"/u);
+  assert.match(site, /city: "Hamburg"/u);
+  assert.match(site, /region: "Hamburg"/u);
 });
 
 test("requested short privacy routes redirect to localized canonical pages", async () => {
