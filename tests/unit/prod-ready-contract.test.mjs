@@ -22,6 +22,8 @@ test("Hamburg legal identity is the versioned default without bypassing approval
   assert.match(config, /Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit/u);
   assert.match(config, /https:\/\/datenschutz-hamburg\.de\/service-information\/beschwerde-oder-hinweis-einreichen/u);
   assert.match(config, /legalVersion: "2026-08-05\.1"/u);
+  assert.match(productionEnv, /PUBLIC_LEGAL_NAME=Diego Armando Diaz Devia/u);
+  assert.match(productionEnv, /PUBLIC_LEGAL_REPRESENTATIVE=Diego Armando Diaz Devia/u);
   assert.match(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
   assert.match(config, /PUBLIC_LEGAL_APPROVED/u);
   assert.match(config, /PUBLIC_PRIVACY_APPROVED/u);
