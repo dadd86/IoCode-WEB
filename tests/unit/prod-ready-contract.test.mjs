@@ -21,13 +21,13 @@ test("Hamburg legal identity is the versioned default without bypassing approval
 
   assert.match(config, /Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit/u);
   assert.match(config, /https:\/\/datenschutz-hamburg\.de\/service-information\/beschwerde-oder-hinweis-einreichen/u);
-  assert.match(config, /legalVersion: "2026-08-04\.1"/u);
+  assert.match(config, /legalVersion: "2026-08-05\.1"/u);
   assert.match(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
   assert.match(config, /PUBLIC_LEGAL_APPROVED/u);
   assert.match(config, /PUBLIC_PRIVACY_APPROVED/u);
 });
 
-test("Hetzner disclosure is factual and does not invent a TÜV Rheinland certificate", async () => {
+test("Hetzner disclosure attributes ISO evidence to the provider without bypassing the DPA gate", async () => {
   const [config, governance, legalCopy] = await Promise.all([
     read("src/config/legal.ts"),
     read("config/privacy-governance.json"),
@@ -38,7 +38,44 @@ test("Hetzner disclosure is factual and does not invent a TÜV Rheinland certifi
   assert.match(config, /Germany \(EEA\)/u);
   assert.match(governance, /"provider": "Hetzner Online GmbH"/u);
   assert.match(governance, /"dpaStatus": "pending"/u);
+  assert.match(governance, /"securityEvidence": "Hetzner reports ISO\/IEC 27001:2022 certification/u);
+  assert.ok(
+    (legalCopy.match(/ISO\/IEC 27001:2022/gu) || []).length >= 3,
+    "each locale must attribute the ISO evidence to Hetzner"
+  );
+  assert.doesNotMatch(
+    legalCopy,
+    /IoCode SOLUTIONS (?:está|is|ist) (?:certificada|certified|zertifiziert)/iu
+  );
   assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /TÜV Rheinland/iu);
+});
+
+test("Hamburg supervisory authority replaces the stale Nordrhein-Westfalen wording", async () => {
+  const [legalCopy, ropa] = await Promise.all([
+    read("src/data/legal.ts"),
+    read("docs/ROPA_INVENTORY.md")
+  ]);
+
+  assert.doesNotMatch(`${legalCopy}\n${ropa}`, /Nordrhein-Westfalen|Aachen/iu);
+  assert.ok(
+    (legalCopy.match(/Hamburg/gu) || []).length >= 3,
+    "all three locale copies must point to Hamburg"
+  );
+});
+
+test("requested short privacy routes redirect to localized canonical pages", async () => {
+  const server = await read("Docker/node-static-server.mjs");
+
+  for (const [alias, canonical] of [
+    ["/datenschutz", "/de/datenschutz/"],
+    ["/privacy-policy", "/en/privacy/"],
+    ["/politica-privacidad", "/es/privacidad/"]
+  ]) {
+    assert.ok(
+      server.includes(`["${alias}", "${canonical}"]`),
+      `missing redirect ${alias} -> ${canonical}`
+    );
+  }
 });
 
 test("contact UX adds a honeypot and honest mail-client states while remaining backend-free", async () => {

@@ -66,11 +66,23 @@ test("privacidad expone proveedores, autoridad, derechos y versión", async ({ p
   await expect(page.getByRole("table")).toBeVisible();
   await expect(page.getByText("Aufsichtsbehörde", { exact: true })).toBeVisible();
   await expect(page.getByText("Betroffenenrechte", { exact: false })).toBeVisible();
-  await expect(page.getByText("2026-08-04.1", { exact: true })).toBeVisible();
+  await expect(page.getByText("2026-08-05.1", { exact: true })).toBeVisible();
 });
 
 test("alias histórico inglés redirige al imprint canónico", async ({ request }) => {
   const response = await request.get("/en/legal-notice/", { maxRedirects: 0 });
   expect(response.status()).toBe(308);
   expect(response.headers().location).toBe("/en/imprint/");
+});
+
+test("alias públicos de privacidad redirigen a la ruta canónica localizada", async ({ request }) => {
+  for (const [alias, canonical] of [
+    ["/datenschutz", "/de/datenschutz/"],
+    ["/privacy-policy", "/en/privacy/"],
+    ["/politica-privacidad", "/es/privacidad/"]
+  ] as const) {
+    const response = await request.get(alias, { maxRedirects: 0 });
+    expect(response.status(), alias).toBe(308);
+    expect(response.headers().location, alias).toBe(canonical);
+  }
 });
