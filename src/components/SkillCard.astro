@@ -7,12 +7,23 @@ type Props = {
   skill: SkillGroup;
   labels: Record<string, string>;
   locale: Locale;
+  tabId?: string;
+  active?: boolean;
 };
 
-const { skill, labels, locale } = Astro.props;
+const { skill, labels, locale, tabId, active = false } = Astro.props;
 ---
 
-<article class="skillBlock" id={skill.slug}>
+<article
+  class="skillBlock"
+  id={skill.slug}
+  role={tabId ? "tabpanel" : undefined}
+  aria-labelledby={tabId}
+  aria-hidden={tabId ? !active : undefined}
+  tabindex={tabId ? (active ? 0 : -1) : undefined}
+  inert={tabId && !active ? true : undefined}
+  data-page-control-panel={tabId ? "" : undefined}
+>
   <div class="skillBlock__header">
     <p class="skillBlock__intent">{labels.skillSearchIntent}</p>
     <h2>{skill.title}</h2>

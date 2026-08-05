@@ -1,0 +1,43 @@
+document.querySelectorAll<HTMLElement>("[data-page-control]").forEach((root) => {
+  const view = root.querySelector<HTMLElement>("[data-page-control-viewport]");
+  const tabs = [...root.querySelectorAll<HTMLButtonElement>("[data-page-control-tab]")];
+  const pages = [...root.querySelectorAll<HTMLElement>("[data-page-control-panel]")];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!view || tabs.length !== pages.length) return;
+  const show = (index: number, scroll = false, focus = false) => {
+    if (!tabs[index] || !pages[index]) return;
+    tabs.forEach((tab, i) => {
+      const selected = i === index;
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      pages[i]!.ariaHidden = String(!selected);
+      pages[i]!.inert = !selected;
+      pages[i]!.tabIndex = selected ? 0 : -1;
+    });
+    if (scroll) pages[index].scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest", inline: "center" });
+    if (focus) tabs[index].focus();
+  };
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => show(index, true));
+    tab.addEventListener("keydown", (event) => {
+      const last = tabs.length - 1;
+      const next = event.key === "ArrowRight" ? (index + 1) % tabs.length :
+        event.key === "ArrowLeft" ? (index + last) % tabs.length :
+        event.key === "Home" ? 0 : event.key === "End" ? last : -1;
+      if (next < 0) return;
+      event.preventDefault();
+      show(next, true, true);
+    });
+  });
+  let frame = 0;
+  view.addEventListener("scroll", () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      const center = view.getBoundingClientRect().left + view.clientWidth / 2;
+      const gaps = pages.map((page) => Math.abs(page.getBoundingClientRect().left + page.clientWidth / 2 - center));
+      show(gaps.indexOf(Math.min(...gaps)));
+    });
+  }, { passive: true });
+  const h = pages.findIndex((page) => `#${page.id}` === location.hash);
+  show(h < 0 ? 0 : h);
+});

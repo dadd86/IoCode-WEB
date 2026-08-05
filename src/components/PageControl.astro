@@ -1,0 +1,65 @@
+---
+import type { Locale } from "../i18n/config";
+import { ui } from "../i18n/ui";
+
+export type PageControlItem = {
+  id: string;
+  label: string;
+};
+
+type Props = {
+  locale: Locale;
+  kind: "projects" | "skills";
+  items: PageControlItem[];
+};
+
+const { locale, kind, items } = Astro.props;
+const labels = ui[locale];
+const navigationLabel = kind === "projects"
+  ? labels.pageControlProjectsNavigation
+  : labels.pageControlSkillsNavigation;
+const viewportLabel = kind === "projects"
+  ? labels.pageControlProjectsViewport
+  : labels.pageControlSkillsViewport;
+const pageLabel = (current: number, total: number, label: string) =>
+  `${labels.pageControlPageLabel
+    .replace("{current}", String(current))
+    .replace("{total}", String(total))} — ${label}`;
+---
+
+<div class="pageControl" data-page-control>
+  <div
+    class="pageControl__tabs"
+    role="tablist"
+    aria-label={navigationLabel}
+    aria-orientation="horizontal"
+  >
+    {items.map((item, index) => (
+      <button
+        class="pageControl__tab"
+        type="button"
+        role="tab"
+        id={`${kind}-page-tab-${item.id}`}
+        aria-controls={item.id}
+        aria-selected={index === 0 ? "true" : "false"}
+        aria-label={pageLabel(index + 1, items.length, item.label)}
+        tabindex={index === 0 ? 0 : -1}
+        data-page-control-tab
+      ></button>
+    ))}
+  </div>
+
+  <div
+    class="pageControl__viewport"
+    aria-label={viewportLabel}
+    data-page-control-viewport
+  >
+    <div class="pageControl__track" data-page-control-track>
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script>
+  import "../scripts/page-control";
+</script>
