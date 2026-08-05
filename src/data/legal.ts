@@ -119,7 +119,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "7. Destinatarios, encargados y transferencias",
         paragraphs: [
-          "Los datos sólo se comunican a proveedores necesarios para hosting, correo, DNS/CDN, registro de dominio y soporte técnico bajo instrucciones y contratos aplicables. Si un proveedor trata datos fuera del EEE, debe existir una decisión de adecuación válida o garantías apropiadas, como Cláusulas Contractuales Tipo, junto con la evaluación de transferencia necesaria."
+          "Los datos sólo se comunican a proveedores necesarios para hosting, correo, DNS/CDN, registro de dominio y soporte técnico bajo instrucciones y contratos aplicables. Si un proveedor trata datos fuera del EEE, debe existir una decisión de adecuación válida o garantías apropiadas, como Cláusulas Contractuales Tipo, junto con la evaluación de transferencia necesaria.",
+          "Hetzner Online GmbH declara que su sistema de gestión de seguridad de la información cuenta con certificación ISO/IEC 27001:2022. Esta certificación pertenece al proveedor, no a IoCode SOLUTIONS, y no sustituye la verificación y aceptación del contrato de encargo conforme al artículo 28 RGPD antes de producción."
         ]
       },
       {
@@ -135,7 +136,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "Portabilidad cuando el tratamiento automatizado se base en consentimiento o contrato.",
           "Oposición al tratamiento basado en interés legítimo.",
           "Retirada del consentimiento sin afectar el tratamiento anterior, cuando esa sea la base.",
-          "Reclamación ante una autoridad de control, especialmente la LDI Nordrhein-Westfalen."
+          "Reclamación ante una autoridad de control, en particular la autoridad de Hamburgo indicada a continuación."
         ]
       },
       {
@@ -149,8 +150,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     authorityText: "Las reclamaciones pueden dirigirse a la autoridad competente del domicilio del responsable, en particular:",
     versionTitle: "Versión e historial legal",
     versionSummary:
-      "Versión 2026-08-04.1 — IoCode SOLUTIONS — identidad de Hamburg, hosting Hetzner y transparencia del flujo local de contacto.",
-    lastUpdated: "Última actualización: 4 de agosto de 2026."
+      "Versión 2026-08-05.1 — IoCode SOLUTIONS — autoridad de Hamburgo, evidencia ISO/IEC 27001:2022 de Hetzner y transparencia del flujo local de contacto.",
+    lastUpdated: "Última actualización: 5 de agosto de 2026."
   },
   en: {
     incompleteTitle: "Legal information awaiting approval",
@@ -229,7 +230,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "7. Recipients, processors and transfers",
         paragraphs: [
-          "Data is disclosed only to providers necessary for hosting, email, DNS/CDN, domain registration and technical support under applicable instructions and contracts. Where a provider processes data outside the EEA, a valid adequacy decision or appropriate safeguards such as Standard Contractual Clauses must apply, together with any required transfer assessment."
+          "Data is disclosed only to providers necessary for hosting, email, DNS/CDN, domain registration and technical support under applicable instructions and contracts. Where a provider processes data outside the EEA, a valid adequacy decision or appropriate safeguards such as Standard Contractual Clauses must apply, together with any required transfer assessment.",
+          "Hetzner Online GmbH states that its information security management system is certified to ISO/IEC 27001:2022. This certification belongs to the provider, not to IoCode SOLUTIONS, and does not replace verification and acceptance of the Article 28 GDPR data processing agreement before production."
         ]
       },
       {
@@ -245,7 +247,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "Data portability where automated processing is based on consent or contract.",
           "Objection to processing based on legitimate interests.",
           "Withdrawal of consent without affecting earlier processing, where consent is the basis.",
-          "A complaint to a supervisory authority, in particular LDI Nordrhein-Westfalen."
+          "A complaint to a supervisory authority, in particular the Hamburg authority listed below."
         ]
       },
       {
@@ -259,8 +261,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     authorityText: "Complaints may be submitted to the authority competent for the controller's establishment, in particular:",
     versionTitle: "Version and legal history",
     versionSummary:
-      "Version 2026-08-04.1 — IoCode SOLUTIONS — Hamburg identity, Hetzner hosting and transparency of the local contact flow.",
-    lastUpdated: "Last updated: 4 August 2026."
+      "Version 2026-08-05.1 — IoCode SOLUTIONS — Hamburg authority, Hetzner ISO/IEC 27001:2022 evidence and transparency of the local contact flow.",
+    lastUpdated: "Last updated: 5 August 2026."
   },
   de: {
     incompleteTitle: "Rechtliche Angaben noch nicht freigegeben",
@@ -339,7 +341,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "7. Empfänger, Auftragsverarbeiter und Übermittlungen",
         paragraphs: [
-          "Daten werden nur an notwendige Anbieter für Hosting, E-Mail, DNS/CDN, Domain-Registrierung und technischen Support unter den anwendbaren Weisungen und Verträgen übermittelt. Bei Verarbeitung außerhalb des EWR ist ein gültiger Angemessenheitsbeschluss oder eine geeignete Garantie wie Standardvertragsklauseln samt erforderlicher Transferprüfung notwendig."
+          "Daten werden nur an notwendige Anbieter für Hosting, E-Mail, DNS/CDN, Domain-Registrierung und technischen Support unter den anwendbaren Weisungen und Verträgen übermittelt. Bei Verarbeitung außerhalb des EWR ist ein gültiger Angemessenheitsbeschluss oder eine geeignete Garantie wie Standardvertragsklauseln samt erforderlicher Transferprüfung notwendig.",
+          "Hetzner Online GmbH erklärt, dass ihr Informationssicherheits-Managementsystem nach ISO/IEC 27001:2022 zertifiziert ist. Diese Zertifizierung gilt für den Anbieter, nicht für IoCode SOLUTIONS, und ersetzt vor dem Produktivbetrieb weder die Prüfung noch den Abschluss des Auftragsverarbeitungsvertrags nach Artikel 28 DSGVO."
         ]
       },
       {
@@ -355,7 +358,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "Datenübertragbarkeit bei automatisierter Verarbeitung auf Grundlage von Einwilligung oder Vertrag.",
           "Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen.",
           "Widerruf einer Einwilligung ohne Auswirkung auf frühere Verarbeitungen, soweit Einwilligung die Grundlage ist.",
-          "Beschwerde bei einer Aufsichtsbehörde, insbesondere der LDI Nordrhein-Westfalen."
+          "Beschwerde bei einer Aufsichtsbehörde, insbesondere bei der unten genannten Hamburger Aufsichtsbehörde."
         ]
       },
       {
@@ -369,7 +372,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     authorityText: "Beschwerden können an die für den Sitz des Verantwortlichen zuständige Behörde gerichtet werden, insbesondere:",
     versionTitle: "Version und rechtliche Änderungshistorie",
     versionSummary:
-      "Version 2026-08-04.1 — IoCode SOLUTIONS — Identität in Hamburg, Hosting bei Hetzner und Transparenz des lokalen Kontaktflusses.",
-    lastUpdated: "Stand: 4. August 2026."
+      "Version 2026-08-05.1 — IoCode SOLUTIONS — Hamburger Aufsichtsbehörde, ISO/IEC-27001:2022-Nachweis von Hetzner und Transparenz des lokalen Kontaktflusses.",
+    lastUpdated: "Stand: 5. August 2026."
   }
 };

@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-04 |
+| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-05 |
 
 ## Estado actual
 
@@ -14,7 +14,7 @@
 | Registrar | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
 | Search Console | PENDIENTE entidad contractual | Evaluar términos/DPA | PENDIENTE | DPF o SCC/TIA por verificar | Desactivado |
 
-La selección de Hetzner y la región alemana proceden del contrato técnico aprobado en este lote; no se marca el DPA como aceptado ni la revisión de subencargados como terminada sin evidencia contractual. Los contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
+La selección de Hetzner y la región alemana proceden del contrato técnico aprobado en este lote. Hetzner publica una certificación ISO/IEC 27001:2022 de su sistema de gestión de seguridad de la información; la evidencia corresponde al proveedor y no certifica a IoCode SOLUTIONS. No se marca el DPA como aceptado ni la revisión de subencargados como terminada sin evidencia contractual. Los contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
 
 ## Checklist Art. 28
 

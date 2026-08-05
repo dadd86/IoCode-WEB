@@ -21,7 +21,7 @@ export type OfferCatalogItem = {
 
 export const siteConfig = {
   name: "IoCode SOLUTIONS",
-  legalName: "IoCode SOLUTIONS",
+  legalName: "Diego Armando Diaz Devia",
   url: siteUrl,
   email: "contact@iocode-solutions.com",
   logoPath: "/logo/iocode-logo.png",
@@ -29,8 +29,8 @@ export const siteConfig = {
   logoSmallWebpPath: "/logo/iocode-logo-256.webp",
   logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb?v=572076acb6cb",
   location: {
-    city: "Aachen",
-    region: "North Rhine-Westphalia",
+    city: "Hamburg",
+    region: "Hamburg",
     country: "Germany"
   },
   availableLanguages: ["Spanish", "English", "German"],

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-08-02",
+  "reviewedAt": "2026-08-05",
   "controllerApproval": "pending",
   "treatments": [
     {
@@ -71,6 +71,7 @@
       "dpaRequired": true,
       "dpaStatus": "pending",
       "processingLocation": "Germany (EEA)",
+      "securityEvidence": "Hetzner reports ISO/IEC 27001:2022 certification; this is provider evidence, not IoCode certification or DPA approval",
       "subprocessorsReviewed": false,
       "transferMechanism": "EEA processing; Article 28 DPA verification pending",
       "productionGate": "blocked"

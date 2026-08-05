@@ -170,8 +170,8 @@ check(
 
 check(
   "9.50-legal-governance",
-  legalConfig.includes('legalVersion: "2026-08-04.1"') &&
-    changelog.includes("2026-08-04.1") &&
+  legalConfig.includes('legalVersion: "2026-08-05.1"') &&
+    changelog.includes("2026-08-05.1") &&
     changelog.includes("Responsable") &&
     legalPage.includes("versionSummary"),
   "Versión visible, changelog y flujo de aprobación implantados."

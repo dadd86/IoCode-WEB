@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| A | Matriz de implementación y gates 9.12–9.19 | Astro, SEO, responsive, accesibilidad y legal | ES, EN, DE | `src/`, `tests/e2e/phase-9b-production.spec.ts` y `tools/qa-phase-9b.mjs` | 2026-08-01 |
+| A | Matriz de implementación y gates 9.12–9.19 | Astro, SEO, responsive, accesibilidad y legal | ES, EN, DE | `src/`, `tests/e2e/phase-9b-production.spec.ts` y `tools/qa-phase-9b.mjs` | 2026-08-05 |
 
 ## Matriz
 
@@ -32,7 +32,7 @@ Las 27 rutas comerciales originales permanecen estables. Se añaden seis rutas l
 
 ## Contrato legal de publicación
 
-El repositorio no contiene calle ni código postal verificados. Producción exige `PUBLIC_LEGAL_APPROVED=true`, `PUBLIC_LEGAL_NAME`, `PUBLIC_LEGAL_STREET`, `PUBLIC_LEGAL_POSTAL_CODE`, `PUBLIC_LEGAL_CITY`, `PUBLIC_LEGAL_COUNTRY` y `PUBLIC_LEGAL_EMAIL`. Si falta alguno, las páginas legales emiten `noindex`, muestran estado draft y `qa-production-config.mjs` falla. No se inventan datos ni se declara asesoramiento jurídico.
+El repositorio contiene la identidad del titular, la dirección postal de Hamburgo, el correo y la USt-IdNr. como valores públicos del borrador. Producción continúa bloqueada hasta confirmar la forma jurídica, los proveedores de correo/DNS/registro, sus ubicaciones y garantías, el DPA de hosting y las aprobaciones `PUBLIC_LEGAL_APPROVED=true` y `PUBLIC_PRIVACY_APPROVED=true`. Si falta alguno, las páginas legales emiten `noindex`, muestran estado draft y `qa-production-config.mjs` falla. No se inventan datos ni se declara asesoramiento jurídico.
 
 La estructura se basa en la identificación exigida por [§ 5 DDG](https://www.gesetze-im-internet.de/ddg/__5.html) y la información al interesado de [artículo 13 RGPD](https://eur-lex.europa.eu/eli/reg/2016/679/2016-05-04/eng). El propietario debe validar contenido, actividad, registros, identificación fiscal, autoridad competente y plazos reales antes de publicación.
 
@@ -46,7 +46,7 @@ $env:PUBLIC_LEGAL_APPROVED = "true"
 $env:PUBLIC_LEGAL_NAME = "<nombre aprobado>"
 $env:PUBLIC_LEGAL_STREET = "<calle y número>"
 $env:PUBLIC_LEGAL_POSTAL_CODE = "<código postal>"
-$env:PUBLIC_LEGAL_CITY = "Aachen"
+$env:PUBLIC_LEGAL_CITY = "Hamburg"
 $env:PUBLIC_LEGAL_COUNTRY = "Germany"
 $env:PUBLIC_LEGAL_EMAIL = "contact@iocode-solutions.com"
 npm run check

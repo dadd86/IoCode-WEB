@@ -43,7 +43,7 @@ export const legalConfig = {
   supervisoryAuthorityUrl:
     value(environment.PUBLIC_PRIVACY_AUTHORITY_URL) ||
     "https://datenschutz-hamburg.de/service-information/beschwerde-oder-hinweis-einreichen",
-  legalVersion: "2026-08-04.1"
+  legalVersion: "2026-08-05.1"
 };
 
 export const publicProviderDisclosures: PublicProviderDisclosure[] = [
