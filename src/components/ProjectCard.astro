@@ -6,9 +6,10 @@ type Props = {
   labels: Record<string, string>;
   tabId?: string;
   active?: boolean;
+  detailHref?: string;
 };
 
-const { project, labels, tabId, active = false } = Astro.props;
+const { project, labels, tabId, active = false, detailHref } = Astro.props;
 ---
 
 <article
@@ -23,7 +24,7 @@ const { project, labels, tabId, active = false } = Astro.props;
 >
   <div class="projectCard__top">
     <span class="projectCard__type">{project.type}</span>
-    <span class="projectCard__status">{project.status}</span>
+    <span class="projectCard__status">{project.claimLevel}</span>
   </div>
 
   <div class="projectCard__body">
@@ -53,6 +54,11 @@ const { project, labels, tabId, active = false } = Astro.props;
       </div>
 
       <div>
+        <dt>{labels.projectEvidenceSummary}</dt>
+        <dd>{project.evidenceSummary}</dd>
+      </div>
+
+      <div>
         <dt>{labels.projectEvidenceLevel}</dt>
         <dd>{project.evidenceLevel}</dd>
       </div>
@@ -79,6 +85,12 @@ const { project, labels, tabId, active = false } = Astro.props;
       <strong>{labels.caution}</strong>
       {project.caution}
     </p>
+
+    {detailHref ? (
+      <p class="projectLinks">
+        <a href={detailHref}>{labels.projectReadCaseStudy}</a>
+      </p>
+    ) : null}
 
     {project.publicLinks.length > 0 ? (
       <div class="projectLinks">

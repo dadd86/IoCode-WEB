@@ -51,7 +51,7 @@ test.describe("PageControl accesible y localizado", () => {
     await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
     await tabs.nth(2).press("Enter");
     await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tabpanel").first()).toHaveAttribute("id", "maceta-inteligente");
+    await expect(page.getByRole("tabpanel").first()).toHaveAttribute("id", "hotelsol-integracion-odoo-dotnet");
     await page.keyboard.press("Tab");
     await expect(page.getByRole("tabpanel")).toBeFocused();
     await tabs.nth(3).focus();

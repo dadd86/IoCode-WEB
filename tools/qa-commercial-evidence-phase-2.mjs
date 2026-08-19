@@ -11,7 +11,9 @@ mkdirSync(artifactRoot, { recursive: true });
 const requiredLocales = ["es", "en", "de"];
 
 const requiredFields = [
+  "key",
   "slug",
+  "path",
   "title",
   "type",
   "summary",
@@ -19,25 +21,30 @@ const requiredFields = [
   "solution",
   "technicalRole",
   "businessValue",
+  "evidenceSummary",
   "technologies",
   "capabilities",
-  "status",
   "evidenceLevel",
   "claimLevel",
   "caution",
   "publicLinks",
-  "featured"
+  "featured",
+  "seoTitle",
+  "seoDescription",
+  "keywords",
+  "schemaType",
+  "imageAlt"
 ];
 
-const expectedProjectSlugs = [
+const expectedProjectKeys = [
+  "iocode-web",
   "techwizards",
-  "neuronaprediccion",
-  "maceta-inteligente",
   "hotelsol",
-  "odoo-erp-deployment",
-  "openldap-docker",
-  "ad-wsus",
-  "java-mvc-dao-javafx"
+  "woodshops",
+  "vehicle-rental",
+  "the-javengers",
+  "coworking-database",
+  "break-boxes-game"
 ];
 
 const forbiddenClaimPatterns = [
@@ -204,17 +211,19 @@ if (projects) {
       continue;
     }
 
-    if (localeProjects.length < expectedProjectSlugs.length) {
+    if (localeProjects.length !== expectedProjectKeys.length) {
       modelErrors.push(
-        `${locale}: debe tener al menos ${expectedProjectSlugs.length} proyectos, tiene ${localeProjects.length}.`
+        `${locale}: debe tener ${expectedProjectKeys.length} proyectos, tiene ${localeProjects.length}.`
       );
     }
 
+    const keys = localeProjects.map((project) => project.key);
     const slugs = localeProjects.map((project) => project.slug);
+    const paths = localeProjects.map((project) => project.path);
 
-    for (const expectedSlug of expectedProjectSlugs) {
-      if (!slugs.includes(expectedSlug)) {
-        modelErrors.push(`${locale}: falta el proyecto ${expectedSlug}.`);
+    for (const expectedKey of expectedProjectKeys) {
+      if (!keys.includes(expectedKey)) {
+        modelErrors.push(`${locale}: falta el proyecto ${expectedKey}.`);
       }
     }
 
@@ -222,6 +231,11 @@ if (projects) {
 
     for (const duplicateSlug of duplicateSlugs) {
       modelErrors.push(`${locale}: slug duplicado ${duplicateSlug}.`);
+    }
+
+    const duplicatePaths = paths.filter((path, index) => paths.indexOf(path) !== index);
+    for (const duplicatePath of duplicatePaths) {
+      modelErrors.push(`${locale}: ruta duplicada ${duplicatePath}.`);
     }
 
     for (const project of localeProjects) {
@@ -235,6 +249,18 @@ if (projects) {
         if (typeof project[field] !== "string" || project[field].trim().length < 20) {
           modelErrors.push(`${locale}/${project.title}: ${field} debe ser texto explícito.`);
         }
+      }
+
+      if (project.seoTitle.length > 60) {
+        modelErrors.push(`${locale}/${project.title}: seoTitle supera 60 caracteres.`);
+      }
+
+      if (project.seoDescription.length > 155) {
+        modelErrors.push(`${locale}/${project.title}: seoDescription supera 155 caracteres.`);
+      }
+
+      if (!project.path.startsWith(`/${locale}/`) || !project.path.endsWith(`/${project.slug}/`)) {
+        modelErrors.push(`${locale}/${project.title}: path y slug localizados no coinciden.`);
       }
 
       if (!Array.isArray(project.technologies) || project.technologies.length < 2) {
@@ -331,8 +357,24 @@ if (!cardSource.includes("project.claimLevel")) {
   routesErrors.push("ProjectCard no muestra project.claimLevel.");
 }
 
-if (!pageSource.includes("ItemList") || !pageSource.includes("CreativeWork")) {
-  seoErrors.push("La página de proyectos debe incluir structured data prudente ItemList/CreativeWork.");
+if (!pageSource.includes("ItemList") || !pageSource.includes("project.schemaType")) {
+  seoErrors.push("La página de proyectos debe incluir ItemList y el tipo SoftwareSourceCode del modelo.");
+}
+
+const detailPageSource = existsSync("src/pages/[locale]/[section]/[project].astro")
+  ? readFileSync("src/pages/[locale]/[section]/[project].astro", "utf8")
+  : "";
+
+if (!detailPageSource.includes("project.schemaType") || !detailPageSource.includes("getProjectAlternatePaths")) {
+  seoErrors.push("Las fichas localizadas deben publicar SoftwareSourceCode y alternates recíprocos.");
+}
+
+const sitemapSource = existsSync("src/pages/sitemap.xml.ts")
+  ? readFileSync("src/pages/sitemap.xml.ts", "utf8")
+  : "";
+
+if (!sitemapSource.includes("getProjectAlternatePaths") || !sitemapSource.includes("projects.es")) {
+  seoErrors.push("El sitemap debe incluir cada ficha de proyecto y sus alternates localizados.");
 }
 
 const forbiddenSeoPatterns = [
@@ -374,7 +416,7 @@ for (const forbiddenSeo of forbiddenSeoPatterns) {
 
 const modelArtifact = writeArtifact("content-model.json", modelErrors, {
   checkedFile: sourcePath,
-  requiredProjectSlugs: expectedProjectSlugs
+  requiredProjectKeys: expectedProjectKeys
 });
 
 const claimsArtifact = writeArtifact("claims-review.json", claimsErrors, {
@@ -390,7 +432,12 @@ const routesArtifact = writeArtifact("routes.json", routesErrors, {
 });
 
 const seoArtifact = writeArtifact("seo-structured-data.json", seoErrors, {
-  checkedFiles: ["src/pages/[locale]/[...slug].astro", "src/components/ProjectCard.astro"]
+  checkedFiles: [
+    "src/pages/[locale]/[...slug].astro",
+    "src/pages/[locale]/[section]/[project].astro",
+    "src/pages/sitemap.xml.ts",
+    "src/components/ProjectCard.astro"
+  ]
 });
 
 const allErrors = [

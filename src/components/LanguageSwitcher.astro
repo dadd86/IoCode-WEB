@@ -4,9 +4,13 @@ import type { RouteKey } from "../i18n/routes";
 import { getAlternatePaths } from "../i18n/routes";
 import { ui } from "../i18n/ui";
 
-type Props = { locale: Locale; activeKey: RouteKey };
-const { locale, activeKey } = Astro.props;
-const paths = getAlternatePaths(activeKey);
+type Props = {
+  locale: Locale;
+  activeKey: RouteKey;
+  paths?: Record<Locale, string>;
+};
+const { locale, activeKey, paths: pathsOverride } = Astro.props;
+const paths = pathsOverride ?? getAlternatePaths(activeKey);
 const labels = ui[locale];
 ---
 

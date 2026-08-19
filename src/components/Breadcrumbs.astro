@@ -7,9 +7,10 @@ import { ui } from "../i18n/ui";
 type Props = {
   locale: Locale;
   routeKey: RouteKey;
+  currentLabel?: string;
 };
 
-const { locale, routeKey } = Astro.props;
+const { locale, routeKey, currentLabel } = Astro.props;
 const labels = ui[locale];
 ---
 
@@ -21,7 +22,12 @@ const labels = ui[locale];
           {routeAlternates.home.label[locale]}
         </a>
       </li>
-      <li aria-current="page">{routeAlternates[routeKey].label[locale]}</li>
+      <li aria-current={currentLabel ? undefined : "page"}>
+        {currentLabel ? (
+          <a href={getLocalizedPath(routeKey, locale)}>{routeAlternates[routeKey].label[locale]}</a>
+        ) : routeAlternates[routeKey].label[locale]}
+      </li>
+      {currentLabel ? <li aria-current="page">{currentLabel}</li> : null}
     </ol>
   </div>
 </nav>

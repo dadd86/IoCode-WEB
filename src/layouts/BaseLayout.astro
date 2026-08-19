@@ -18,6 +18,12 @@ type Props = {
   robots?: string;
   refreshTo?: string;
   refreshDelay?: number;
+  canonicalPath?: string;
+  alternatePaths?: Record<Locale, string>;
+  pageType?: string;
+  socialImageAlt?: string;
+  breadcrumbCurrentLabel?: string;
+  additionalStructuredData?: Array<Record<string, unknown>>;
 };
 
 const {
@@ -27,10 +33,16 @@ const {
   description,
   robots = defaultRobotsDirective,
   refreshTo,
-  refreshDelay = 0
+  refreshDelay = 0,
+  canonicalPath: canonicalPathOverride,
+  alternatePaths: alternatePathsOverride,
+  pageType: pageTypeOverride,
+  socialImageAlt = siteConfig.name,
+  breadcrumbCurrentLabel,
+  additionalStructuredData = []
 } = Astro.props;
-const alternatePaths = getAlternatePaths(routeKey);
-const canonicalPath = getLocalizedPath(routeKey, locale);
+const alternatePaths = alternatePathsOverride ?? getAlternatePaths(routeKey);
+const canonicalPath = canonicalPathOverride ?? getLocalizedPath(routeKey, locale);
 const canonicalUrl = `${siteConfig.url}${canonicalPath}`;
 const labels = ui[locale];
 
@@ -43,6 +55,12 @@ const ogLocale: Record<Locale, string> = {
 const alternateOgLocales = Object.entries(ogLocale)
   .filter(([key]) => key !== locale)
   .map(([, value]) => value);
+
+const languageTag: Record<Locale, string> = {
+  es: "es-ES",
+  en: "en-US",
+  de: "de-DE"
+};
 
 const breadcrumbItems = [
   {
@@ -58,9 +76,21 @@ const breadcrumbItems = [
           "@type": "ListItem",
           position: 2,
           name: routeAlternates[routeKey].label[locale],
+          item: breadcrumbCurrentLabel
+            ? `${siteConfig.url}${getLocalizedPath(routeKey, locale)}`
+            : canonicalUrl
+        }
+      ]),
+  ...(breadcrumbCurrentLabel
+    ? [
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: breadcrumbCurrentLabel,
           item: canonicalUrl
         }
-      ])
+      ]
+    : [])
 ];
 
 const organizationSameAs =
@@ -89,11 +119,11 @@ const pageTypeByRoute: Partial<Record<RouteKey, string>> = {
   services: "CollectionPage",
   about: "AboutPage",
   projects: "CollectionPage",
-  skills: "CollectionPage",
+  skills: "ProfilePage",
   contact: "ContactPage"
 };
 
-const pageType = pageTypeByRoute[routeKey] ?? "WebPage";
+const pageType = pageTypeOverride ?? pageTypeByRoute[routeKey] ?? "WebPage";
 const pageServiceOffer =
   routeKey === "plc" || routeKey === "robotics"
     ? siteConfig.offerCatalog.find((offer) => offer.routeKey === routeKey)
@@ -184,7 +214,7 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     "@id": `${siteConfig.url}/#website`,
     name: siteConfig.name,
     url: siteConfig.url,
-    inLanguage: locale,
+    inLanguage: languageTag[locale],
     publisher: {
       "@id": `${siteConfig.url}/#organization`
     }
@@ -195,7 +225,7 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     url: canonicalUrl,
     name: title,
     description,
-    inLanguage: locale,
+    inLanguage: languageTag[locale],
     isPartOf: {
       "@id": `${siteConfig.url}/#website`
     },
@@ -272,6 +302,8 @@ if (routeKey === "contact") {
   });
 }
 
+structuredDataGraph.push(...additionalStructuredData);
+
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": structuredDataGraph
@@ -311,7 +343,7 @@ const structuredData = {
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content={siteConfig.name} />
+    <meta property="og:image:alt" content={socialImageAlt} />
     {alternateOgLocales.map((alternateLocale) => (
       <meta property="og:locale:alternate" content={alternateLocale} />
     ))}
@@ -321,15 +353,21 @@ const structuredData = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:url" content={canonicalUrl} />
     <meta name="twitter:image" content={`${siteConfig.url}${siteConfig.logoPath}`} />
-    <meta name="twitter:image:alt" content={siteConfig.name} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
     <a class="skipLink" href="#contenido">{labels.skipToContent}</a>
-    <Header locale={locale} activeKey={routeKey} />
+    <Header locale={locale} activeKey={routeKey} alternatePaths={alternatePaths} />
     <main id="contenido">
-      {routeKey !== "home" && <Breadcrumbs locale={locale} routeKey={routeKey} />}
+      {routeKey !== "home" && (
+        <Breadcrumbs
+          locale={locale}
+          routeKey={routeKey}
+          currentLabel={breadcrumbCurrentLabel}
+        />
+      )}
       <slot />
     </main>
     <Footer locale={locale} />

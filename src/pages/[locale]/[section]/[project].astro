@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PageHero from "../../../components/PageHero.astro";
+import ProjectCard from "../../../components/ProjectCard.astro";
+import { ui } from "../../../i18n/ui";
+import { getLocalizedPath } from "../../../i18n/routes";
+import {
+  getProjectAlternatePaths,
+  getProjectStaticPaths,
+  type Project
+} from "../../../data/projects";
+import { siteConfig } from "../../../data/site";
+import type { Locale } from "../../../i18n/config";
+
+export function getStaticPaths() {
+  return getProjectStaticPaths();
+}
+
+const { locale, project } = Astro.props as { locale: Locale; project: Project };
+const labels = ui[locale];
+const languageTag: Record<Locale, string> = {
+  es: "es-ES",
+  en: "en-US",
+  de: "de-DE"
+};
+const repository = project.publicLinks.find((link) => link.type === "repository")?.href;
+const projectEntityId = `${siteConfig.url}${project.path}#software`;
+const projectStructuredData = {
+  "@type": project.schemaType,
+  "@id": projectEntityId,
+  name: project.title,
+  description: project.summary,
+  url: `${siteConfig.url}${project.path}`,
+  inLanguage: languageTag[locale],
+  codeRepository: repository,
+  programmingLanguage: project.technologies,
+  keywords: project.keywords,
+  about: project.capabilities,
+  author: {
+    "@id": `${siteConfig.url}/#organization`
+  },
+  isPartOf: {
+    "@id": `${siteConfig.url}${getLocalizedPath("projects", locale)}#projects`
+  }
+};
+---
+
+<BaseLayout
+  locale={locale}
+  routeKey="projects"
+  title={project.seoTitle}
+  description={project.seoDescription}
+  canonicalPath={project.path}
+  alternatePaths={getProjectAlternatePaths(project.key)}
+  pageType="WebPage"
+  socialImageAlt={project.imageAlt}
+  breadcrumbCurrentLabel={project.title}
+  additionalStructuredData={[projectStructuredData]}
+>
+  <PageHero
+    eyebrow={project.type}
+    title={project.title}
+    text={project.summary}
+    variant="default"
+  />
+
+  <section class="section">
+    <div class="container">
+      <ProjectCard project={project} labels={labels} />
+      <p class="projectLinks">
+        <a href={getLocalizedPath("projects", locale)}>{labels.projectBackToPortfolio}</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -11,8 +11,8 @@ import BusinessValueSections from "../../components/BusinessValueSections.astro"
 import ProcessMethod from "../../components/ProcessMethod.astro";
 import LegalPage from "../../components/LegalPage.astro";
 import { pageContent } from "../../data/pageContent";
-import { projects } from "../../data/projects";
-import { skillGroups } from "../../data/skills";
+import { portfolioPageCopy, projects } from "../../data/projects";
+import { skillGroups, skillsPageCopy } from "../../data/skills";
 import { ui } from "../../i18n/ui";
 import { getLocalizedPath, getStaticRouteParams } from "../../i18n/routes";
 import type { Locale } from "../../i18n/config";
@@ -27,6 +27,11 @@ export function getStaticPaths() {
 const { locale, routeKey } = Astro.props as { locale: Locale; routeKey: RouteKey };
 const content = pageContent[locale][routeKey];
 const labels = ui[locale];
+const languageTag: Record<Locale, string> = {
+  es: "es-ES",
+  en: "en-US",
+  de: "de-DE"
+};
 
 const routesWithStandardCards: RouteKey[] = ["services", "plc", "robotics", "about"];
 const isLegalRoute = routeKey === "imprint" || routeKey === "privacy";
@@ -46,14 +51,16 @@ const projectStructuredData =
           "@type": "ListItem",
           position: index + 1,
           item: {
-            "@type": "CreativeWork",
-            "@id": `${siteConfig.url}${getLocalizedPath("projects", locale)}#${project.slug}`,
+            "@type": project.schemaType,
+            "@id": `${siteConfig.url}${project.path}#software`,
             name: project.title,
             description: project.summary,
-            inLanguage: locale,
-            genre: project.status,
+            inLanguage: languageTag[locale],
+            codeRepository: project.publicLinks[0]?.href,
+            programmingLanguage: project.technologies,
+            keywords: project.keywords,
             about: project.capabilities,
-            url: `${siteConfig.url}${getLocalizedPath("projects", locale)}#${project.slug}`
+            url: `${siteConfig.url}${project.path}`
           }
         }))
       }
@@ -63,24 +70,42 @@ const skillStructuredData =
   routeKey === "skills"
     ? {
         "@context": "https://schema.org",
-        "@type": "DefinedTermSet",
+        "@type": "ItemList",
         "@id": `${siteConfig.url}${getLocalizedPath("skills", locale)}#technical-skills`,
         name: content.heading,
         description: content.description,
-        inLanguage: locale,
-        hasDefinedTerm: skillGroups[locale].map((skill) => ({
-          "@type": "DefinedTerm",
-          "@id": `${siteConfig.url}${getLocalizedPath("skills", locale)}#${skill.slug}`,
-          name: skill.title,
-          description: skill.businessProblem,
-          termCode: skill.slug,
-          inDefinedTermSet: `${siteConfig.url}${getLocalizedPath("skills", locale)}#technical-skills`
+        inLanguage: languageTag[locale],
+        numberOfItems: skillGroups[locale].length,
+        itemListElement: skillGroups[locale].map((skill, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "DefinedTerm",
+            "@id": `${siteConfig.url}${getLocalizedPath("skills", locale)}#${skill.slug}`,
+            name: skill.title,
+            description: skill.businessProblem,
+            termCode: skill.slug,
+            inDefinedTermSet: `${siteConfig.url}${getLocalizedPath("skills", locale)}#technical-skills`
+          }
         }))
       }
     : null;
 ---
 
-<BaseLayout locale={locale} routeKey={routeKey} title={content.title} description={content.description} robots={pageRobots}>
+<BaseLayout
+  locale={locale}
+  routeKey={routeKey}
+  title={content.title}
+  description={content.description}
+  robots={pageRobots}
+  socialImageAlt={
+    routeKey === "projects"
+      ? portfolioPageCopy[locale].imageAlt
+      : routeKey === "skills"
+        ? skillsPageCopy[locale].imageAlt
+        : undefined
+  }
+>
   {routeKey === "home" ? (
     <>
       <HomeHero locale={locale} content={content} />
@@ -122,6 +147,7 @@ const skillStructuredData =
               labels={labels}
               tabId={`projects-page-tab-${project.slug}`}
               active={index === 0}
+              detailHref={project.path}
             />
           ))}
         </PageControl>

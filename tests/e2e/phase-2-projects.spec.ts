@@ -7,10 +7,10 @@ const routes = [
 ];
 
 const requiredTexts = [
+  "IoCode-WEB",
   "TechWizards",
-  "NeuronaPrediccion",
-  "MacetaInteligente",
-  "HotelSOL"
+  "HotelSOL",
+  "WoodShops"
 ];
 
 const forbiddenTexts = [
@@ -66,10 +66,31 @@ test.describe("Fase 2 - Proyectos como evidencia comercial", () => {
           const href = await link.getAttribute("href");
 
           if (href) {
-            expect(href.startsWith("https://")).toBe(true);
+            expect(href.startsWith("https://") || href.startsWith("/")).toBe(true);
           }
         }
       }
     });
   }
+
+  test("las fichas publican canonical, alternates y SoftwareSourceCode", async ({ page }) => {
+    await page.goto("/es/proyectos/plataforma-web-industrial-iocode/", {
+      waitUntil: "domcontentloaded"
+    });
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "https://iocode-solutions.com/es/proyectos/plataforma-web-industrial-iocode/"
+    );
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
+      "href",
+      "https://iocode-solutions.com/en/projects/iocode-industrial-web-platform/"
+    );
+    await expect(page.locator('.languageSwitcher').first().locator('a[hreflang="en"]')).toHaveAttribute(
+      "href",
+      "/en/projects/iocode-industrial-web-platform/"
+    );
+    const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
+    expect(structuredData).toContain("SoftwareSourceCode");
+  });
 });

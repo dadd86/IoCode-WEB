@@ -30,9 +30,10 @@ import { ui } from "../i18n/ui";
 type Props = {
   locale: Locale;
   activeKey: RouteKey;
+  alternatePaths?: Record<Locale, string>;
 };
 
-const { locale, activeKey } =
+const { locale, activeKey, alternatePaths } =
   Astro.props as Props;
 const labels = ui[locale];
 ---
@@ -68,6 +69,7 @@ const labels = ui[locale];
       <LanguageSwitcher
         locale={locale}
         activeKey={activeKey}
+        paths={alternatePaths}
       />
     </div>
 
@@ -97,6 +99,7 @@ const labels = ui[locale];
         <LanguageSwitcher
           locale={locale}
           activeKey={activeKey}
+          paths={alternatePaths}
         />
       </div>
     </details>

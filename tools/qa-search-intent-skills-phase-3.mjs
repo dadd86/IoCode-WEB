@@ -12,13 +12,13 @@ const requiredLocales = ["es", "en", "de"];
 
 const expectedSkillSlugs = [
   "industrial-automation",
-  "robotics",
   "industrial-communications",
-  "industrial-software",
-  "data-databases",
-  "erp-business-systems",
-  "devops-systems",
-  "documentation-qa"
+  "ot-it-security",
+  "modern-web-ui",
+  "cloud-devsecops",
+  "software-mobile",
+  "eu-data-governance",
+  "performance-qa"
 ];
 
 const requiredFields = [
@@ -28,10 +28,12 @@ const requiredFields = [
   "businessProblem",
   "technologies",
   "businessValue",
+  "proficiency",
+  "level",
+  "evidence",
   "useCases",
   "relatedServices",
   "relatedProjects",
-  "applicationLevel",
   "caution"
 ];
 
@@ -273,7 +275,8 @@ for (const requiredCardToken of [
   "skill.useCases",
   "skill.relatedServices",
   "skill.relatedProjects",
-  "skill.applicationLevel",
+  "skill.proficiency",
+  "skill.evidence",
   "skill.caution"
 ]) {
   if (!cardSource.includes(requiredCardToken)) {
@@ -285,7 +288,7 @@ if (!pageSource.includes("skillStructuredData")) {
   seoErrors.push("La página de habilidades debe incluir skillStructuredData.");
 }
 
-if (!pageSource.includes("DefinedTermSet") || !pageSource.includes("DefinedTerm")) {
+if (!pageSource.includes("ItemList") || !pageSource.includes("DefinedTerm")) {
   seoErrors.push("Structured data de skills debe usar DefinedTermSet/DefinedTerm.");
 }
 

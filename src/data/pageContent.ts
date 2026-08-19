@@ -1,5 +1,7 @@
 import type { Locale } from "../i18n/config";
 import type { RouteKey } from "../i18n/routes";
+import { portfolioPageCopy } from "./projects";
+import { skillsPageCopy } from "./skills";
 
 export type CardContent = {
   title: string;
@@ -200,24 +202,8 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         }
       ]
     },
-    projects: {
-      title: "Proyectos | Software industrial, ERP, Android, Docker y datos",
-      description:
-        "Proyectos seleccionados de IoCode SOLUTIONS: .NET, SQL Server, Odoo ERP, Android, Firebase, Docker, OpenLDAP y software industrial.",
-      eyebrow: "Proyectos",
-      heading: "Proyectos seleccionados por valor profesional, no por cantidad.",
-      intro:
-        "El portafolio muestra criterio técnico, arquitectura, documentación, integración de sistemas y capacidad para convertir requisitos complejos en soluciones mantenibles."
-    },
-    skills: {
-      title: "Habilidades | PLC, robótica, software, ERP, Docker e Industria 4.0",
-      description:
-        "Habilidades técnicas en programación PLC, robótica industrial, comunicaciones industriales, software, bases de datos, ERP, Docker y sistemas.",
-      eyebrow: "Habilidades técnicas",
-      heading: "Automatización industrial, software y datos en una misma propuesta técnica.",
-      intro:
-        "La combinación clave es entender el cuadro eléctrico, el PLC, el robot, la HMI, la base de datos y la aplicación."
-    },
+    projects: portfolioPageCopy.es,
+    skills: skillsPageCopy.es,
     process: {
       title: "Proceso técnico | Diagnóstico, propuesta, desarrollo y validación",
       description:
@@ -386,24 +372,8 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         { title: "Business mindset", text: "The goal is to reduce downtime, improve diagnostics, increase traceability and connect systems that normally work in isolation." }
       ]
     },
-    projects: {
-      title: "Projects | Industrial Software, ERP, Android, Docker and Data",
-      description:
-        "Selected projects by IoCode SOLUTIONS: .NET, SQL Server, Odoo ERP, Android, Firebase, Docker, OpenLDAP and industrial software.",
-      eyebrow: "Projects",
-      heading: "Projects selected by professional value, not quantity.",
-      intro:
-        "The portfolio shows technical judgment, architecture, documentation, system integration and the ability to turn complex requirements into maintainable solutions."
-    },
-    skills: {
-      title: "Skills | PLC, Robotics, Software, ERP, Docker and Industry 4.0",
-      description:
-        "Technical skills in PLC programming, industrial robotics, industrial communications, software, databases, ERP, Docker and systems.",
-      eyebrow: "Technical skills",
-      heading: "Industrial automation, software and data in one technical proposal.",
-      intro:
-        "The key combination is understanding the electrical cabinet, the PLC, the robot, the HMI, the database and the application."
-    },
+    projects: portfolioPageCopy.en,
+    skills: skillsPageCopy.en,
     process: {
       title: "Technical Process | Diagnostics, Proposal, Development and Validation",
       description:
@@ -572,24 +542,8 @@ export const pageContent: Record<Locale, Record<RouteKey, PageContent>> = {
         { title: "Business-Mentalität", text: "Ziel ist es, Stillstände zu reduzieren, Diagnose zu verbessern, Traceability zu erhöhen und isolierte Systeme zu verbinden." }
       ]
     },
-    projects: {
-      title: "Projekte | Industriesoftware, ERP, Android, Docker und Daten",
-      description:
-        "Ausgewählte Projekte von IoCode SOLUTIONS: .NET, SQL Server, Odoo ERP, Android, Firebase, Docker, OpenLDAP und Industriesoftware.",
-      eyebrow: "Projekte",
-      heading: "Projekte ausgewählt nach professionellem Wert, nicht nach Menge.",
-      intro:
-        "Das Portfolio zeigt technisches Urteilsvermögen, Architektur, Dokumentation, Systemintegration und die Fähigkeit, komplexe Anforderungen in wartbare Lösungen zu übertragen."
-    },
-    skills: {
-      title: "Fähigkeiten | SPS, Robotik, Software, ERP, Docker und Industrie 4.0",
-      description:
-        "Technische Fähigkeiten in SPS-Programmierung, Industrierobotik, industrieller Kommunikation, Software, Datenbanken, ERP, Docker und Systemen.",
-      eyebrow: "Technische Fähigkeiten",
-      heading: "Industrielle Automatisierung, Software und Daten in einem technischen Angebot.",
-      intro:
-        "Die entscheidende Kombination ist das Verständnis von Schaltschrank, SPS, Roboter, HMI, Datenbank und Anwendung."
-    },
+    projects: portfolioPageCopy.de,
+    skills: skillsPageCopy.de,
     process: {
       title: "Technischer Prozess | Diagnose, Vorschlag, Entwicklung und Validierung",
       description:

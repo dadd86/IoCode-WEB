@@ -1,6 +1,7 @@
 ---
 import type { Locale } from "../i18n/config";
 import type { SkillGroup } from "../data/skills";
+import { getProjectByKey } from "../data/projects";
 import { getLocalizedPath } from "../i18n/routes";
 
 type Props = {
@@ -41,8 +42,13 @@ const { skill, labels, locale, tabId, active = false } = Astro.props;
     </div>
 
     <div>
-      <dt>{labels.skillApplicationLevel}</dt>
-      <dd>{skill.applicationLevel}</dd>
+      <dt>{labels.skillProficiency}</dt>
+      <dd>{skill.proficiency}</dd>
+    </div>
+
+    <div>
+      <dt>{labels.skillEvidence}</dt>
+      <dd>{skill.evidence}</dd>
     </div>
   </dl>
 
@@ -74,8 +80,10 @@ const { skill, labels, locale, tabId, active = false } = Astro.props;
   <section class="skillBlock__section" aria-label={labels.skillRelatedProjects}>
     <h3>{labels.skillRelatedProjects}</h3>
     <div class="skillLinks">
-      {skill.relatedProjects.map((projectSlug) => (
-        <a href={`${getLocalizedPath("projects", locale)}#${projectSlug}`}>{projectSlug}</a>
+      {skill.relatedProjects.map((projectKey) => (
+        <a href={getProjectByKey(projectKey, locale).path}>
+          {getProjectByKey(projectKey, locale).title}
+        </a>
       ))}
     </div>
   </section>

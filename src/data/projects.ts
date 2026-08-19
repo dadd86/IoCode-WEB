@@ -1,54 +1,43 @@
 import type { Locale } from "../i18n/config";
 
-export type ProjectStatus =
-  | "public"
-  | "private"
-  | "academic"
-  | "technical-case"
-  | "local-demo"
-  | "documentation-only"
-  | "in-progress";
+const projectBasePaths: Record<Locale, string> = {
+  es: "/es/proyectos/",
+  en: "/en/projects/",
+  de: "/de/projekte/"
+};
 
-export type EvidenceLevel =
-  | "public-demo"
-  | "public-repository"
-  | "private-project"
-  | "academic-project"
-  | "technical-case"
-  | "local-demo"
-  | "documentation-only"
-  | "not-publicly-verifiable";
-
-export type ClaimLevel =
-  | "verified"
-  | "user-provided"
-  | "technical-demonstration"
-  | "inferred-capability"
-  | "not-publicly-verifiable";
+export type ProjectKey =
+  | "iocode-web"
+  | "techwizards"
+  | "hotelsol"
+  | "woodshops"
+  | "vehicle-rental"
+  | "the-javengers"
+  | "coworking-database"
+  | "break-boxes-game";
 
 export type ProjectCapability =
-  | "erp-deployment"
-  | "web-development"
+  | "industrial-web"
   | "mobile-development"
-  | "devops-docker"
-  | "identity-access-management"
-  | "windows-server-administration"
-  | "java-desktop"
-  | "iot-automation"
-  | "machine-learning"
+  | "devsecops-docker"
   | "database-design"
-  | "industrial-automation"
-  | "software-architecture";
+  | "software-architecture"
+  | "java-oop"
+  | "quality-assurance"
+  | "erp-integration"
+  | "python-development";
 
 export type ProjectLink = {
   label: string;
   href: string;
-  type: "demo" | "repository" | "documentation" | "case-study";
-  external: boolean;
+  type: "repository" | "documentation";
+  external: true;
 };
 
 export type Project = {
+  key: ProjectKey;
   slug: string;
+  path: string;
   title: string;
   type: string;
   summary: string;
@@ -56,564 +45,435 @@ export type Project = {
   solution: string;
   technicalRole: string;
   businessValue: string;
+  evidenceSummary: string;
   technologies: string[];
   capabilities: ProjectCapability[];
-  status: ProjectStatus;
-  evidenceLevel: EvidenceLevel;
-  claimLevel: ClaimLevel;
+  evidenceLevel: "public-repository";
+  claimLevel: "verified" | "technical-demonstration";
   caution: string;
   publicLinks: ProjectLink[];
   featured: boolean;
+  seoTitle: string;
+  seoDescription: string;
+  keywords: string[];
+  schemaType: "SoftwareSourceCode";
+  imageAlt: string;
+};
+
+export type PortfolioPageCopy = {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  imageAlt: string;
 };
 
 type LocalizedProjectCopy = Record<
   Locale,
-  {
-    title: string;
-    type: string;
-    summary: string;
-    problem: string;
-    solution: string;
-    technicalRole: string;
-    businessValue: string;
-    caution: string;
-  }
+  Omit<
+    Project,
+    | "key"
+    | "path"
+    | "technologies"
+    | "capabilities"
+    | "evidenceLevel"
+    | "claimLevel"
+    | "publicLinks"
+    | "featured"
+  >
 >;
 
 type ProjectSeed = {
-  slug: string;
+  key: ProjectKey;
+  repository: string;
   technologies: string[];
   capabilities: ProjectCapability[];
-  status: ProjectStatus;
-  evidenceLevel: EvidenceLevel;
-  claimLevel: ClaimLevel;
-  publicLinks: ProjectLink[];
+  claimLevel: Project["claimLevel"];
   featured: boolean;
   copy: LocalizedProjectCopy;
 };
 
-function toProject(seed: ProjectSeed, locale: Locale): Project {
-  const copy = seed.copy[locale];
-
-  return {
-    slug: seed.slug,
-    title: copy.title,
-    type: copy.type,
-    summary: copy.summary,
-    problem: copy.problem,
-    solution: copy.solution,
-    technicalRole: copy.technicalRole,
-    businessValue: copy.businessValue,
-    technologies: seed.technologies,
-    capabilities: seed.capabilities,
-    status: seed.status,
-    evidenceLevel: seed.evidenceLevel,
-    claimLevel: seed.claimLevel,
-    caution: copy.caution,
-    publicLinks: seed.publicLinks,
-    featured: seed.featured
-  };
-}
+export const portfolioPageCopy: Record<Locale, PortfolioPageCopy> = {
+  es: {
+    title: "Proyectos de software industrial | IoCode",
+    description:
+      "Casos verificables en Astro, Docker, Android, .NET, Odoo, Java, Python y SQL, con arquitectura, código público y trazabilidad técnica.",
+    eyebrow: "Portfolio técnico verificable",
+    heading: "Código público convertido en casos técnicos comprensibles.",
+    intro:
+      "Cada ficha separa problema, solución, resultado observable y límites de la evidencia. No se publican métricas comerciales ni experiencia industrial que GitHub no pueda demostrar.",
+    imageAlt: "Portfolio técnico de software industrial y automatización de IoCode SOLUTIONS"
+  },
+  en: {
+    title: "Industrial software projects | IoCode",
+    description:
+      "Verifiable Astro, Docker, Android, .NET, Odoo, Java, Python and SQL projects with public code, architecture and technical traceability.",
+    eyebrow: "Verifiable technical portfolio",
+    heading: "Public code translated into clear technical case studies.",
+    intro:
+      "Each case separates the problem, implementation, observable result and evidence limits. No commercial metric or industrial claim is inferred from GitHub.",
+    imageAlt: "IoCode SOLUTIONS industrial software and automation engineering portfolio"
+  },
+  de: {
+    title: "Industriesoftware-Projekte | IoCode",
+    description:
+      "Nachprüfbare Projekte mit Astro, Docker, Android, .NET, Odoo, Java, Python und SQL: öffentlicher Code und technische Traceability.",
+    eyebrow: "Nachprüfbares technisches Portfolio",
+    heading: "Öffentlicher Code als nachvollziehbare technische Fallstudie.",
+    intro:
+      "Jede Fallstudie trennt Problem, Umsetzung, sichtbares Ergebnis und Evidenzgrenzen. Geschäftliche Kennzahlen oder Industrieerfolge werden nicht aus GitHub abgeleitet.",
+    imageAlt: "IoCode SOLUTIONS Portfolio für Industriesoftware und Automatisierungstechnik"
+  }
+};
 
 const projectSeeds: ProjectSeed[] = [
   {
-    slug: "techwizards",
-    technologies: ["Kotlin", "Android", "Firebase", "Jetpack Compose", "Layered architecture"],
+    key: "iocode-web",
+    repository: "IoCode-WEB",
+    technologies: ["Astro", "TypeScript", "Three.js", "WebGL", "Docker", "Nginx", "Playwright", "Axe", "GitHub Actions"],
+    capabilities: ["industrial-web", "devsecops-docker", "quality-assurance", "software-architecture"],
+    claimLevel: "verified",
+    featured: true,
+    copy: {
+      es: {
+        slug: "plataforma-web-industrial-iocode",
+        title: "IoCode-WEB: plataforma industrial trilingüe",
+        type: "Astro, WebGL y DevSecOps",
+        summary: "Sitio estático ES/EN/DE con Hero3D progresivo, SEO técnico, pruebas accesibles y entrega endurecida en contenedores.",
+        problem: "Publicar una propuesta industrial multilingüe sin sacrificar rendimiento, accesibilidad, trazabilidad del release ni seguridad HTTP.",
+        solution: "Arquitectura Astro estática con TypeScript, Three.js bajo carga progresiva, CSP con hashes, Nginx, imágenes OCI por digest y gates Playwright/Axe.",
+        technicalRole: "Arquitectura frontend, i18n, runtime WebGL, hardening Docker/Nginx, automatización CI/CD y contratos QA.",
+        businessValue: "El build genera 66 páginas desde una base tipada para tres idiomas, con controles reproducibles de compilación, seguridad y accesibilidad.",
+        evidenceSummary: "Código fuente, Compose, Nginx, workflows, 17 especificaciones E2E y nueve suites unitarias visibles en GitHub.",
+        caution: "La existencia de los gates no equivale a un despliegue productivo aprobado ni a métricas reales de usuarios.",
+        seoTitle: "Astro, Docker y WebGL industrial | IoCode",
+        seoDescription: "Caso técnico Astro ES/EN/DE con Three.js, Docker, Nginx, CSP, Playwright, Axe y CI/CD inmutable para una web industrial rápida.",
+        keywords: ["Astro industrial", "Docker hardening", "Three.js WebGL", "Playwright", "SEO multilingüe"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Arquitectura Astro, Docker y WebGL de la plataforma industrial IoCode"
+      },
+      en: {
+        slug: "iocode-industrial-web-platform",
+        title: "IoCode-WEB: trilingual industrial platform",
+        type: "Astro, WebGL and DevSecOps",
+        summary: "ES/EN/DE static site with a progressive 3D hero, technical SEO, accessible testing and hardened container delivery.",
+        problem: "Publish a multilingual industrial proposition without trading away performance, accessibility, release traceability or HTTP security.",
+        solution: "Static Astro architecture with TypeScript, progressively loaded Three.js, hash-based CSP, Nginx, digest-pinned OCI images and Playwright/Axe gates.",
+        technicalRole: "Frontend architecture, i18n, WebGL runtime, Docker/Nginx hardening, CI/CD automation and QA contracts.",
+        businessValue: "The build generates 66 pages from one typed codebase for three languages, with reproducible build, security and accessibility controls.",
+        evidenceSummary: "Source, Compose, Nginx, workflows, 17 E2E specifications and nine unit suites are publicly inspectable on GitHub.",
+        caution: "Implemented gates do not prove an approved production deployment or real-user performance metrics.",
+        seoTitle: "Industrial Astro, Docker and WebGL | IoCode",
+        seoDescription: "Astro ES/EN/DE case with Three.js, Docker, Nginx, CSP, Playwright, Axe and immutable CI/CD for a fast industrial website.",
+        keywords: ["industrial Astro", "Docker hardening", "Three.js WebGL", "Playwright", "multilingual SEO"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Astro, Docker and WebGL architecture of the IoCode industrial platform"
+      },
+      de: {
+        slug: "iocode-industrie-webplattform",
+        title: "IoCode-WEB: dreisprachige Industrieplattform",
+        type: "Astro, WebGL und DevSecOps",
+        summary: "Statische ES/EN/DE-Website mit progressivem 3D-Hero, technischem SEO, Accessibility-Tests und gehärteter Container-Auslieferung.",
+        problem: "Eine mehrsprachige Industriepräsenz veröffentlichen, ohne Performance, Barrierefreiheit, Release-Traceability oder HTTP-Sicherheit zu verlieren.",
+        solution: "Statische Astro-Architektur mit TypeScript, progressiv geladenem Three.js, Hash-CSP, Nginx, OCI-Digests und Playwright/Axe-Gates.",
+        technicalRole: "Frontend-Architektur, i18n, WebGL-Runtime, Docker/Nginx-Hardening, CI/CD-Automatisierung und QA-Verträge.",
+        businessValue: "Der Build erzeugt 66 Seiten aus einer typisierten Codebasis für drei Sprachen mit reproduzierbaren Build-, Security- und Accessibility-Kontrollen.",
+        evidenceSummary: "Quellcode, Compose, Nginx, Workflows, 17 E2E-Spezifikationen und neun Unit-Suiten sind öffentlich prüfbar.",
+        caution: "Implementierte Gates belegen weder ein freigegebenes Produktiv-Deployment noch reale Nutzermetriken.",
+        seoTitle: "Astro, Docker und WebGL für Industrie | IoCode",
+        seoDescription: "Astro-Fallstudie ES/EN/DE mit Three.js, Docker, Nginx, CSP, Playwright, Axe und unveränderlicher CI/CD für schnelle Industriewebsites.",
+        keywords: ["Astro Industrie", "Docker Hardening", "Three.js WebGL", "Playwright", "mehrsprachiges SEO"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Astro-, Docker- und WebGL-Architektur der IoCode-Industrieplattform"
+      }
+    }
+  },
+  {
+    key: "techwizards",
+    repository: "TechWizards",
+    technologies: ["Kotlin", "Android", "Jetpack Compose", "Firebase", "EncryptedSharedPreferences", "SQL", "TypeScript"],
     capabilities: ["mobile-development", "database-design", "software-architecture"],
-    status: "technical-case",
-    evidenceLevel: "public-repository",
-    claimLevel: "technical-demonstration",
+    claimLevel: "verified",
     featured: true,
-    publicLinks: [
-      {
-        label: "GitHub",
-        href: "https://github.com/dadd86/TechWizards",
-        type: "repository",
-        external: true
-      }
-    ],
     copy: {
       es: {
-        title: "TechWizards",
-        type: "Aplicación Android",
-        summary:
-          "Aplicación Android documentada con arquitectura por capas, persistencia y separación de responsabilidades.",
-        problem:
-          "Estructurar una aplicación móvil mantenible evitando mezclar interfaz, lógica, datos y configuración.",
-        solution:
-          "Organización por capas con Kotlin, Firebase y Jetpack Compose, separando componentes de UI, persistencia y lógica de aplicación.",
-        technicalRole:
-          "Diseño de estructura técnica, organización del código, integración de Firebase y documentación del enfoque de arquitectura.",
-        businessValue:
-          "Demuestra capacidad para construir aplicaciones móviles organizadas, mantenibles y preparadas para evolucionar sin depender de improvisación.",
-        caution:
-          "Repositorio público usado como evidencia técnica. No se presenta como producto comercial validado ni como aplicación en producción."
+        slug: "app-android-techwizards",
+        title: "TechWizards: aplicación Android por capas",
+        type: "Kotlin y arquitectura móvil",
+        summary: "Aplicación Android con casos de uso, autenticación, credenciales cifradas, persistencia y separación explícita de capas.",
+        problem: "Evitar que autenticación, interfaz, preferencias, historial y reglas de juego queden acoplados en una aplicación móvil creciente.",
+        solution: "Código Kotlin organizado por núcleo, casos de uso, datos y UI, con Firebase, Jetpack Compose y almacenamiento cifrado de credenciales.",
+        technicalRole: "Diseño de arquitectura, implementación Kotlin, integración de identidad y persistencia, y documentación dentro del código.",
+        businessValue: "La estructura pública permite localizar responsabilidades, sustituir dependencias y probar flujos sin concentrar toda la lógica en la actividad principal.",
+        evidenceSummary: "El árbol público contiene casos de uso, ServiceLocator, SessionManager, EncryptedCredentialsStore, SQL y pruebas instrumentadas.",
+        caution: "Es evidencia de ingeniería académica; no se presenta como producto móvil publicado ni como sistema industrial.",
+        seoTitle: "App Android con Kotlin y Firebase | IoCode",
+        seoDescription: "Caso Android con Kotlin, Jetpack Compose, Firebase, credenciales cifradas, casos de uso y arquitectura por capas verificable en GitHub.",
+        keywords: ["Kotlin Android", "Jetpack Compose", "Firebase", "arquitectura por capas", "credenciales cifradas"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Arquitectura Kotlin por capas de la aplicación Android TechWizards"
       },
       en: {
-        title: "TechWizards",
-        type: "Android application",
-        summary:
-          "Documented Android application with layered architecture, persistence and separation of responsibilities.",
-        problem:
-          "Structure a maintainable mobile application without mixing interface, logic, data and configuration.",
-        solution:
-          "Layered organization with Kotlin, Firebase and Jetpack Compose, separating UI components, persistence and application logic.",
-        technicalRole:
-          "Technical structure design, code organization, Firebase integration and architecture documentation.",
-        businessValue:
-          "Demonstrates the ability to build organized, maintainable mobile applications that can evolve without improvisation.",
-        caution:
-          "Public repository used as technical evidence. It is not presented as a validated commercial product or production application."
+        slug: "techwizards-layered-android-app",
+        title: "TechWizards: layered Android application",
+        type: "Kotlin and mobile architecture",
+        summary: "Android app with use cases, authentication, encrypted credentials, persistence and explicit layer boundaries.",
+        problem: "Prevent authentication, UI, preferences, match history and game rules from becoming coupled as the mobile app grows.",
+        solution: "Kotlin code organized into core, use-case, data and UI layers with Firebase, Jetpack Compose and encrypted credential storage.",
+        technicalRole: "Architecture design, Kotlin implementation, identity and persistence integration, plus in-code documentation.",
+        businessValue: "The public structure makes responsibilities traceable, dependencies replaceable and workflows testable without centralizing logic in one activity.",
+        evidenceSummary: "The public tree includes use cases, ServiceLocator, SessionManager, EncryptedCredentialsStore, SQL and instrumented tests.",
+        caution: "This is academic engineering evidence, not a published mobile product or industrial system.",
+        seoTitle: "Kotlin and Firebase Android app | IoCode",
+        seoDescription: "Android case with Kotlin, Jetpack Compose, Firebase, encrypted credentials, use cases and a verifiable layered architecture on GitHub.",
+        keywords: ["Kotlin Android", "Jetpack Compose", "Firebase", "layered architecture", "encrypted credentials"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Layered Kotlin architecture of the TechWizards Android application"
       },
       de: {
-        title: "TechWizards",
-        type: "Android-Anwendung",
-        summary:
-          "Dokumentierte Android-Anwendung mit Schichtenarchitektur, Persistenz und klarer Trennung der Verantwortlichkeiten.",
-        problem:
-          "Eine wartbare mobile Anwendung strukturieren, ohne Oberfläche, Logik, Daten und Konfiguration zu vermischen.",
-        solution:
-          "Schichtenstruktur mit Kotlin, Firebase und Jetpack Compose, getrennt nach UI-Komponenten, Persistenz und Anwendungslogik.",
-        technicalRole:
-          "Technische Strukturierung, Code-Organisation, Firebase-Integration und Dokumentation des Architekturansatzes.",
-        businessValue:
-          "Zeigt die Fähigkeit, organisierte und wartbare mobile Anwendungen aufzubauen, die ohne Improvisation erweitert werden können.",
-        caution:
-          "Öffentliches Repository als technischer Nachweis. Es wird nicht als validiertes kommerzielles Produkt oder produktive Anwendung dargestellt."
+        slug: "techwizards-android-app-schichtenarchitektur",
+        title: "TechWizards: Android-App mit Schichtenarchitektur",
+        type: "Kotlin und Mobile-Architektur",
+        summary: "Android-App mit Use Cases, Authentifizierung, verschlüsselten Zugangsdaten, Persistenz und klaren Schichtgrenzen.",
+        problem: "Authentifizierung, UI, Einstellungen, Spielhistorie und Regeln bei wachsendem Funktionsumfang entkoppelt halten.",
+        solution: "Kotlin-Code in Core-, Use-Case-, Daten- und UI-Schichten mit Firebase, Jetpack Compose und verschlüsseltem Credential Store.",
+        technicalRole: "Architekturentwurf, Kotlin-Implementierung, Identity- und Persistenzintegration sowie Code-Dokumentation.",
+        businessValue: "Die öffentliche Struktur macht Verantwortlichkeiten auffindbar, Abhängigkeiten austauschbar und Abläufe testbar.",
+        evidenceSummary: "Der öffentliche Baum enthält Use Cases, ServiceLocator, SessionManager, EncryptedCredentialsStore, SQL und instrumentierte Tests.",
+        caution: "Dies ist akademische Engineering-Evidenz, kein veröffentlichtes Mobile-Produkt und kein Industriesystem.",
+        seoTitle: "Android-App mit Kotlin und Firebase | IoCode",
+        seoDescription: "Android-Fallstudie mit Kotlin, Jetpack Compose, Firebase, verschlüsselten Zugangsdaten, Use Cases und prüfbarer Schichtenarchitektur.",
+        keywords: ["Kotlin Android", "Jetpack Compose", "Firebase", "Schichtenarchitektur", "verschlüsselte Zugangsdaten"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Kotlin-Schichtenarchitektur der Android-Anwendung TechWizards"
       }
     }
   },
   {
-    slug: "neuronaprediccion",
-    technologies: ["Python", "SQL", "YAML", "DAO", "Machine learning"],
-    capabilities: ["machine-learning", "database-design", "software-architecture"],
-    status: "private",
-    evidenceLevel: "private-project",
-    claimLevel: "not-publicly-verifiable",
+    key: "hotelsol",
+    repository: "HotelSOL",
+    technologies: ["C#", ".NET", "Python", "Odoo 19", "SQL Server 2022", "PostgreSQL 16", "Docker Compose", "XML"],
+    capabilities: ["erp-integration", "devsecops-docker", "database-design", "software-architecture"],
+    claimLevel: "verified",
     featured: true,
-    publicLinks: [],
     copy: {
       es: {
-        title: "NeuronaPrediccion",
-        type: "Caso privado de datos y ML",
-        summary:
-          "Caso privado orientado a arquitectura de datos, configuración YAML, SQL, DAO y componentes de análisis.",
-        problem:
-          "Organizar datos, configuración y lógica de análisis de forma trazable sin exponer código privado ni métricas no reproducibles.",
-        solution:
-          "Separación de capas para acceso a datos, configuración y componentes de análisis usando Python, SQL, YAML y patrón DAO.",
-        technicalRole:
-          "Diseño de estructura de datos, separación de responsabilidades, organización de configuración y documentación técnica.",
-        businessValue:
-          "Demuestra capacidad para trabajar con datos, trazabilidad y componentes analíticos sin prometer precisión predictiva no verificada.",
-        caution:
-          "Repositorio privado. No se publica enlace ni se prometen métricas de precisión, impacto económico o resultados productivos."
+        slug: "hotelsol-integracion-odoo-dotnet",
+        title: "HotelSOL: integración .NET, Odoo y datos",
+        type: "ERP y arquitectura de integración",
+        summary: "Entorno académico que conecta una API .NET, un módulo Odoo, SQL Server y PostgreSQL mediante Docker Compose.",
+        problem: "Coordinar reservas, clientes, consumos y sincronización entre una aplicación de gestión y un ERP con persistencias diferentes.",
+        solution: "Stack reproducible con SQL Server, PostgreSQL, Odoo 19, módulo Python, API C#, healthcheck y scripts de inicialización.",
+        technicalRole: "Modelado, integración entre servicios, configuración de contenedores, exportación XML y pruebas del módulo Odoo.",
+        businessValue: "El Compose público documenta cinco servicios coordinados y separa inicialización, persistencia y ejecución para reproducir el laboratorio.",
+        evidenceSummary: "Repositorio con C#, Python, T-SQL, módulo Odoo, pruebas, XML, Dockerfiles y Compose público.",
+        caution: "Caso académico; no representa operación hotelera real, datos de clientes ni un despliegue productivo.",
+        seoTitle: "Integración .NET, Odoo y Docker | HotelSOL",
+        seoDescription: "Caso ERP con API .NET, Odoo 19, Python, SQL Server, PostgreSQL, XML y Docker Compose para integración de datos hoteleros.",
+        keywords: ["Odoo 19", ".NET API", "SQL Server", "PostgreSQL", "Docker Compose", "integración ERP"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Servicios Docker de HotelSOL con .NET, Odoo, SQL Server y PostgreSQL"
       },
       en: {
-        title: "NeuronaPrediccion",
-        type: "Private data and ML case",
-        summary:
-          "Private case focused on data architecture, YAML configuration, SQL, DAO and analysis components.",
-        problem:
-          "Organize data, configuration and analysis logic in a traceable way without exposing private code or non-reproducible metrics.",
-        solution:
-          "Layer separation for data access, configuration and analysis components using Python, SQL, YAML and the DAO pattern.",
-        technicalRole:
-          "Data structure design, separation of responsibilities, configuration organization and technical documentation.",
-        businessValue:
-          "Demonstrates the ability to work with data, traceability and analytical components without promising unverified predictive accuracy.",
-        caution:
-          "Private repository. No link is published and no accuracy, economic impact or production result is promised."
+        slug: "hotelsol-odoo-dotnet-integration",
+        title: "HotelSOL: .NET, Odoo and data integration",
+        type: "ERP and integration architecture",
+        summary: "Academic environment connecting a .NET API, an Odoo module, SQL Server and PostgreSQL through Docker Compose.",
+        problem: "Coordinate bookings, guests, charges and synchronization between a management application and an ERP with separate data stores.",
+        solution: "Reproducible stack with SQL Server, PostgreSQL, Odoo 19, a Python module, C# API, healthcheck and initialization scripts.",
+        technicalRole: "Data modelling, service integration, container configuration, XML export and Odoo module testing.",
+        businessValue: "The public Compose file coordinates five services and separates initialization, persistence and runtime for reproducible labs.",
+        evidenceSummary: "Repository with C#, Python, T-SQL, an Odoo module, tests, XML, Dockerfiles and public Compose configuration.",
+        caution: "Academic case; it does not represent real hotel operations, guest data or a production deployment.",
+        seoTitle: ".NET, Odoo and Docker integration | HotelSOL",
+        seoDescription: "ERP case with a .NET API, Odoo 19, Python, SQL Server, PostgreSQL, XML and Docker Compose for hotel data integration.",
+        keywords: ["Odoo 19", ".NET API", "SQL Server", "PostgreSQL", "Docker Compose", "ERP integration"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "HotelSOL Docker services with .NET, Odoo, SQL Server and PostgreSQL"
       },
       de: {
-        title: "NeuronaPrediccion",
-        type: "Privater Daten- und ML-Fall",
-        summary:
-          "Privater Fall mit Fokus auf Datenarchitektur, YAML-Konfiguration, SQL, DAO und Analysekomponenten.",
-        problem:
-          "Daten, Konfiguration und Analyselogik nachvollziehbar organisieren, ohne privaten Code oder nicht reproduzierbare Metriken offenzulegen.",
-        solution:
-          "Schichtentrennung für Datenzugriff, Konfiguration und Analysekomponenten mit Python, SQL, YAML und DAO-Muster.",
-        technicalRole:
-          "Datenstrukturierung, Trennung der Verantwortlichkeiten, Organisation der Konfiguration und technische Dokumentation.",
-        businessValue:
-          "Zeigt die Fähigkeit, mit Daten, Traceability und Analysekomponenten zu arbeiten, ohne nicht verifizierte Prognosegenauigkeit zu versprechen.",
-        caution:
-          "Privates Repository. Es wird kein Link veröffentlicht und keine Genauigkeit, wirtschaftliche Wirkung oder produktives Ergebnis versprochen."
+        slug: "hotelsol-odoo-dotnet-integration",
+        title: "HotelSOL: .NET-, Odoo- und Datenintegration",
+        type: "ERP- und Integrationsarchitektur",
+        summary: "Akademische Umgebung mit .NET-API, Odoo-Modul, SQL Server und PostgreSQL unter Docker Compose.",
+        problem: "Reservierungen, Gäste, Leistungen und Synchronisation zwischen Verwaltungsanwendung und ERP mit getrennten Datenspeichern koordinieren.",
+        solution: "Reproduzierbarer Stack mit SQL Server, PostgreSQL, Odoo 19, Python-Modul, C#-API, Healthcheck und Initialisierungsskripten.",
+        technicalRole: "Datenmodellierung, Service-Integration, Container-Konfiguration, XML-Export und Tests des Odoo-Moduls.",
+        businessValue: "Die öffentliche Compose-Datei koordiniert fünf Services und trennt Initialisierung, Persistenz und Laufzeit.",
+        evidenceSummary: "Repository mit C#, Python, T-SQL, Odoo-Modul, Tests, XML, Dockerfiles und Compose.",
+        caution: "Akademische Fallstudie; keine reale Hoteloperation, keine Gästedaten und kein Produktiv-Deployment.",
+        seoTitle: ".NET-, Odoo- und Docker-Integration | HotelSOL",
+        seoDescription: "ERP-Fallstudie mit .NET-API, Odoo 19, Python, SQL Server, PostgreSQL, XML und Docker Compose für Hoteldatenintegration.",
+        keywords: ["Odoo 19", ".NET API", "SQL Server", "PostgreSQL", "Docker Compose", "ERP-Integration"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "HotelSOL-Docker-Services mit .NET, Odoo, SQL Server und PostgreSQL"
       }
     }
   },
   {
-    slug: "maceta-inteligente",
-    technologies: ["IoT", "Sensors", "Python", "SQL", "Automation"],
-    capabilities: ["iot-automation", "database-design", "industrial-automation"],
-    status: "private",
-    evidenceLevel: "private-project",
-    claimLevel: "technical-demonstration",
-    featured: true,
-    publicLinks: [],
-    copy: {
-      es: {
-        title: "MacetaInteligente",
-        type: "Caso privado IoT",
-        summary:
-          "Caso privado de automatización e IoT con integración de sensores, datos físicos y lógica de seguimiento.",
-        problem:
-          "Conectar señales de sensores con datos persistentes y lógica de automatización sin exponer información interna del proyecto.",
-        solution:
-          "Modelo técnico para capturar datos de sensores, almacenarlos y relacionarlos con estados físicos de una maceta o proceso controlado.",
-        technicalRole:
-          "Diseño de estructura de datos, integración conceptual de sensores y organización de lógica de automatización.",
-        businessValue:
-          "Demuestra capacidad para conectar mundo físico, datos y software en casos de trazabilidad e IoT.",
-        caution:
-          "Caso privado. Solo debe publicarse descripción general, sin credenciales, IPs, capturas sensibles ni datos internos."
-      },
-      en: {
-        title: "MacetaInteligente",
-        type: "Private IoT case",
-        summary:
-          "Private automation and IoT case with sensor integration, physical data and monitoring logic.",
-        problem:
-          "Connect sensor signals with persistent data and automation logic without exposing internal project information.",
-        solution:
-          "Technical model to capture sensor data, store it and relate it to physical states of a pot or controlled process.",
-        technicalRole:
-          "Data structure design, conceptual sensor integration and organization of automation logic.",
-        businessValue:
-          "Demonstrates the ability to connect the physical world, data and software in traceability and IoT cases.",
-        caution:
-          "Private case. Only a general description should be published, without credentials, IPs, sensitive screenshots or internal data."
-      },
-      de: {
-        title: "MacetaInteligente",
-        type: "Privater IoT-Fall",
-        summary:
-          "Privater Automatisierungs- und IoT-Fall mit Sensorintegration, physischen Daten und Monitoring-Logik.",
-        problem:
-          "Sensorsignale mit persistenten Daten und Automatisierungslogik verbinden, ohne interne Projektinformationen offenzulegen.",
-        solution:
-          "Technisches Modell zur Erfassung, Speicherung und Zuordnung von Sensordaten zu physischen Zuständen einer Pflanze oder eines kontrollierten Prozesses.",
-        technicalRole:
-          "Datenstrukturierung, konzeptionelle Sensorintegration und Organisation der Automatisierungslogik.",
-        businessValue:
-          "Zeigt die Fähigkeit, physische Prozesse, Daten und Software in Traceability- und IoT-Fällen zu verbinden.",
-        caution:
-          "Privater Fall. Es sollte nur eine allgemeine Beschreibung ohne Zugangsdaten, IPs, sensible Screenshots oder interne Daten veröffentlicht werden."
-      }
-    }
-  },
-  {
-    slug: "hotelsol",
-    technologies: [".NET", "SQL Server", "XML", "UML", "Layered architecture"],
-    capabilities: ["web-development", "database-design", "software-architecture"],
-    status: "technical-case",
-    evidenceLevel: "public-repository",
-    claimLevel: "technical-demonstration",
-    featured: true,
-    publicLinks: [
-      {
-        label: "GitHub",
-        href: "https://github.com/dadd86/HotelSOL",
-        type: "repository",
-        external: true
-      }
-    ],
-    copy: {
-      es: {
-        title: "HotelSOL",
-        type: "Sistema de gestión hotelera",
-        summary:
-          "Aplicación de gestión orientada a reservas, datos, documentación técnica y arquitectura por capas.",
-        problem:
-          "Modelar una solución de gestión hotelera con persistencia, documentación y separación clara entre datos, lógica y presentación.",
-        solution:
-          "Aplicación estructurada con base de datos, documentación UML/XML y enfoque de capas para mantener el código comprensible.",
-        technicalRole:
-          "Diseño de estructura, modelado de datos, documentación técnica y organización del proyecto.",
-        businessValue:
-          "Demuestra capacidad para construir aplicaciones de gestión con base de datos, documentación y lógica empresarial organizada.",
-        caution:
-          "Repositorio público usado como evidencia técnica. No se presenta como sistema productivo de un hotel ni como implementación de cliente."
-      },
-      en: {
-        title: "HotelSOL",
-        type: "Hotel management system",
-        summary:
-          "Management application focused on bookings, data, technical documentation and layered architecture.",
-        problem:
-          "Model a hotel management solution with persistence, documentation and clear separation between data, logic and presentation.",
-        solution:
-          "Structured application with database, UML/XML documentation and a layered approach to keep the code understandable.",
-        technicalRole:
-          "Structure design, data modeling, technical documentation and project organization.",
-        businessValue:
-          "Demonstrates the ability to build management applications with database, documentation and organized business logic.",
-        caution:
-          "Public repository used as technical evidence. It is not presented as a productive hotel system or client implementation."
-      },
-      de: {
-        title: "HotelSOL",
-        type: "Hotelverwaltungssystem",
-        summary:
-          "Verwaltungsanwendung mit Fokus auf Reservierungen, Daten, technischer Dokumentation und Schichtenarchitektur.",
-        problem:
-          "Eine Hotelverwaltungslösung mit Persistenz, Dokumentation und klarer Trennung zwischen Daten, Logik und Darstellung modellieren.",
-        solution:
-          "Strukturierte Anwendung mit Datenbank, UML/XML-Dokumentation und Schichtenansatz zur besseren Wartbarkeit.",
-        technicalRole:
-          "Strukturentwurf, Datenmodellierung, technische Dokumentation und Projektorganisation.",
-        businessValue:
-          "Zeigt die Fähigkeit, Verwaltungsanwendungen mit Datenbank, Dokumentation und organisierter Geschäftslogik aufzubauen.",
-        caution:
-          "Öffentliches Repository als technischer Nachweis. Es wird nicht als produktives Hotelsystem oder Kundenimplementierung dargestellt."
-      }
-    }
-  },
-  {
-    slug: "odoo-erp-deployment",
-    technologies: ["Odoo", "Docker", "PostgreSQL", "Windows Server", "DevOps"],
-    capabilities: ["erp-deployment", "devops-docker", "database-design"],
-    status: "local-demo",
-    evidenceLevel: "local-demo",
-    claimLevel: "technical-demonstration",
-    featured: true,
-    publicLinks: [],
-    copy: {
-      es: {
-        title: "Odoo ERP Deployment",
-        type: "Caso técnico ERP local",
-        summary:
-          "Caso técnico de despliegue ERP con contenedores, servicios dependientes y documentación operativa.",
-        problem:
-          "Preparar un entorno ERP reproducible para validar instalación, servicios y arranque sin depender de configuración manual frágil.",
-        solution:
-          "Definición de entorno Docker con Odoo, base de datos y guía de ejecución local.",
-        technicalRole:
-          "Configuración de contenedores, revisión de dependencias, documentación de ejecución y validación de arranque.",
-        businessValue:
-          "Demuestra capacidad para preparar entornos ERP reproducibles y documentados antes de una implantación real.",
-        caution:
-          "Caso técnico local. No se presenta como despliegue productivo ni como implantación realizada para un cliente."
-      },
-      en: {
-        title: "Odoo ERP Deployment",
-        type: "Local ERP technical case",
-        summary:
-          "Technical ERP deployment case with containers, dependent services and operational documentation.",
-        problem:
-          "Prepare a reproducible ERP environment to validate installation, services and startup without fragile manual configuration.",
-        solution:
-          "Docker environment definition with Odoo, database and local execution guide.",
-        technicalRole:
-          "Container configuration, dependency review, execution documentation and startup validation.",
-        businessValue:
-          "Demonstrates the ability to prepare reproducible and documented ERP environments before a real implementation.",
-        caution:
-          "Local technical case. It is not presented as a production deployment or client implementation."
-      },
-      de: {
-        title: "Odoo ERP Deployment",
-        type: "Lokaler technischer ERP-Fall",
-        summary:
-          "Technischer ERP-Deployment-Fall mit Containern, abhängigen Diensten und operativer Dokumentation.",
-        problem:
-          "Eine reproduzierbare ERP-Umgebung vorbereiten, um Installation, Dienste und Start ohne fragile manuelle Konfiguration zu validieren.",
-        solution:
-          "Docker-Umgebung mit Odoo, Datenbank und lokaler Ausführungsanleitung.",
-        technicalRole:
-          "Container-Konfiguration, Prüfung von Abhängigkeiten, Ausführungsdokumentation und Startvalidierung.",
-        businessValue:
-          "Zeigt die Fähigkeit, reproduzierbare und dokumentierte ERP-Umgebungen vor einer realen Einführung vorzubereiten.",
-        caution:
-          "Lokaler technischer Fall. Es wird nicht als produktives Deployment oder Kundenimplementierung dargestellt."
-      }
-    }
-  },
-  {
-    slug: "openldap-docker",
-    technologies: ["OpenLDAP", "Docker", "Linux", "Authentication", "Infrastructure"],
-    capabilities: ["identity-access-management", "devops-docker", "software-architecture"],
-    status: "local-demo",
-    evidenceLevel: "local-demo",
+    key: "woodshops",
+    repository: "AA5-FP056-_WoodShops",
+    technologies: ["Java", "OOP", "HTML", "CSS", "JavaScript", "NetBeans"],
+    capabilities: ["java-oop", "software-architecture"],
     claimLevel: "technical-demonstration",
     featured: false,
-    publicLinks: [],
     copy: {
       es: {
-        title: "OpenLDAP Docker",
-        type: "Caso técnico IAM",
-        summary:
-          "Caso técnico de servicio de directorio en contenedor para validar conceptos de identidad, usuarios y autenticación.",
-        problem:
-          "Probar una base de identidad reproducible sin depender de infraestructura externa ni exponer datos reales.",
-        solution:
-          "Entorno local con OpenLDAP y Docker para validar estructura, usuarios de prueba y documentación técnica.",
-        technicalRole:
-          "Configuración de servicio, documentación de arranque, revisión de estructura de directorio y aislamiento de datos.",
-        businessValue:
-          "Demuestra capacidad para trabajar con servicios de identidad, autenticación e infraestructura reproducible.",
-        caution:
-          "Caso técnico local. No contiene usuarios reales, dominios internos, contraseñas ni datos empresariales."
+        slug: "woodshops-modelo-dominio-java",
+        title: "WoodShops: modelo de dominio comercial en Java",
+        type: "Java y programación orientada a objetos",
+        summary: "Modelo académico de tiendas, almacenes, productos, proveedores, clientes y ventas mediante clases Java especializadas.",
+        problem: "Representar reglas y entidades de un comercio de madera sin concentrar inventario, clientes, proveedores y ventas en una única clase.",
+        solution: "Dominio orientado a objetos con jerarquías para artículos y clientes, detalles de venta y gestores separados.",
+        technicalRole: "Modelado de entidades, relaciones, herencia y operaciones de negocio en Java.",
+        businessValue: "El árbol público contiene más de quince clases de dominio que hacen explícitas las responsabilidades del sistema.",
+        evidenceSummary: "Código Java visible para Tienda, Almacén, Artículo, Producto, Proveedor, Cliente, Venta y DetalleVenta.",
+        caution: "Ejercicio académico sin persistencia productiva ni métricas comerciales verificadas.",
+        seoTitle: "Modelo de dominio Java OOP | WoodShops",
+        seoDescription: "Caso Java OOP para tiendas, almacenes, productos, proveedores, clientes y ventas con responsabilidades de dominio separadas.",
+        keywords: ["Java OOP", "modelo de dominio", "inventario", "ventas", "NetBeans"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "Modelo de dominio Java de tiendas, productos, proveedores y ventas WoodShops"
       },
       en: {
-        title: "OpenLDAP Docker",
-        type: "IAM technical case",
-        summary:
-          "Technical directory-service case in a container to validate identity, users and authentication concepts.",
-        problem:
-          "Test a reproducible identity base without depending on external infrastructure or exposing real data.",
-        solution:
-          "Local environment with OpenLDAP and Docker to validate structure, test users and technical documentation.",
-        technicalRole:
-          "Service configuration, startup documentation, directory structure review and data isolation.",
-        businessValue:
-          "Demonstrates the ability to work with identity services, authentication and reproducible infrastructure.",
-        caution:
-          "Local technical case. It does not contain real users, internal domains, passwords or business data."
+        slug: "woodshops-java-domain-model",
+        title: "WoodShops: Java commercial domain model",
+        type: "Java and object-oriented programming",
+        summary: "Academic model for stores, warehouses, products, suppliers, customers and sales using specialized Java classes.",
+        problem: "Represent timber retail rules and entities without concentrating inventory, customers, suppliers and sales in one class.",
+        solution: "Object-oriented domain with article and customer hierarchies, sales details and separate manager classes.",
+        technicalRole: "Entity, relationship, inheritance and business-operation modelling in Java.",
+        businessValue: "The public tree contains more than fifteen domain classes that make system responsibilities explicit.",
+        evidenceSummary: "Visible Java code for Store, Warehouse, Article, Product, Supplier, Customer, Sale and SaleDetail entities.",
+        caution: "Academic exercise without production persistence or verified commercial metrics.",
+        seoTitle: "Java OOP domain model | WoodShops",
+        seoDescription: "Java OOP case for stores, warehouses, products, suppliers, customers and sales with separated domain responsibilities.",
+        keywords: ["Java OOP", "domain model", "inventory", "sales", "NetBeans"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "WoodShops Java domain model for stores, products, suppliers and sales"
       },
       de: {
-        title: "OpenLDAP Docker",
-        type: "Technischer IAM-Fall",
-        summary:
-          "Technischer Verzeichnisdienst-Fall im Container zur Validierung von Identität, Benutzern und Authentifizierungskonzepten.",
-        problem:
-          "Eine reproduzierbare Identitätsbasis testen, ohne externe Infrastruktur oder reale Daten offenzulegen.",
-        solution:
-          "Lokale Umgebung mit OpenLDAP und Docker zur Validierung von Struktur, Testbenutzern und technischer Dokumentation.",
-        technicalRole:
-          "Dienstkonfiguration, Startdokumentation, Prüfung der Verzeichnisstruktur und Datenisolation.",
-        businessValue:
-          "Zeigt die Fähigkeit, mit Identitätsdiensten, Authentifizierung und reproduzierbarer Infrastruktur zu arbeiten.",
-        caution:
-          "Lokaler technischer Fall. Er enthält keine realen Benutzer, internen Domains, Passwörter oder Geschäftsdaten."
+        slug: "woodshops-java-domaenenmodell",
+        title: "WoodShops: Java-Domänenmodell für Handel",
+        type: "Java und objektorientierte Programmierung",
+        summary: "Akademisches Modell für Filialen, Lager, Produkte, Lieferanten, Kunden und Verkäufe mit spezialisierten Java-Klassen.",
+        problem: "Regeln und Entitäten eines Holzhandels abbilden, ohne Bestand, Kunden, Lieferanten und Verkäufe in einer Klasse zu bündeln.",
+        solution: "Objektorientierte Domäne mit Artikel- und Kundenhierarchien, Verkaufspositionen und getrennten Manager-Klassen.",
+        technicalRole: "Modellierung von Entitäten, Beziehungen, Vererbung und Geschäftsoperationen in Java.",
+        businessValue: "Der öffentliche Baum enthält mehr als fünfzehn Domänenklassen mit klar erkennbaren Verantwortlichkeiten.",
+        evidenceSummary: "Java-Code für Filiale, Lager, Artikel, Produkt, Lieferant, Kunde, Verkauf und Verkaufsposition.",
+        caution: "Akademische Übung ohne produktive Persistenz oder verifizierte Geschäftszahlen.",
+        seoTitle: "Java-OOP-Domänenmodell | WoodShops",
+        seoDescription: "Java-OOP-Fallstudie für Filialen, Lager, Produkte, Lieferanten, Kunden und Verkäufe mit getrennten Domänenverantwortungen.",
+        keywords: ["Java OOP", "Domänenmodell", "Lagerbestand", "Verkauf", "NetBeans"],
+        schemaType: "SoftwareSourceCode",
+        imageAlt: "WoodShops Java-Domänenmodell für Filialen, Produkte, Lieferanten und Verkäufe"
       }
     }
   },
   {
-    slug: "ad-wsus",
-    technologies: ["Windows Server", "Active Directory", "WSUS", "GPO", "DNS"],
-    capabilities: ["windows-server-administration", "identity-access-management", "software-architecture"],
-    status: "documentation-only",
-    evidenceLevel: "documentation-only",
+    key: "vehicle-rental",
+    repository: "AA2-FP056-_AlquilerVehiculos",
+    technologies: ["Java", "OOP", "Inheritance", "Contracts", "NetBeans"],
+    capabilities: ["java-oop", "software-architecture"],
     claimLevel: "technical-demonstration",
     featured: false,
-    publicLinks: [],
     copy: {
-      es: {
-        title: "AD/WSUS",
-        type: "Caso técnico Windows Server",
-        summary:
-          "Caso de laboratorio técnico sobre Active Directory, políticas, servicios Windows y administración centralizada.",
-        problem:
-          "Diseñar una estructura controlada para usuarios, equipos, políticas y actualizaciones sin publicar datos internos.",
-        solution:
-          "Documentación técnica de laboratorio con dominio, DNS, GPO, permisos y criterios de administración.",
-        technicalRole:
-          "Diseño de dominio de laboratorio, configuración de políticas, documentación y validación de administración.",
-        businessValue:
-          "Demuestra capacidad para organizar infraestructura Windows, acceso de usuarios y criterios de administración.",
-        caution:
-          "Caso documentado. No deben publicarse nombres de dominio reales, usuarios reales, IPs internas ni credenciales."
-      },
-      en: {
-        title: "AD/WSUS",
-        type: "Windows Server technical case",
-        summary:
-          "Technical lab case about Active Directory, policies, Windows services and centralized administration.",
-        problem:
-          "Design a controlled structure for users, computers, policies and updates without publishing internal data.",
-        solution:
-          "Technical lab documentation with domain, DNS, GPO, permissions and administration criteria.",
-        technicalRole:
-          "Lab domain design, policy configuration, documentation and administration validation.",
-        businessValue:
-          "Demonstrates the ability to organize Windows infrastructure, user access and administration criteria.",
-        caution:
-          "Documented case. Real domain names, real users, internal IPs and credentials must not be published."
-      },
-      de: {
-        title: "AD/WSUS",
-        type: "Technischer Windows-Server-Fall",
-        summary:
-          "Technischer Laborfall zu Active Directory, Richtlinien, Windows-Diensten und zentraler Administration.",
-        problem:
-          "Eine kontrollierte Struktur für Benutzer, Computer, Richtlinien und Updates entwerfen, ohne interne Daten zu veröffentlichen.",
-        solution:
-          "Technische Labordokumentation mit Domain, DNS, GPO, Berechtigungen und Administrationskriterien.",
-        technicalRole:
-          "Labordomain-Design, Richtlinienkonfiguration, Dokumentation und Validierung der Administration.",
-        businessValue:
-          "Zeigt die Fähigkeit, Windows-Infrastruktur, Benutzerzugriff und Administrationskriterien zu organisieren.",
-        caution:
-          "Dokumentierter Fall. Reale Domainnamen, reale Benutzer, interne IPs und Zugangsdaten dürfen nicht veröffentlicht werden."
-      }
+      es: { slug: "alquiler-vehiculos-java-oop", title: "Alquiler de vehículos: Java OOP", type: "Modelado de flota y contratos", summary: "Aplicación académica que modela agencia, flota, clientes, contratos y varios tipos de vehículo.", problem: "Gestionar coches, motos y camiones con reglas comunes sin duplicar estructura ni lógica contractual.", solution: "Jerarquía Java de vehículos, clases de agencia, flota, cliente y contrato de alquiler.", technicalRole: "Diseño orientado a objetos, herencia, encapsulación y operaciones sobre flota y contratos.", businessValue: "El código público separa vehículos, clientes, flota y contratación en nueve clases identificables.", evidenceSummary: "Fuentes Java públicas para Agencia, Flota, Vehículo, Coche, Moto, Camión, Cliente y ContratoAlquiler.", caution: "Ejercicio académico; no es una plataforma operativa de alquiler.", seoTitle: "Gestión de flota con Java OOP | IoCode", seoDescription: "Caso Java OOP para agencia, flota, clientes, contratos, coches, motos y camiones mediante herencia y responsabilidades separadas.", keywords: ["Java OOP", "gestión de flota", "herencia", "contratos", "NetBeans"], schemaType: "SoftwareSourceCode", imageAlt: "Jerarquía Java de vehículos, flota y contratos de alquiler" },
+      en: { slug: "vehicle-rental-java-oop", title: "Vehicle rental: Java OOP", type: "Fleet and contract modelling", summary: "Academic application modelling an agency, fleet, customers, rental contracts and several vehicle types.", problem: "Manage cars, motorcycles and trucks with shared rules without duplicating structure or contract logic.", solution: "Java vehicle hierarchy plus agency, fleet, customer and rental-contract classes.", technicalRole: "Object-oriented design, inheritance, encapsulation and fleet/contract operations.", businessValue: "The public code separates vehicles, customers, fleet and contracting into nine identifiable classes.", evidenceSummary: "Public Java sources for Agency, Fleet, Vehicle, Car, Motorcycle, Truck, Customer and RentalContract.", caution: "Academic exercise, not an operational vehicle-rental platform.", seoTitle: "Fleet management with Java OOP | IoCode", seoDescription: "Java OOP case for agencies, fleets, customers, contracts, cars, motorcycles and trucks using inheritance and separated responsibilities.", keywords: ["Java OOP", "fleet management", "inheritance", "contracts", "NetBeans"], schemaType: "SoftwareSourceCode", imageAlt: "Java hierarchy for vehicles, fleets and rental contracts" },
+      de: { slug: "fahrzeugvermietung-java-oop", title: "Fahrzeugvermietung: Java OOP", type: "Flotten- und Vertragsmodellierung", summary: "Akademische Anwendung für Agentur, Flotte, Kunden, Mietverträge und unterschiedliche Fahrzeugtypen.", problem: "Pkw, Motorräder und Lkw mit gemeinsamen Regeln verwalten, ohne Struktur oder Vertragslogik zu duplizieren.", solution: "Java-Fahrzeughierarchie sowie Klassen für Agentur, Flotte, Kunde und Mietvertrag.", technicalRole: "Objektorientierter Entwurf, Vererbung, Kapselung und Operationen für Flotte und Verträge.", businessValue: "Der öffentliche Code trennt Fahrzeuge, Kunden, Flotte und Vermietung in neun erkennbare Klassen.", evidenceSummary: "Öffentliche Java-Quellen für Agentur, Flotte, Fahrzeug, Pkw, Motorrad, Lkw, Kunde und Mietvertrag.", caution: "Akademische Übung, keine operative Vermietungsplattform.", seoTitle: "Flottenverwaltung mit Java OOP | IoCode", seoDescription: "Java-OOP-Fallstudie für Agentur, Flotte, Kunden, Verträge, Pkw, Motorräder und Lkw mit Vererbung und klaren Verantwortungen.", keywords: ["Java OOP", "Flottenverwaltung", "Vererbung", "Mietverträge", "NetBeans"], schemaType: "SoftwareSourceCode", imageAlt: "Java-Hierarchie für Fahrzeuge, Flotte und Mietverträge" }
     }
   },
   {
-    slug: "java-mvc-dao-javafx",
-    technologies: ["Java", "JavaFX", "MVC", "DAO", "SQL"],
-    capabilities: ["java-desktop", "database-design", "software-architecture"],
-    status: "academic",
-    evidenceLevel: "academic-project",
+    key: "the-javengers",
+    repository: "The-Javengers---IntellJ",
+    technologies: ["Java", "JavaFX", "JDBC", "DAO", "SQL", "JUnit", "Maven"],
+    capabilities: ["java-oop", "database-design", "software-architecture"],
+    claimLevel: "verified",
+    featured: false,
+    copy: {
+      es: { slug: "the-javengers-javafx-dao", title: "The Javengers: JavaFX, JDBC y DAO", type: "Aplicación de escritorio con datos", summary: "Proyecto Java para socios, federaciones, excursiones e inscripciones con UI JavaFX y acceso DAO.", problem: "Mantener interfaz, reglas de dominio y persistencia SQL separadas en una aplicación de gestión de asociaciones.", solution: "Capas JavaFX, modelos, DAO/DAOImpl, JDBC, excepciones específicas, SQL y pruebas JUnit.", technicalRole: "Modelado, persistencia, controladores, gestión de escenas, validaciones y excepciones de dominio.", businessValue: "El repositorio permite rastrear operaciones desde controladores y escenas hasta interfaces DAO e implementaciones SQL.", evidenceSummary: "Árbol público con DAOFactory, cinco pares DAO/DAOImpl, excepciones de dominio, scripts SQL y fuentes JavaFX.", caution: "Proyecto académico colaborativo; no se atribuye autoría exclusiva ni uso productivo.", seoTitle: "JavaFX, JDBC y patrón DAO | The Javengers", seoDescription: "Caso Java de escritorio con JavaFX, JDBC, DAO, SQL, Maven, JUnit y excepciones de dominio para socios, excursiones e inscripciones.", keywords: ["JavaFX", "JDBC", "patrón DAO", "SQL", "Maven", "JUnit"], schemaType: "SoftwareSourceCode", imageAlt: "Arquitectura JavaFX, JDBC y DAO del proyecto The Javengers" },
+      en: { slug: "the-javengers-javafx-dao", title: "The Javengers: JavaFX, JDBC and DAO", type: "Data-driven desktop application", summary: "Java project for members, federations, trips and registrations with a JavaFX UI and DAO persistence.", problem: "Keep UI, domain rules and SQL persistence separate in an association-management desktop application.", solution: "JavaFX, model, DAO/DAOImpl, JDBC, domain-exception, SQL and JUnit test layers.", technicalRole: "Modelling, persistence, controllers, scene management, validation and domain exceptions.", businessValue: "The repository makes operations traceable from controllers and scenes to DAO interfaces and SQL implementations.", evidenceSummary: "Public tree with DAOFactory, five DAO/DAOImpl pairs, domain exceptions, SQL scripts and JavaFX sources.", caution: "Collaborative academic project; exclusive authorship and production use are not claimed.", seoTitle: "JavaFX, JDBC and DAO pattern | The Javengers", seoDescription: "Java desktop case with JavaFX, JDBC, DAO, SQL, Maven, JUnit and domain exceptions for members, trips and registrations.", keywords: ["JavaFX", "JDBC", "DAO pattern", "SQL", "Maven", "JUnit"], schemaType: "SoftwareSourceCode", imageAlt: "JavaFX, JDBC and DAO architecture of The Javengers project" },
+      de: { slug: "the-javengers-javafx-dao", title: "The Javengers: JavaFX, JDBC und DAO", type: "Datenbasierte Desktop-Anwendung", summary: "Java-Projekt für Mitglieder, Verbände, Ausflüge und Anmeldungen mit JavaFX-Oberfläche und DAO-Persistenz.", problem: "UI, Domänenregeln und SQL-Persistenz in einer Vereinsverwaltung voneinander trennen.", solution: "Schichten für JavaFX, Modelle, DAO/DAOImpl, JDBC, Domänenausnahmen, SQL und JUnit-Tests.", technicalRole: "Modellierung, Persistenz, Controller, Szenenverwaltung, Validierung und Domänenausnahmen.", businessValue: "Operationen sind vom Controller und der Szene bis zu DAO-Schnittstellen und SQL-Implementierungen nachvollziehbar.", evidenceSummary: "Öffentlicher Baum mit DAOFactory, fünf DAO/DAOImpl-Paaren, Domänenausnahmen, SQL-Skripten und JavaFX-Quellen.", caution: "Kollaboratives akademisches Projekt; keine Behauptung exklusiver Urheberschaft oder produktiver Nutzung.", seoTitle: "JavaFX, JDBC und DAO-Muster | The Javengers", seoDescription: "Java-Desktop-Fallstudie mit JavaFX, JDBC, DAO, SQL, Maven, JUnit und Domänenausnahmen für Mitglieder, Ausflüge und Anmeldungen.", keywords: ["JavaFX", "JDBC", "DAO-Muster", "SQL", "Maven", "JUnit"], schemaType: "SoftwareSourceCode", imageAlt: "JavaFX-, JDBC- und DAO-Architektur des Projekts The Javengers" }
+    }
+  },
+  {
+    key: "coworking-database",
+    repository: "MySQL-Workbench-Forward-Engineering",
+    technologies: ["MySQL Workbench", "SQL", "PL/SQL", "ER modelling", "Forward engineering"],
+    capabilities: ["database-design"],
+    claimLevel: "verified",
+    featured: false,
+    copy: {
+      es: { slug: "base-datos-coworking-mysql", title: "Base de datos de coworking con MySQL", type: "Modelado relacional y forward engineering", summary: "Esquema académico para gestionar entidades y relaciones de un espacio de coworking mediante diseño relacional.", problem: "Convertir requisitos de gestión de coworking en tablas, claves y relaciones consistentes antes de implementar aplicaciones.", solution: "Diagrama entidad-relación, modelo físico y scripts generados mediante forward engineering.", technicalRole: "Normalización, diseño ER, definición de claves y generación del esquema físico.", businessValue: "El repositorio conserva el modelo, relaciones, claves foráneas y SQL para revisar la trazabilidad entre diseño lógico y físico.", evidenceSummary: "Descripción pública y artefactos de MySQL Workbench con SQL, tablas, claves foráneas y modelo relacional.", caution: "Ejercicio académico sin carga, volumen ni rendimiento productivo validados.", seoTitle: "MySQL Workbench y diseño relacional | IoCode", seoDescription: "Caso de modelado ER, claves, relaciones, SQL y forward engineering en MySQL Workbench para la gestión de un espacio de coworking.", keywords: ["MySQL Workbench", "modelo entidad-relación", "SQL", "claves foráneas", "forward engineering"], schemaType: "SoftwareSourceCode", imageAlt: "Modelo entidad-relación de una base de datos MySQL para coworking" },
+      en: { slug: "mysql-coworking-database", title: "Coworking database with MySQL", type: "Relational modelling and forward engineering", summary: "Academic schema for managing coworking entities and relationships through relational design.", problem: "Translate coworking-management requirements into consistent tables, keys and relationships before application implementation.", solution: "Entity-relationship diagram, physical model and scripts generated through forward engineering.", technicalRole: "Normalization, ER design, key definition and physical-schema generation.", businessValue: "The repository preserves models, relationships, foreign keys and SQL for tracing logical design into a physical schema.", evidenceSummary: "Public description and MySQL Workbench artefacts with SQL, tables, foreign keys and relational models.", caution: "Academic exercise with no validated production load, volume or performance.", seoTitle: "MySQL Workbench relational design | IoCode", seoDescription: "ER modelling, keys, relationships, SQL and MySQL Workbench forward engineering case for coworking-space management.", keywords: ["MySQL Workbench", "entity relationship model", "SQL", "foreign keys", "forward engineering"], schemaType: "SoftwareSourceCode", imageAlt: "Entity-relationship model for a MySQL coworking database" },
+      de: { slug: "mysql-coworking-datenbank", title: "Coworking-Datenbank mit MySQL", type: "Relationale Modellierung und Forward Engineering", summary: "Akademisches Schema für Entitäten und Beziehungen eines Coworking-Spaces mit relationalem Design.", problem: "Anforderungen der Coworking-Verwaltung vor der Applikationsentwicklung in konsistente Tabellen, Schlüssel und Beziehungen überführen.", solution: "Entity-Relationship-Diagramm, physisches Modell und per Forward Engineering erzeugte Skripte.", technicalRole: "Normalisierung, ER-Entwurf, Schlüsseldefinition und Generierung des physischen Schemas.", businessValue: "Repository mit Modellen, Beziehungen, Fremdschlüsseln und SQL zur Traceability vom logischen zum physischen Design.", evidenceSummary: "Öffentliche Beschreibung und MySQL-Workbench-Artefakte mit SQL, Tabellen, Fremdschlüsseln und relationalem Modell.", caution: "Akademische Übung ohne validierte Produktivlast, Datenmenge oder Performance.", seoTitle: "Relationales Design mit MySQL Workbench | IoCode", seoDescription: "ER-Modellierung, Schlüssel, Beziehungen, SQL und Forward Engineering in MySQL Workbench für die Verwaltung eines Coworking-Spaces.", keywords: ["MySQL Workbench", "Entity-Relationship-Modell", "SQL", "Fremdschlüssel", "Forward Engineering"], schemaType: "SoftwareSourceCode", imageAlt: "Entity-Relationship-Modell einer MySQL-Datenbank für Coworking" }
+    }
+  },
+  {
+    key: "break-boxes-game",
+    repository: "JuegoRompeCajas",
+    technologies: ["Python", "Pygame", "OOP", "Animation", "Scene management"],
+    capabilities: ["python-development", "software-architecture"],
     claimLevel: "technical-demonstration",
     featured: false,
-    publicLinks: [],
     copy: {
-      es: {
-        title: "Java MVC/DAO/JavaFX",
-        type: "Caso académico de arquitectura Java",
-        summary:
-          "Caso académico para demostrar separación MVC, acceso a datos con DAO, interfaz JavaFX y persistencia.",
-        problem:
-          "Construir una aplicación Java mantenible evitando mezclar interfaz, consultas, lógica y modelo de datos.",
-        solution:
-          "Estructura MVC con patrón DAO, JavaFX para interfaz y persistencia separada por capas.",
-        technicalRole:
-          "Diseño de capas, organización de clases, conexión con datos y documentación del patrón usado.",
-        businessValue:
-          "Demuestra fundamentos de arquitectura de software, aplicaciones de escritorio y persistencia de datos.",
-        caution:
-          "Caso académico. No se presenta como software comercial ni como solución implantada en producción."
-      },
-      en: {
-        title: "Java MVC/DAO/JavaFX",
-        type: "Academic Java architecture case",
-        summary:
-          "Academic case to demonstrate MVC separation, DAO data access, JavaFX interface and persistence.",
-        problem:
-          "Build a maintainable Java application without mixing interface, queries, logic and data model.",
-        solution:
-          "MVC structure with DAO pattern, JavaFX interface and persistence separated by layers.",
-        technicalRole:
-          "Layer design, class organization, data connection and documentation of the pattern used.",
-        businessValue:
-          "Demonstrates software architecture fundamentals, desktop applications and data persistence.",
-        caution:
-          "Academic case. It is not presented as commercial software or as a production implementation."
-      },
-      de: {
-        title: "Java MVC/DAO/JavaFX",
-        type: "Akademischer Java-Architekturfall",
-        summary:
-          "Akademischer Fall zur Demonstration von MVC-Trennung, DAO-Datenzugriff, JavaFX-Oberfläche und Persistenz.",
-        problem:
-          "Eine wartbare Java-Anwendung bauen, ohne Oberfläche, Abfragen, Logik und Datenmodell zu vermischen.",
-        solution:
-          "MVC-Struktur mit DAO-Muster, JavaFX-Oberfläche und schichtweise getrennter Persistenz.",
-        technicalRole:
-          "Schichtendesign, Klassenorganisation, Datenanbindung und Dokumentation des verwendeten Musters.",
-        businessValue:
-          "Zeigt Grundlagen der Softwarearchitektur, Desktop-Anwendungen und Datenpersistenz.",
-        caution:
-          "Akademischer Fall. Es wird nicht als kommerzielle Software oder produktive Implementierung dargestellt."
-      }
+      es: { slug: "juego-python-rompecajas", title: "RompeCajas: juego modular en Python", type: "Python, escenas y animación", summary: "Juego pequeño estructurado con módulos separados para jugador, escenas, animaciones y gestión de color.", problem: "Evitar que bucle, estado del jugador, animaciones y representación visual queden mezclados en un único script.", solution: "Separación en módulos Python para Player, Scene, Animation y ColorManager coordinados desde el punto de entrada.", technicalRole: "Organización modular, lógica de interacción, escenas y animación con Python.", businessValue: "El repositorio demuestra descomposición funcional en seis fuentes Python en lugar de un script monolítico.", evidenceSummary: "Código público con main.py, Player.py, Scene.py, Animation.py y ColorManager.py.", caution: "Demostración formativa; no se presenta como videojuego publicado ni como aplicación móvil.", seoTitle: "Juego modular con Python y Pygame | IoCode", seoDescription: "Caso Python con Pygame, escenas, jugador, animaciones y gestión de color organizado en módulos pequeños y verificables.", keywords: ["Python", "Pygame", "scene management", "animación", "programación modular"], schemaType: "SoftwareSourceCode", imageAlt: "Módulos Python de escenas, jugador y animación del juego RompeCajas" },
+      en: { slug: "python-break-boxes-game", title: "Break Boxes: modular Python game", type: "Python, scenes and animation", summary: "Small game structured into separate modules for player state, scenes, animations and colour management.", problem: "Avoid mixing the game loop, player state, animation and visual representation inside one script.", solution: "Separate Python modules for Player, Scene, Animation and ColorManager coordinated by the entry point.", technicalRole: "Modular organization, interaction logic, scenes and animation with Python.", businessValue: "The repository demonstrates functional decomposition across six Python sources instead of one monolithic script.", evidenceSummary: "Public code with main.py, Player.py, Scene.py, Animation.py and ColorManager.py.", caution: "Learning demonstration, not a published game or mobile application.", seoTitle: "Modular game with Python and Pygame | IoCode", seoDescription: "Python case with Pygame, scenes, player state, animations and colour management organized into small, verifiable modules.", keywords: ["Python", "Pygame", "scene management", "animation", "modular programming"], schemaType: "SoftwareSourceCode", imageAlt: "Python scene, player and animation modules in the Break Boxes game" },
+      de: { slug: "python-spiel-kistenbrechen", title: "Kistenbrechen: modulares Python-Spiel", type: "Python, Szenen und Animation", summary: "Kleines Spiel mit getrennten Modulen für Spielerzustand, Szenen, Animationen und Farbverwaltung.", problem: "Game Loop, Spielerzustand, Animation und visuelle Darstellung nicht in einem Skript vermischen.", solution: "Getrennte Python-Module für Player, Scene, Animation und ColorManager, koordiniert durch den Einstiegspunkt.", technicalRole: "Modulare Organisation, Interaktionslogik, Szenen und Animation mit Python.", businessValue: "Das Repository belegt funktionale Zerlegung in sechs Python-Quellen statt eines monolithischen Skripts.", evidenceSummary: "Öffentlicher Code mit main.py, Player.py, Scene.py, Animation.py und ColorManager.py.", caution: "Lerndemonstration, kein veröffentlichtes Spiel und keine Mobile-Anwendung.", seoTitle: "Modulares Spiel mit Python und Pygame | IoCode", seoDescription: "Python-Fallstudie mit Pygame, Szenen, Spielerzustand, Animationen und Farbverwaltung in kleinen, prüfbaren Modulen.", keywords: ["Python", "Pygame", "Szenenverwaltung", "Animation", "modulare Programmierung"], schemaType: "SoftwareSourceCode", imageAlt: "Python-Module für Szenen, Spieler und Animation im Spiel Kistenbrechen" }
     }
   }
 ];
 
+function createProject(seed: ProjectSeed, locale: Locale): Project {
+  const copy = seed.copy[locale];
+  return {
+    ...copy,
+    key: seed.key,
+    path: `${projectBasePaths[locale]}${copy.slug}/`,
+    technologies: seed.technologies,
+    capabilities: seed.capabilities,
+    evidenceLevel: "public-repository",
+    claimLevel: seed.claimLevel,
+    publicLinks: [{ label: "GitHub", href: `https://github.com/dadd86/${seed.repository}`, type: "repository", external: true }],
+    featured: seed.featured,
+    schemaType: "SoftwareSourceCode"
+  };
+}
+
 export const projects: Record<Locale, Project[]> = {
-  es: projectSeeds.map((project) => toProject(project, "es")),
-  en: projectSeeds.map((project) => toProject(project, "en")),
-  de: projectSeeds.map((project) => toProject(project, "de"))
+  es: projectSeeds.map((seed) => createProject(seed, "es")),
+  en: projectSeeds.map((seed) => createProject(seed, "en")),
+  de: projectSeeds.map((seed) => createProject(seed, "de"))
 };
+
+export function getProjectByKey(key: ProjectKey, locale: Locale): Project {
+  const project = projects[locale].find((candidate) => candidate.key === key);
+  if (!project) throw new Error(`Unknown project key: ${key}`);
+  return project;
+}
+
+export function getProjectAlternatePaths(key: ProjectKey): Record<Locale, string> {
+  return {
+    es: getProjectByKey(key, "es").path,
+    en: getProjectByKey(key, "en").path,
+    de: getProjectByKey(key, "de").path
+  };
+}
+
+export function getProjectStaticPaths() {
+  return projectSeeds.flatMap((seed) =>
+    (["es", "en", "de"] as Locale[]).map((locale) => {
+      const project = getProjectByKey(seed.key, locale);
+      return {
+        params: {
+          locale,
+          section: projectBasePaths[locale].split("/").filter(Boolean)[1],
+          project: project.slug
+        },
+        props: { locale, project }
+      };
+    })
+  );
+}
