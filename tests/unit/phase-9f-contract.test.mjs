@@ -22,7 +22,8 @@ test("production legal approval requires identity and provider disclosures", asy
     "PUBLIC_LEGAL_APPROVED",
     "PUBLIC_PRIVACY_APPROVED",
     "PUBLIC_LEGAL_FORM",
-    "PUBLIC_LEGAL_REPRESENTATIVE",
+    "PUBLIC_PRIVACY_AUTHORITY_NAME",
+    "PUBLIC_PRIVACY_AUTHORITY_URL",
     "PUBLIC_LEGAL_STREET",
     "PUBLIC_HOSTING_PROVIDER",
     "PUBLIC_EMAIL_PROVIDER",
@@ -57,14 +58,15 @@ test("RAT is maintained and DSAR uses the GDPR one-month deadline", async () => 
   assert.match(operations, /Verificar identidad de forma proporcional/u);
 });
 
-test("unknown DPA and transfer facts remain explicit production blockers", async () => {
+test("verified DPAs and unresolved providers have distinct gate states", async () => {
   const governance = JSON.parse(await read("config/privacy-governance.json"));
   const productionGate = await read("tools/qa-production-config.mjs");
   assert.equal(governance.controllerApproval, "pending");
-  for (const provider of governance.providers) {
-    assert.equal(provider.dpaStatus, "pending");
-    assert.ok(["blocked", "feature-disabled"].includes(provider.productionGate));
-  }
+  const ready = governance.providers.filter((provider) => provider.productionGate === "ready");
+  const unresolved = governance.providers.filter((provider) => provider.productionGate !== "ready");
+  assert.deepEqual(ready.map((provider) => provider.service), ["hosting", "email"]);
+  assert.ok(ready.every((provider) => provider.dpaStatus.startsWith("executed")));
+  assert.ok(unresolved.every((provider) => ["blocked", "feature-disabled"].includes(provider.productionGate)));
   assert.match(productionGate, /governance\.controllerApproval !== "approved"/u);
   assert.match(productionGate, /provider\.productionGate !== "ready"/u);
 });

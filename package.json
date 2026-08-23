@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check",
+    "check": "npm run internal:qa:privacy && astro check",
     "build": "astro build",
     "build:preview": "astro build --mode preview",
     "preview": "astro preview",
@@ -20,6 +20,7 @@
     "internal:env:coverage": "node --test --experimental-test-coverage tests/unit/check-env-parity.test.mjs",
     "internal:env:check": "node tools/check-env-parity.js",
     "internal:qa:config:prod": "node tools/qa-production-config.mjs",
+    "internal:qa:privacy": "node tools/qa-privacy-gate.mjs && node --test tests/unit/privacy-gate.test.mjs",
     "internal:qa:phase-9a": "node --test tests/unit/phase-9a-contract.test.mjs && npm run internal:qa:config:prod",
     "internal:qa:dns-tls": "node tools/validate-dns-tls.mjs",
     "internal:qa:phase-9b:static": "node --test tests/unit/i18n-contract.test.mjs && node tools/qa-phase-9b.mjs",

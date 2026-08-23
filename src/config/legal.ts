@@ -17,11 +17,7 @@ export const legalConfig = {
   privacyApproved: enabled(environment.PUBLIC_PRIVACY_APPROVED),
   providerName: value(environment.PUBLIC_LEGAL_NAME) || "Diego Armando Diaz Devia",
   businessName: value(environment.PUBLIC_LEGAL_BUSINESS_NAME) || "IoCode SOLUTIONS",
-  legalForm: value(environment.PUBLIC_LEGAL_FORM),
-  legalRepresentative:
-    value(environment.PUBLIC_LEGAL_REPRESENTATIVE) ||
-    value(environment.PUBLIC_LEGAL_NAME) ||
-    "Diego Armando Diaz Devia",
+  legalForm: value(environment.PUBLIC_LEGAL_FORM) || "Einzelunternehmen",
   street:
     value(environment.PUBLIC_LEGAL_STREET) ||
     "c/o IP-Management #11289, Ludwig-Erhard-Straße 18",
@@ -35,15 +31,9 @@ export const legalConfig = {
     "contact@iocode-solutions.com",
   phone: value(environment.PUBLIC_LEGAL_PHONE),
   vatId: value(environment.PUBLIC_LEGAL_VAT_ID) || "DE461105535",
-  registerName: value(environment.PUBLIC_LEGAL_REGISTER_NAME),
-  registerNumber: value(environment.PUBLIC_LEGAL_REGISTER_NUMBER),
-  supervisoryAuthorityName:
-    value(environment.PUBLIC_PRIVACY_AUTHORITY_NAME) ||
-    "Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit",
-  supervisoryAuthorityUrl:
-    value(environment.PUBLIC_PRIVACY_AUTHORITY_URL) ||
-    "https://datenschutz-hamburg.de/service-information/beschwerde-oder-hinweis-einreichen",
-  legalVersion: "2026-08-05.1"
+  supervisoryAuthorityName: value(environment.PUBLIC_PRIVACY_AUTHORITY_NAME),
+  supervisoryAuthorityUrl: value(environment.PUBLIC_PRIVACY_AUTHORITY_URL),
+  legalVersion: "2026-08-23.1"
 };
 
 export const publicProviderDisclosures: PublicProviderDisclosure[] = [
@@ -53,13 +43,15 @@ export const publicProviderDisclosures: PublicProviderDisclosure[] = [
     processingLocation: value(environment.PUBLIC_HOSTING_LOCATION) || "Germany (EEA)",
     transferSafeguard:
       value(environment.PUBLIC_HOSTING_TRANSFER_SAFEGUARD) ||
-      "EEA processing; Article 28 DPA verification required"
+      "EEA hosting; Article 28 DPA executed"
   },
   {
     service: "email",
-    provider: value(environment.PUBLIC_EMAIL_PROVIDER),
-    processingLocation: value(environment.PUBLIC_EMAIL_LOCATION),
-    transferSafeguard: value(environment.PUBLIC_EMAIL_TRANSFER_SAFEGUARD)
+    provider: value(environment.PUBLIC_EMAIL_PROVIDER) || "Zoho Corporation GmbH",
+    processingLocation: value(environment.PUBLIC_EMAIL_LOCATION) || "EEA data centres; support access may occur from India",
+    transferSafeguard:
+      value(environment.PUBLIC_EMAIL_TRANSFER_SAFEGUARD) ||
+      "Article 28 DPA executed 2026-08-19; Zoho DPA section 5.2 requires a valid transfer basis"
   },
   {
     service: "dns",
@@ -81,14 +73,15 @@ const requiredLegalValues: Array<[string, string]> = [
   ["PUBLIC_LEGAL_NAME", value(environment.PUBLIC_LEGAL_NAME)],
   ["PUBLIC_LEGAL_BUSINESS_NAME", value(environment.PUBLIC_LEGAL_BUSINESS_NAME)],
   ["PUBLIC_LEGAL_FORM", legalConfig.legalForm],
-  ["PUBLIC_LEGAL_REPRESENTATIVE", legalConfig.legalRepresentative],
   ["PUBLIC_LEGAL_STREET", legalConfig.street],
   ["PUBLIC_LEGAL_POSTAL_CODE", legalConfig.postalCode],
   ["PUBLIC_LEGAL_CITY", value(environment.PUBLIC_LEGAL_CITY)],
   ["PUBLIC_LEGAL_COUNTRY", value(environment.PUBLIC_LEGAL_COUNTRY)],
   ["PUBLIC_LEGAL_EMAIL", value(environment.PUBLIC_LEGAL_EMAIL)],
   ["PUBLIC_PRIVACY_EMAIL", legalConfig.privacyEmail],
-  ["PUBLIC_LEGAL_VAT_ID", legalConfig.vatId]
+  ["PUBLIC_LEGAL_VAT_ID", legalConfig.vatId],
+  ["PUBLIC_PRIVACY_AUTHORITY_NAME", legalConfig.supervisoryAuthorityName],
+  ["PUBLIC_PRIVACY_AUTHORITY_URL", legalConfig.supervisoryAuthorityUrl]
 ];
 
 for (const provider of publicProviderDisclosures) {

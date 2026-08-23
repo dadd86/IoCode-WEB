@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-08-05",
+  "reviewedAt": "2026-08-23",
   "controllerApproval": "pending",
   "treatments": [
     {
@@ -25,8 +25,8 @@
       "legalBasis": "GDPR Article 6(1)(b) or Article 6(1)(f), depending on context",
       "legitimateInterest": "responding to legitimate business communications",
       "recipients": ["email provider", "authorised IoCode personnel"],
-      "retention": "six months after closure when no contract follows; statutory periods for contractual records",
-      "internationalTransfer": "blocked until email provider location and safeguard are verified"
+      "retention": "controller deletes or organises messages when no longer necessary; after active deletion Zoho's routine cycle may take up to six months and backup deletion up to three additional months; statutory periods apply to contractual records",
+      "internationalTransfer": "EEA storage; Zoho group access from India for support and debugging is covered by the valid transfer basis Zoho must ensure under DPA section 5.2"
     },
     {
       "id": "search-console",
@@ -67,25 +67,25 @@
     {
       "service": "hosting",
       "provider": "Hetzner Online GmbH",
-      "role": "processor expected",
+      "role": "processor",
       "dpaRequired": true,
-      "dpaStatus": "pending",
+      "dpaStatus": "executed",
       "processingLocation": "Germany (EEA)",
-      "securityEvidence": "Hetzner reports ISO/IEC 27001:2022 certification; this is provider evidence, not IoCode certification or DPA approval",
+      "securityEvidence": "contractual evidence refers to ISO 27001 certification, section 8a BSI-KritisV and BSI C5 Type 2; this is provider evidence, not IoCode certification",
       "subprocessorsReviewed": false,
-      "transferMechanism": "EEA processing; Article 28 DPA verification pending",
-      "productionGate": "blocked"
+      "transferMechanism": "EEA hosting; Article 28 DPA executed",
+      "productionGate": "ready"
     },
     {
       "service": "email",
-      "provider": "PENDING",
-      "role": "processor expected",
+      "provider": "Zoho Corporation GmbH",
+      "role": "processor",
       "dpaRequired": true,
-      "dpaStatus": "pending",
-      "processingLocation": "PENDING",
-      "subprocessorsReviewed": false,
-      "transferMechanism": "PENDING",
-      "productionGate": "blocked"
+      "dpaStatus": "executed-2026-08-19",
+      "processingLocation": "EEA data centres; group support access may occur from India",
+      "subprocessorsReviewed": true,
+      "transferMechanism": "Zoho DPA section 5.2 requires Zoho to ensure a valid transfer basis for Schedule 2 group access from India",
+      "productionGate": "ready"
     },
     {
       "service": "DNS/CDN",

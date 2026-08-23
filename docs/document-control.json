@@ -197,6 +197,14 @@
       "type": "adr"
     },
     {
+      "path": "adr/0007-commit-message-traceability.md",
+      "type": "adr"
+    },
+    {
+      "path": "adr/0008-retain-history-and-mitigate-email-exposure.md",
+      "type": "adr"
+    },
+    {
       "path": "audits/R0_BASELINE.md",
       "type": "historical"
     },
@@ -217,6 +225,10 @@
       "type": "historical"
     },
     {
+      "path": "audits/R_POST_PRIVACY_DEBT.md",
+      "type": "historical"
+    },
+    {
       "path": "testing/phase-6-closure.tdd.md",
       "type": "historical"
     },
@@ -227,6 +239,11 @@
     {
       "path": "testing/r2-recovery-g03.tdd.md",
       "type": "historical"
+    },
+    {
+      "path": "testing/r-privacy-gate.tdd.md",
+      "type": "security",
+      "maxAgeDays": 90
     },
     {
       "path": "testing/seo-geo-rag.tdd.md",

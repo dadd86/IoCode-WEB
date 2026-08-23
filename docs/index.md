@@ -41,6 +41,10 @@
 
 - [SECURITY](../SECURITY.md): controles técnicos y límites.
 - [ADR-0006](adr/0006-production-hosting.md): elección de VPS Docker frente a hosting administrado.
+- [ADR-0007](adr/0007-commit-message-traceability.md): divergencia documentada entre el mensaje y el diff de `14e70ef`.
+- [ADR-0008](adr/0008-retain-history-and-mitigate-email-exposure.md): aceptación consciente de P3 histórico y controles preventivos sin reescritura.
+- [Gate R-PRIVACIDAD / G-01](testing/r-privacy-gate.tdd.md): patrones, lista exacta privada, fixtures y falsos positivos IPv4.
+- [Lote R-POST-PRIVACY](audits/R_POST_PRIVACY_DEBT.md): inventarios congelados, contratos de expectativa y ocho defectos de README pendientes.
 - [CHANGELOG](../CHANGELOG.md): entregas.
 - [Migración](MIGRATION_FROM_STATIC_HTML.md): contexto histórico.
 - [Evidencia R0](audits/R0_BASELINE.md) y [evidencia R1](testing/r1-document-validator.tdd.md).
@@ -56,4 +60,4 @@
 frescura por `docs/document-control.json`. Los contratos vigentes son los
 documentos resumidos enlazados en “Entrada y arquitectura”.
 
-Las rutas legales están implementadas como draft controlado y permanecen `noindex` hasta completar identidad, forma jurídica, representación, dirección, proveedores/DPA/transferencias y aprobación del propietario. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.
+Las rutas legales están implementadas como draft controlado y permanecen `noindex` hasta resolver X1/X2, completar DNS/registrar y registrar la aprobación formal del propietario. Los DPA de Hetzner y Zoho están documentados como ejecutados; ello no desbloquea por sí solo la publicación. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.

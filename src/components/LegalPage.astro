@@ -50,10 +50,6 @@ const address = [
               <dd>{legalConfig.legalForm || "—"}</dd>
             </div>
             <div>
-              <dt>{copy.representedBy}</dt>
-              <dd>{legalConfig.legalRepresentative || "—"}</dd>
-            </div>
-            <div>
               <dt>{copy.address}</dt>
               <dd>{address.length > 0 ? address.map((line) => <>{line}<br /></>) : "—"}</dd>
             </div>
@@ -68,21 +64,15 @@ const address = [
               <dt>{copy.privacyContact}</dt>
               <dd><a href={`mailto:${legalConfig.privacyEmail}`}>{legalConfig.privacyEmail}</a></dd>
             </div>
-            {(legalConfig.vatId || legalConfig.registerName || legalConfig.registerNumber) && (
+            {legalConfig.vatId && (
               <div>
                 <dt>{copy.optionalRegistration}</dt>
                 <dd>
-                  {legalConfig.vatId && <span>USt-IdNr.: {legalConfig.vatId}<br /></span>}
-                  {legalConfig.registerName && <span>{legalConfig.registerName} </span>}
-                  {legalConfig.registerNumber && <span>{legalConfig.registerNumber}</span>}
+                  <span>USt-IdNr.: {legalConfig.vatId}</span>
                 </dd>
               </div>
             )}
           </dl>
-        </section>
-        <section>
-          <h2>{copy.contentResponsibleTitle}</h2>
-          <p>{copy.contentResponsibleText}</p>
         </section>
         <section>
           <h2>{copy.disputeTitle}</h2>
@@ -132,11 +122,13 @@ const address = [
         <section>
           <h2>{copy.authorityTitle}</h2>
           <p>{copy.authorityText}</p>
-          <p>
-            <a href={legalConfig.supervisoryAuthorityUrl} rel="external">
-              {legalConfig.supervisoryAuthorityName}
-            </a>
-          </p>
+          {legalConfig.supervisoryAuthorityUrl && legalConfig.supervisoryAuthorityName ? (
+            <p>
+              <a href={legalConfig.supervisoryAuthorityUrl} rel="external">
+                {legalConfig.supervisoryAuthorityName}
+              </a>
+            </p>
+          ) : <p>{copy.providerLabels.pending}</p>}
         </section>
         <section>
           <h2>{copy.versionTitle}</h2>

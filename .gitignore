@@ -106,3 +106,41 @@ test-results/
 
 # internal prompt / working notes, not part of release
 Prompt.md
+
+# === R-PRIVACIDAD: documentos legales y de identidad — NUNCA versionados ===
+legal-private/
+docs/legal/private/
+*Vollmacht*
+*vollmacht*
+*AV-Vertrag*
+*av-vertrag*
+*DPA*.pdf
+*dpa*.pdf
+*Auftragsverarbeitung*
+*Gewerbeanmeldung*
+*Steuerbescheid*
+*Finanzamt*
+*ausweis*
+*personalausweis*
+
+# === R-PRIVACIDAD: infraestructura, acceso y despliegue ===
+.env.production
+.env.preview
+.env.local
+.env.staging
+deploy/secrets/
+inventory.ini
+hosts.yml
+hosts.ini
+*.ovpn
+id_rsa*
+id_ed25519*
+known_hosts
+.ssh/
+
+# === R-PRIVACIDAD: lista de denegación local del gate ===
+tools/private-denylist.txt
+
+# === R-PRIVACIDAD: prompts y notas internas de trabajo ===
+PROMPT_*.md
+_prompts/

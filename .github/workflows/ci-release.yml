@@ -29,7 +29,6 @@ jobs:
       PUBLIC_LEGAL_NAME: ${{ vars.PUBLIC_LEGAL_NAME }}
       PUBLIC_LEGAL_BUSINESS_NAME: ${{ vars.PUBLIC_LEGAL_BUSINESS_NAME }}
       PUBLIC_LEGAL_FORM: ${{ vars.PUBLIC_LEGAL_FORM }}
-      PUBLIC_LEGAL_REPRESENTATIVE: ${{ vars.PUBLIC_LEGAL_REPRESENTATIVE }}
       PUBLIC_LEGAL_STREET: ${{ vars.PUBLIC_LEGAL_STREET }}
       PUBLIC_LEGAL_POSTAL_CODE: ${{ vars.PUBLIC_LEGAL_POSTAL_CODE }}
       PUBLIC_LEGAL_CITY: ${{ vars.PUBLIC_LEGAL_CITY }}
@@ -38,8 +37,8 @@ jobs:
       PUBLIC_PRIVACY_EMAIL: ${{ vars.PUBLIC_PRIVACY_EMAIL }}
       PUBLIC_LEGAL_PHONE: ${{ vars.PUBLIC_LEGAL_PHONE }}
       PUBLIC_LEGAL_VAT_ID: ${{ vars.PUBLIC_LEGAL_VAT_ID }}
-      PUBLIC_LEGAL_REGISTER_NAME: ${{ vars.PUBLIC_LEGAL_REGISTER_NAME }}
-      PUBLIC_LEGAL_REGISTER_NUMBER: ${{ vars.PUBLIC_LEGAL_REGISTER_NUMBER }}
+      PUBLIC_PRIVACY_AUTHORITY_NAME: ${{ vars.PUBLIC_PRIVACY_AUTHORITY_NAME }}
+      PUBLIC_PRIVACY_AUTHORITY_URL: ${{ vars.PUBLIC_PRIVACY_AUTHORITY_URL }}
       PUBLIC_HOSTING_PROVIDER: ${{ vars.PUBLIC_HOSTING_PROVIDER }}
       PUBLIC_HOSTING_LOCATION: ${{ vars.PUBLIC_HOSTING_LOCATION }}
       PUBLIC_HOSTING_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_HOSTING_TRANSFER_SAFEGUARD }}
@@ -52,6 +51,8 @@ jobs:
       PUBLIC_REGISTRAR_PROVIDER: ${{ vars.PUBLIC_REGISTRAR_PROVIDER }}
       PUBLIC_REGISTRAR_LOCATION: ${{ vars.PUBLIC_REGISTRAR_LOCATION }}
       PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD }}
+      PRIVACY_DENYLIST_CONTENT: ${{ secrets.PRIVACY_DENYLIST_CONTENT }}
+      PRIVACY_DENYLIST_REQUIRED: "1"
       ASTRO_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout exact commit
@@ -70,10 +71,12 @@ jobs:
           npm run internal:typecheck:tests
           npm run internal:env:test
           npm run internal:docs:test
+          npm run internal:qa:privacy
           node --test tests/unit/phase-9a-contract.test.mjs
       - name: Production build and leak gate
         run: |
           npm run build
+          npm run internal:qa:privacy
           npm run internal:qa:config:prod
           npm run internal:qa:phase-9b:static
           npm run internal:qa:phase-9c:static
@@ -107,7 +110,6 @@ jobs:
             --build-arg PUBLIC_LEGAL_NAME="${PUBLIC_LEGAL_NAME}" \
             --build-arg PUBLIC_LEGAL_BUSINESS_NAME="${PUBLIC_LEGAL_BUSINESS_NAME}" \
             --build-arg PUBLIC_LEGAL_FORM="${PUBLIC_LEGAL_FORM}" \
-            --build-arg PUBLIC_LEGAL_REPRESENTATIVE="${PUBLIC_LEGAL_REPRESENTATIVE}" \
             --build-arg PUBLIC_LEGAL_STREET="${PUBLIC_LEGAL_STREET}" \
             --build-arg PUBLIC_LEGAL_POSTAL_CODE="${PUBLIC_LEGAL_POSTAL_CODE}" \
             --build-arg PUBLIC_LEGAL_CITY="${PUBLIC_LEGAL_CITY}" \
@@ -116,8 +118,8 @@ jobs:
             --build-arg PUBLIC_PRIVACY_EMAIL="${PUBLIC_PRIVACY_EMAIL}" \
             --build-arg PUBLIC_LEGAL_PHONE="${PUBLIC_LEGAL_PHONE}" \
             --build-arg PUBLIC_LEGAL_VAT_ID="${PUBLIC_LEGAL_VAT_ID}" \
-            --build-arg PUBLIC_LEGAL_REGISTER_NAME="${PUBLIC_LEGAL_REGISTER_NAME}" \
-            --build-arg PUBLIC_LEGAL_REGISTER_NUMBER="${PUBLIC_LEGAL_REGISTER_NUMBER}" \
+            --build-arg PUBLIC_PRIVACY_AUTHORITY_NAME="${PUBLIC_PRIVACY_AUTHORITY_NAME}" \
+            --build-arg PUBLIC_PRIVACY_AUTHORITY_URL="${PUBLIC_PRIVACY_AUTHORITY_URL}" \
             --build-arg PUBLIC_HOSTING_PROVIDER="${PUBLIC_HOSTING_PROVIDER}" \
             --build-arg PUBLIC_HOSTING_LOCATION="${PUBLIC_HOSTING_LOCATION}" \
             --build-arg PUBLIC_HOSTING_TRANSFER_SAFEGUARD="${PUBLIC_HOSTING_TRANSFER_SAFEGUARD}" \

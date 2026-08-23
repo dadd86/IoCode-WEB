@@ -4,32 +4,31 @@ import test from "node:test";
 
 const read = (path) => readFile(path, "utf8");
 
-test("Hamburg legal identity is the versioned default without bypassing approval", async () => {
-  const [config, productionEnv, dockerfile, productionGate] = await Promise.all([
+test("sole-proprietor legal model is versioned while example values remain empty", async () => {
+  const [config, productionEnv, legalPage, productionGate] = await Promise.all([
     read("src/config/legal.ts"),
     read(".env.production.example"),
-    read("Docker/Dockerfile"),
+    read("src/components/LegalPage.astro"),
     read("tools/qa-production-config.mjs")
   ]);
 
-  for (const source of [config, productionEnv, dockerfile]) {
-    assert.match(source, /c\/o IP-Management #11289, Ludwig-Erhard-Straße 18/u);
-    assert.match(source, /20459/u);
-    assert.match(source, /Hamburg/u);
-    assert.match(source, /DE461105535/u);
+  for (const variable of [
+    "PUBLIC_LEGAL_NAME", "PUBLIC_LEGAL_BUSINESS_NAME", "PUBLIC_LEGAL_FORM",
+    "PUBLIC_LEGAL_STREET", "PUBLIC_LEGAL_POSTAL_CODE", "PUBLIC_LEGAL_CITY",
+    "PUBLIC_LEGAL_COUNTRY", "PUBLIC_LEGAL_EMAIL", "PUBLIC_LEGAL_VAT_ID"
+  ]) {
+    assert.match(productionEnv, new RegExp(`^${variable}=$`, "mu"));
   }
 
-  assert.match(config, /Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit/u);
-  assert.match(config, /https:\/\/datenschutz-hamburg\.de\/service-information\/beschwerde-oder-hinweis-einreichen/u);
-  assert.match(config, /legalVersion: "2026-08-05\.1"/u);
-  assert.match(productionEnv, /PUBLIC_LEGAL_NAME=Diego Armando Diaz Devia/u);
-  assert.match(productionEnv, /PUBLIC_LEGAL_REPRESENTATIVE=Diego Armando Diaz Devia/u);
+  assert.match(config, /legalForm: value\(environment\.PUBLIC_LEGAL_FORM\) \|\| "Einzelunternehmen"/u);
+  assert.match(config, /legalVersion: "2026-08-23\.1"/u);
+  assert.doesNotMatch(`${config}\n${legalPage}`, /legalRepresentative|registerName|registerNumber|contentResponsible/iu);
   assert.match(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
   assert.match(config, /PUBLIC_LEGAL_APPROVED/u);
   assert.match(config, /PUBLIC_PRIVACY_APPROVED/u);
 });
 
-test("Hetzner disclosure attributes ISO evidence to the provider without bypassing the DPA gate", async () => {
+test("executed Hetzner and Zoho DPAs are disclosed without overclaiming provider evidence", async () => {
   const [config, governance, legalCopy] = await Promise.all([
     read("src/config/legal.ts"),
     read("config/privacy-governance.json"),
@@ -39,12 +38,12 @@ test("Hetzner disclosure attributes ISO evidence to the provider without bypassi
   assert.match(config, /Hetzner Online GmbH/u);
   assert.match(config, /Germany \(EEA\)/u);
   assert.match(governance, /"provider": "Hetzner Online GmbH"/u);
-  assert.match(governance, /"dpaStatus": "pending"/u);
-  assert.match(governance, /"securityEvidence": "Hetzner reports ISO\/IEC 27001:2022 certification/u);
-  assert.ok(
-    (legalCopy.match(/ISO\/IEC 27001:2022/gu) || []).length >= 3,
-    "each locale must attribute the ISO evidence to Hetzner"
-  );
+  assert.match(governance, /"dpaStatus": "executed"/u);
+  assert.match(governance, /"provider": "Zoho Corporation GmbH"/u);
+  assert.match(governance, /"dpaStatus": "executed-2026-08-19"/u);
+  assert.match(governance, /BSI C5 Type 2/u);
+  assert.match(legalCopy, /Schedule 2/u);
+  assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /27001:2022/u);
   assert.doesNotMatch(
     legalCopy,
     /IoCode SOLUTIONS (?:está|is|ist) (?:certificada|certified|zertifiziert)/iu
@@ -52,22 +51,18 @@ test("Hetzner disclosure attributes ISO evidence to the provider without bypassi
   assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /TÜV Rheinland/iu);
 });
 
-test("Hamburg supervisory authority replaces the stale Nordrhein-Westfalen wording", async () => {
-  const [legalCopy, ropa, site, delivery] = await Promise.all([
+test("supervisory authority remains an explicit X1 blocker", async () => {
+  const [config, legalCopy, ropa] = await Promise.all([
+    read("src/config/legal.ts"),
     read("src/data/legal.ts"),
-    read("docs/ROPA_INVENTORY.md"),
-    read("src/data/site.ts"),
-    read("docs/PHASE_9B_DELIVERY.md")
+    read("docs/ROPA_INVENTORY.md")
   ]);
 
-  assert.doesNotMatch(`${legalCopy}\n${ropa}\n${site}\n${delivery}`, /Nordrhein-Westfalen|Aachen/iu);
-  assert.ok(
-    (legalCopy.match(/Hamburg/gu) || []).length >= 3,
-    "all three locale copies must point to Hamburg"
-  );
-  assert.match(site, /legalName: "Diego Armando Diaz Devia"/u);
-  assert.match(site, /city: "Hamburg"/u);
-  assert.match(site, /region: "Hamburg"/u);
+  assert.match(config, /PUBLIC_PRIVACY_AUTHORITY_NAME/u);
+  assert.match(config, /PUBLIC_PRIVACY_AUTHORITY_URL/u);
+  assert.doesNotMatch(config, /datenschutz-hamburg\.de/u);
+  assert.ok((legalCopy.match(/X1/gu) || []).length >= 3);
+  assert.match(ropa, /X1 permanece pendiente/u);
 });
 
 test("requested short privacy routes redirect to localized canonical pages", async () => {

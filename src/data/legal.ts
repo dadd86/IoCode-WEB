@@ -23,13 +23,10 @@ type LegalCopy = {
   providerName: string;
   businessName: string;
   legalForm: string;
-  representedBy: string;
   address: string;
   contact: string;
   privacyContact: string;
   optionalRegistration: string;
-  contentResponsibleTitle: string;
-  contentResponsibleText: string;
   disputeTitle: string;
   disputeText: string;
   providerLabels: ProviderLabels;
@@ -50,14 +47,10 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     providerName: "Titular",
     businessName: "Nombre comercial",
     legalForm: "Forma jurídica",
-    representedBy: "Representación legal",
     address: "Dirección postal",
     contact: "Contacto electrónico rápido",
     privacyContact: "Canal para derechos de protección de datos",
     optionalRegistration: "Datos registrales y fiscales, cuando sean aplicables",
-    contentResponsibleTitle: "Responsable editorial",
-    contentResponsibleText:
-      "Responsable del contenido conforme al § 18(2) MStV: la persona indicada como titular y representante legal.",
     disputeTitle: "Resolución de litigios de consumo",
     disputeText:
       "Salvo obligación legal específica, el proveedor no participa en procedimientos de resolución de litigios ante una junta arbitral de consumo.",
@@ -93,7 +86,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         title: "3. Contacto por correo electrónico",
         paragraphs: [
           "El formulario no transmite datos a un backend de IoCode SOLUTIONS. Genera localmente un enlace mailto; el envío comienza únicamente cuando la persona confirma la acción en su cliente de correo.",
-          "Tras la recepción del correo se tratan nombre, dirección de correo, tipo de proyecto, mensaje y metadatos del correo para responder consultas y, cuando proceda, preparar o ejecutar un contrato (art. 6.1.b RGPD) o atender comunicaciones empresariales legítimas (art. 6.1.f RGPD). Las consultas sin contrato se eliminan normalmente seis meses después de cerrarse; la documentación contractual o legal se conserva durante los plazos obligatorios aplicables."
+          "Tras la recepción del correo se tratan nombre, dirección de correo, tipo de proyecto, mensaje y metadatos del correo para responder consultas y, cuando proceda, preparar o ejecutar un contrato (art. 6.1.b RGPD) o atender comunicaciones empresariales legítimas (art. 6.1.f RGPD). El responsable elimina u organiza los mensajes en su buzón según dejen de ser necesarios; la documentación contractual o legal se conserva durante los plazos obligatorios aplicables. Tras una eliminación activa, el ciclo ordinario del encargado puede tardar hasta seis meses y las copias de seguridad hasta tres meses adicionales."
         ]
       },
       {
@@ -119,8 +112,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "7. Destinatarios, encargados y transferencias",
         paragraphs: [
-          "Los datos sólo se comunican a proveedores necesarios para hosting, correo, DNS/CDN, registro de dominio y soporte técnico bajo instrucciones y contratos aplicables. Si un proveedor trata datos fuera del EEE, debe existir una decisión de adecuación válida o garantías apropiadas, como Cláusulas Contractuales Tipo, junto con la evaluación de transferencia necesaria.",
-          "Hetzner Online GmbH declara que su sistema de gestión de seguridad de la información cuenta con certificación ISO/IEC 27001:2022. Esta certificación pertenece al proveedor, no a IoCode SOLUTIONS, y no sustituye la verificación y aceptación del contrato de encargo conforme al artículo 28 RGPD antes de producción."
+          "Los datos sólo se comunican a proveedores necesarios para hosting, correo, DNS/CDN, registro de dominio y soporte técnico bajo instrucciones y contratos aplicables. Zoho Corporation GmbH, II. Hagen 7, 45127 Essen, Alemania, presta el buzón corporativo como encargado conforme al artículo 28 RGPD; el DPA se firmó el 19 de agosto de 2026. Los datos se almacenan en centros del EEE. El Schedule 2 prevé acceso por entidades del grupo en India para soporte y depuración, y la sección 5.2 del DPA obliga a Zoho a garantizar una base válida para la transferencia.",
+          "Hetzner Online GmbH aloja el sitio como encargado conforme al artículo 28 RGPD con DPA ejecutado. La evidencia contractual refiere certificación ISO 27001, § 8a BSI-KritisV y BSI C5 Type 2; son evidencias del proveedor y no certificaciones de IoCode SOLUTIONS."
         ]
       },
       {
@@ -136,7 +129,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "Portabilidad cuando el tratamiento automatizado se base en consentimiento o contrato.",
           "Oposición al tratamiento basado en interés legítimo.",
           "Retirada del consentimiento sin afectar el tratamiento anterior, cuando esa sea la base.",
-          "Reclamación ante una autoridad de control, en particular la autoridad de Hamburgo indicada a continuación."
+          "Reclamación ante una autoridad de control. La autoridad competente está pendiente de determinación jurídica por la diferencia entre residencia y dirección de servicio."
         ]
       },
       {
@@ -147,11 +140,11 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       }
     ],
     authorityTitle: "Autoridad de control",
-    authorityText: "Las reclamaciones pueden dirigirse a la autoridad competente del domicilio del responsable, en particular:",
+    authorityText: "La autoridad competente está pendiente de determinación jurídica (X1). Este dato permanece bloqueado y no se infiere de la dirección de servicio.",
     versionTitle: "Versión e historial legal",
     versionSummary:
-      "Versión 2026-08-05.1 — IoCode SOLUTIONS — autoridad de Hamburgo, evidencia ISO/IEC 27001:2022 de Hetzner y transparencia del flujo local de contacto.",
-    lastUpdated: "Última actualización: 5 de agosto de 2026."
+      "Versión 2026-08-23.1 — IoCode SOLUTIONS — forma unipersonal, DPA de Hetzner y Zoho documentados; autoridad competente pendiente de X1.",
+    lastUpdated: "Última actualización: 23 de agosto de 2026."
   },
   en: {
     incompleteTitle: "Legal information awaiting approval",
@@ -161,14 +154,10 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     providerName: "Provider",
     businessName: "Trading name",
     legalForm: "Legal form",
-    representedBy: "Legal representation",
     address: "Postal address",
     contact: "Rapid electronic contact",
     privacyContact: "Data-subject rights channel",
     optionalRegistration: "Register and tax information, where applicable",
-    contentResponsibleTitle: "Editorial responsibility",
-    contentResponsibleText:
-      "Person responsible for content under section 18(2) MStV: the person identified as provider and legal representative above.",
     disputeTitle: "Consumer dispute resolution",
     disputeText:
       "Unless a specific legal obligation applies, the provider does not participate in dispute-resolution proceedings before a consumer arbitration board.",
@@ -204,7 +193,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         title: "3. Contact by email",
         paragraphs: [
           "The form sends nothing to an IoCode SOLUTIONS backend. It generates a mailto link locally; transmission begins only after the person confirms the action in their email client.",
-          "After the email is received, name, email address, project type, message and email metadata are processed to answer enquiries and, where applicable, take steps before or perform a contract (Article 6(1)(b) GDPR), or under the legitimate interest in business communication (Article 6(1)(f) GDPR). Enquiries without a contract are normally erased six months after closure; contractual or legally required records are retained for the applicable statutory periods."
+          "After an email is received, name, email address, project type, message and email metadata are processed to answer enquiries and, where applicable, take steps before or perform a contract (Article 6(1)(b) GDPR), or under the legitimate interest in business communication (Article 6(1)(f) GDPR). The controller deletes or organises messages when they are no longer necessary; contractual or legally required records follow the applicable statutory periods. After active deletion, the processor's routine cycle may take up to six months and backup deletion up to three additional months."
         ]
       },
       {
@@ -230,8 +219,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "7. Recipients, processors and transfers",
         paragraphs: [
-          "Data is disclosed only to providers necessary for hosting, email, DNS/CDN, domain registration and technical support under applicable instructions and contracts. Where a provider processes data outside the EEA, a valid adequacy decision or appropriate safeguards such as Standard Contractual Clauses must apply, together with any required transfer assessment.",
-          "Hetzner Online GmbH states that its information security management system is certified to ISO/IEC 27001:2022. This certification belongs to the provider, not to IoCode SOLUTIONS, and does not replace verification and acceptance of the Article 28 GDPR data processing agreement before production."
+          "Data is disclosed only to providers necessary for hosting, email, DNS/CDN, domain registration and technical support under applicable instructions and contracts. Zoho Corporation GmbH, II. Hagen 7, 45127 Essen, Germany, supplies the corporate mailbox as an Article 28 GDPR processor under a DPA signed on 19 August 2026. Data is stored in EEA data centres. Schedule 2 allows Zoho group entities in India to access data for support and debugging, and DPA section 5.2 requires Zoho to ensure a valid transfer basis.",
+          "Hetzner Online GmbH hosts the site as an Article 28 GDPR processor under an executed DPA. The contractual evidence refers to ISO 27001 certification, section 8a BSI-KritisV and BSI C5 Type 2; these are provider evidence, not IoCode SOLUTIONS certifications."
         ]
       },
       {
@@ -247,7 +236,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "Data portability where automated processing is based on consent or contract.",
           "Objection to processing based on legitimate interests.",
           "Withdrawal of consent without affecting earlier processing, where consent is the basis.",
-          "A complaint to a supervisory authority, in particular the Hamburg authority listed below."
+          "A complaint to a supervisory authority. The competent authority awaits legal determination because residence and service address differ."
         ]
       },
       {
@@ -258,11 +247,11 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       }
     ],
     authorityTitle: "Supervisory authority",
-    authorityText: "Complaints may be submitted to the authority competent for the controller's establishment, in particular:",
+    authorityText: "The competent authority awaits legal determination (X1). It is not inferred from the service address.",
     versionTitle: "Version and legal history",
     versionSummary:
-      "Version 2026-08-05.1 — IoCode SOLUTIONS — Hamburg authority, Hetzner ISO/IEC 27001:2022 evidence and transparency of the local contact flow.",
-    lastUpdated: "Last updated: 5 August 2026."
+      "Version 2026-08-23.1 — IoCode SOLUTIONS — sole proprietorship and executed Hetzner and Zoho DPAs documented; competent authority pending X1.",
+    lastUpdated: "Last updated: 23 August 2026."
   },
   de: {
     incompleteTitle: "Rechtliche Angaben noch nicht freigegeben",
@@ -272,14 +261,10 @@ export const legalCopy: Record<Locale, LegalCopy> = {
     providerName: "Diensteanbieter",
     businessName: "Geschäftsbezeichnung",
     legalForm: "Rechtsform",
-    representedBy: "Vertretungsberechtigte Person",
     address: "Ladungsfähige Anschrift",
     contact: "Schnelle elektronische Kontaktaufnahme",
     privacyContact: "Kanal für Betroffenenrechte",
     optionalRegistration: "Register- und Steuerangaben, soweit anwendbar",
-    contentResponsibleTitle: "Inhaltlich verantwortlich",
-    contentResponsibleText:
-      "Verantwortlich für den Inhalt gemäß § 18 Abs. 2 MStV: die oben als Diensteanbieter und vertretungsberechtigte Person genannte Person.",
     disputeTitle: "Verbraucherstreitbeilegung",
     disputeText:
       "Soweit keine besondere gesetzliche Verpflichtung besteht, nimmt der Anbieter nicht an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil.",
@@ -315,7 +300,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         title: "3. Kontakt per E-Mail",
         paragraphs: [
           "Das Formular übermittelt nichts an ein Backend von IoCode SOLUTIONS. Es erzeugt lokal einen mailto-Link; die Übermittlung beginnt erst nach Bestätigung im E-Mail-Programm der Person.",
-          "Nach Eingang der E-Mail werden Name, E-Mail-Adresse, Projekttyp, Nachricht und E-Mail-Metadaten zur Beantwortung und gegebenenfalls zur Vertragsanbahnung oder -durchführung (Art. 6 Abs. 1 lit. b DSGVO) oder aufgrund des berechtigten Interesses an geschäftlicher Kommunikation (Art. 6 Abs. 1 lit. f DSGVO) verarbeitet. Anfragen ohne Vertrag werden regelmäßig sechs Monate nach Abschluss gelöscht; Vertragsunterlagen oder gesetzlich erforderliche Nachweise gelten nach den einschlägigen Fristen."
+          "Nach Eingang der E-Mail werden Name, E-Mail-Adresse, Projekttyp, Nachricht und E-Mail-Metadaten zur Beantwortung und gegebenenfalls zur Vertragsanbahnung oder -durchführung (Art. 6 Abs. 1 lit. b DSGVO) oder aufgrund des berechtigten Interesses an geschäftlicher Kommunikation (Art. 6 Abs. 1 lit. f DSGVO) verarbeitet. Der Verantwortliche löscht oder ordnet Nachrichten im Postfach, sobald sie nicht mehr erforderlich sind; Vertragsunterlagen und gesetzliche Nachweise folgen den einschlägigen Fristen. Nach aktiver Löschung kann der reguläre Bereinigungszyklus des Auftragsverarbeiters bis zu sechs Monate und die Löschung von Backups bis zu drei weitere Monate dauern."
         ]
       },
       {
@@ -341,8 +326,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "7. Empfänger, Auftragsverarbeiter und Übermittlungen",
         paragraphs: [
-          "Daten werden nur an notwendige Anbieter für Hosting, E-Mail, DNS/CDN, Domain-Registrierung und technischen Support unter den anwendbaren Weisungen und Verträgen übermittelt. Bei Verarbeitung außerhalb des EWR ist ein gültiger Angemessenheitsbeschluss oder eine geeignete Garantie wie Standardvertragsklauseln samt erforderlicher Transferprüfung notwendig.",
-          "Hetzner Online GmbH erklärt, dass ihr Informationssicherheits-Managementsystem nach ISO/IEC 27001:2022 zertifiziert ist. Diese Zertifizierung gilt für den Anbieter, nicht für IoCode SOLUTIONS, und ersetzt vor dem Produktivbetrieb weder die Prüfung noch den Abschluss des Auftragsverarbeitungsvertrags nach Artikel 28 DSGVO."
+          "Daten werden nur an notwendige Anbieter für Hosting, E-Mail, DNS/CDN, Domain-Registrierung und technischen Support unter den anwendbaren Weisungen und Verträgen übermittelt. Zoho Corporation GmbH, II. Hagen 7, 45127 Essen, Deutschland, stellt das geschäftliche Postfach als Auftragsverarbeiter gemäß Art. 28 DSGVO auf Grundlage eines am 19. August 2026 unterzeichneten DPA bereit. Die Speicherung erfolgt in Rechenzentren im EWR. Schedule 2 erlaubt Gruppengesellschaften in Indien Zugriff für Support und Fehlerbehebung; Abschnitt 5.2 des DPA verpflichtet Zoho, eine gültige Übermittlungsgrundlage sicherzustellen.",
+          "Hetzner Online GmbH hostet die Website als Auftragsverarbeiter gemäß Art. 28 DSGVO auf Grundlage eines abgeschlossenen DPA. Die Vertragsnachweise nennen ISO-27001-Zertifizierung, § 8a BSI-KritisV und BSI C5 Typ 2; dies sind Nachweise des Anbieters und keine Zertifizierungen von IoCode SOLUTIONS."
         ]
       },
       {
@@ -358,7 +343,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
           "Datenübertragbarkeit bei automatisierter Verarbeitung auf Grundlage von Einwilligung oder Vertrag.",
           "Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen.",
           "Widerruf einer Einwilligung ohne Auswirkung auf frühere Verarbeitungen, soweit Einwilligung die Grundlage ist.",
-          "Beschwerde bei einer Aufsichtsbehörde, insbesondere bei der unten genannten Hamburger Aufsichtsbehörde."
+          "Beschwerde bei einer Aufsichtsbehörde. Wegen der Abweichung zwischen Wohnsitz und Serviceanschrift ist die zuständige Behörde rechtlich noch zu bestimmen."
         ]
       },
       {
@@ -369,10 +354,10 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       }
     ],
     authorityTitle: "Aufsichtsbehörde",
-    authorityText: "Beschwerden können an die für den Sitz des Verantwortlichen zuständige Behörde gerichtet werden, insbesondere:",
+    authorityText: "Die zuständige Aufsichtsbehörde ist rechtlich noch zu bestimmen (X1). Sie wird nicht aus der Serviceanschrift abgeleitet.",
     versionTitle: "Version und rechtliche Änderungshistorie",
     versionSummary:
-      "Version 2026-08-05.1 — IoCode SOLUTIONS — Hamburger Aufsichtsbehörde, ISO/IEC-27001:2022-Nachweis von Hetzner und Transparenz des lokalen Kontaktflusses.",
-    lastUpdated: "Stand: 5. August 2026."
+      "Version 2026-08-23.1 — IoCode SOLUTIONS — Einzelunternehmen sowie abgeschlossene DPA mit Hetzner und Zoho dokumentiert; zuständige Behörde gemäß X1 offen.",
+    lastUpdated: "Stand: 23. August 2026."
   }
 };

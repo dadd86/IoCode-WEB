@@ -2,19 +2,19 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-05 |
+| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-23 |
 
 ## Estado actual
 
 | Servicio | Proveedor | Rol/DPA | Ubicación | Transferencia | Gate |
 |---|---|---|---|---|---|
-| Hosting | Hetzner Online GmbH | Encargado esperado; aceptación del DPA Art. 28 pendiente | Alemania (EEE) | Tratamiento EEE; revisar subencargados y soporte | Bloqueado hasta evidencia contractual |
-| Email | PENDIENTE | Encargado esperado; DPA obligatorio | PENDIENTE | PENDIENTE | Bloqueado |
+| Hosting | Hetzner Online GmbH | Encargado; DPA Art. 28 ejecutado | Alemania (EEE) | Hosting EEE; subencargados sujetos al contrato | Listo respecto de DPA; aprobación global sigue bloqueada |
+| Email | Zoho Corporation GmbH | Encargado; DPA firmado el 19.08.2026 | Datos en centros del EEE | Schedule 2: acceso del grupo desde India para soporte y depuración; § 5.2 obliga a Zoho a garantizar base válida | Listo respecto de DPA; aprobación global sigue bloqueada |
 | DNS/CDN | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
 | Registrar | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
 | Search Console | PENDIENTE entidad contractual | Evaluar términos/DPA | PENDIENTE | DPF o SCC/TIA por verificar | Desactivado |
 
-La selección de Hetzner y la región alemana proceden del contrato técnico aprobado en este lote. Hetzner publica una certificación ISO/IEC 27001:2022 de su sistema de gestión de seguridad de la información; la evidencia corresponde al proveedor y no certifica a IoCode SOLUTIONS. No se marca el DPA como aceptado ni la revisión de subencargados como terminada sin evidencia contractual. Los contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
+La selección de Hetzner y la región alemana proceden del contrato técnico. El DPA de Hetzner está ejecutado; la evidencia contractual refiere ISO 27001, § 8a BSI-KritisV y BSI C5 Type 2 sin atribuir una versión de ISO que el contrato no sustenta. El DPA de Zoho está firmado y documenta almacenamiento en el EEE, además del acceso posible desde India descrito arriba. Estas evidencias corresponden a los proveedores y no certifican a IoCode SOLUTIONS. Contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
 
 ## Checklist Art. 28
 
@@ -30,7 +30,7 @@ Antes de aprobar un encargado:
 
 Orden de decisión:
 
-1. Preferir tratamiento y soporte íntegramente en el EEE.
+1. Preferir tratamiento y soporte íntegramente en el EEE cuando sea viable, sin presentarlo como condición absoluta ni ocultar accesos de soporte fuera del EEE.
 2. Si existe decisión de adecuación, verificar que cubra al país, sector y entidad concreta.
 3. Para Estados Unidos, comprobar la participación activa de la entidad receptora en el EU-US Data Privacy Framework y el alcance de datos cubiertos.
 4. Si no hay adecuación aplicable, ejecutar SCC vigentes, Transfer Impact Assessment y medidas suplementarias antes del primer dato.

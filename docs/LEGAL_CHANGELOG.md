@@ -2,12 +2,13 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| 9.50 | Registro público de versiones legales | Impressum, privacidad, RAT, DPA y DSAR | ES, EN, DE | Git, aprobación legal y documentos 9F | 2026-08-05 |
+| 9.50 | Registro público de versiones legales | Impressum, privacidad, RAT, DPA y DSAR | ES, EN, DE | Git, aprobación legal y documentos 9F | 2026-08-23 |
 
 ## Versiones
 
 | Versión | Fecha | Responsable | Estado | Cambios |
 |---|---|---|---|---|
+| 2026-08-23.1 | 2026-08-23 | IoCode SOLUTIONS — propietario legal pendiente de firma | Borrador técnico | Einzelunternehmen; retirada de representación/registro y § 18(2) MStV; DPA ejecutados de Hetzner y Zoho; retención de correo alineada con el ciclo del encargado; autoridad X1 pendiente |
 | 2026-08-05.1 | 2026-08-05 | IoCode SOLUTIONS — propietario legal pendiente de firma | Borrador técnico | Autoridad de Hamburgo corregida, evidencia ISO/IEC 27001:2022 atribuida sólo a Hetzner y alias públicos hacia las políticas canónicas |
 | 2026-08-04.1 | 2026-08-04 | IoCode SOLUTIONS — propietario legal pendiente de firma | Borrador técnico | Dirección y USt-IdNr. de Hamburg, hosting Hetzner pendiente de DPA y transparencia de Clipboard API/contacto local |
 | 2026-08-02.1 | 2026-08-02 | IoCode SOLUTIONS — propietario legal pendiente de firma | Borrador técnico | Transparencia Art. 13/14, RAT, proveedores/DPA, cookies §25 TDDDG, transferencias y DSAR |

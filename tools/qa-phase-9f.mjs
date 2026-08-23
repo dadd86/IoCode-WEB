@@ -67,7 +67,7 @@ check(
   "9.42-imprint",
   legalBuildValid &&
     routes.includes('path: { es: "/es/aviso-legal/", en: "/en/imprint/", de: "/de/impressum/" }') &&
-    ["legalForm", "legalRepresentative", "street", "postalCode", "email"].every((field) =>
+    ["legalForm", "street", "postalCode", "email", "vatId"].every((field) =>
       legalConfig.includes(field)
     ) &&
     footer.includes('getLocalizedPath("imprint", locale)'),
@@ -170,8 +170,8 @@ check(
 
 check(
   "9.50-legal-governance",
-  legalConfig.includes('legalVersion: "2026-08-05.1"') &&
-    changelog.includes("2026-08-05.1") &&
+  legalConfig.includes('legalVersion: "2026-08-23.1"') &&
+    changelog.includes("2026-08-23.1") &&
     changelog.includes("Responsable") &&
     legalPage.includes("versionSummary"),
   "Versión visible, changelog y flujo de aprobación implantados."

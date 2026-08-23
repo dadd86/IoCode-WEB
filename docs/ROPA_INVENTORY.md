@@ -2,13 +2,13 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| 9.41/9.45 | Inventario y registro conforme al artículo 30 RGPD | Sitio, infraestructura, correo y derechos | ES, EN, DE | `config/privacy-governance.json`, Nginx y componentes Astro | 2026-08-05 |
+| 9.41/9.45 | Inventario y registro conforme al artículo 30 RGPD | Sitio, infraestructura, correo y derechos | ES, EN, DE | `config/privacy-governance.json`, Nginx y componentes Astro | 2026-08-23 |
 
 ## Decisión sobre aplicabilidad
 
 IoCode SOLUTIONS mantiene un RAT completo. No se invoca la excepción del artículo 30(5): aunque la organización pueda tener menos de 250 personas, la publicación del sitio, los logs técnicos y la gestión de correo son actividades recurrentes y no meramente ocasionales. El registro también facilita demostrar responsabilidad proactiva.
 
-Responsable: la identidad y dirección de Hamburgo están definidas como valores públicos del borrador, pero siguen pendientes la forma jurídica, la confirmación de las variables de producción y la aprobación formal. Canal operativo: `PUBLIC_PRIVACY_EMAIL`. Autoridad prevista por el establecimiento en Hamburgo: Der Hamburgische Beauftragte für Datenschutz und Informationsfreiheit. Estos campos bloquean producción mientras permanezcan pendientes.
+Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTIONS es el nombre comercial. La identidad y dirección de servicio son datos públicos del aviso. Canal operativo: `PUBLIC_PRIVACY_EMAIL`. La autoridad competente no se deduce de la dirección de servicio: X1 permanece pendiente por la diferencia entre residencia y dirección de servicio. X1, X2 y la aprobación formal mantienen bloqueada la publicación definitiva.
 
 ## RAT-01 — Entrega del sitio y seguridad
 
@@ -31,9 +31,9 @@ Responsable: la identidad y dirección de Hamburgo están definidas como valores
 | Datos | Nombre, email, tipo de proyecto, mensaje y metadatos del correo |
 | Finalidad | Respuesta, medidas precontractuales, contrato y comunicación empresarial |
 | Base | Art. 6.1.b o 6.1.f RGPD según contexto |
-| Destinatarios | Proveedor de email y personal autorizado |
-| Transferencia | Pendiente de ubicación, DPA y mecanismo del proveedor |
-| Conservación | Seis meses tras cierre sin contrato; plazos legales aplicables si existe relación contractual |
+| Destinatarios | Zoho Corporation GmbH como encargado y personal autorizado |
+| Transferencia | Datos almacenados en el EEE; Schedule 2 permite acceso del grupo desde India para soporte y depuración; § 5.2 del DPA obliga a Zoho a garantizar base válida |
+| Conservación | El responsable elimina u organiza mensajes cuando dejan de ser necesarios; tras borrado activo, el ciclo ordinario de Zoho puede tardar hasta seis meses y los backups hasta tres meses adicionales; plazos legales aplicables si existe contrato |
 | Medidas | `mailto:` local, sin backend ni base de datos, minimización de campos y acceso restringido al buzón |
 
 ## RAT-03 — Google Search Console
