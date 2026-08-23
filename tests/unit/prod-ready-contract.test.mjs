@@ -4,9 +4,10 @@ import test from "node:test";
 
 const read = (path) => readFile(path, "utf8");
 
-test("sole-proprietor legal model is versioned while example values remain empty", async () => {
-  const [config, productionEnv, legalPage, productionGate] = await Promise.all([
+test("sole-proprietor identity has one versioned source without deployment overrides", async () => {
+  const [config, profile, productionEnv, legalPage, productionGate] = await Promise.all([
     read("src/config/legal.ts"),
+    read("src/data/legal-profile.ts"),
     read(".env.production.example"),
     read("src/components/LegalPage.astro"),
     read("tools/qa-production-config.mjs")
@@ -17,13 +18,15 @@ test("sole-proprietor legal model is versioned while example values remain empty
     "PUBLIC_LEGAL_STREET", "PUBLIC_LEGAL_POSTAL_CODE", "PUBLIC_LEGAL_CITY",
     "PUBLIC_LEGAL_COUNTRY", "PUBLIC_LEGAL_EMAIL", "PUBLIC_LEGAL_VAT_ID"
   ]) {
-    assert.match(productionEnv, new RegExp(`^${variable}=$`, "mu"));
+    assert.doesNotMatch(`${config}\n${productionEnv}`, new RegExp(variable, "u"));
   }
 
-  assert.match(config, /legalForm: value\(environment\.PUBLIC_LEGAL_FORM\) \|\| "Einzelunternehmen"/u);
+  assert.match(config, /\.\.\.publicLegalProfile/u);
+  assert.match(profile, /legalForm: "Einzelunternehmen"/u);
+  assert.match(profile, /vatId: "DE461105535"/u);
   assert.match(config, /legalVersion: "2026-08-23\.1"/u);
   assert.doesNotMatch(`${config}\n${legalPage}`, /legalRepresentative|registerName|registerNumber|contentResponsible/iu);
-  assert.match(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
+  assert.doesNotMatch(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
   assert.match(config, /PUBLIC_LEGAL_APPROVED/u);
   assert.match(config, /PUBLIC_PRIVACY_APPROVED/u);
 });
@@ -35,8 +38,9 @@ test("executed Hetzner and Zoho DPAs are disclosed without overclaiming provider
     read("src/data/legal.ts")
   ]);
 
-  assert.match(config, /Hetzner Online GmbH/u);
-  assert.match(config, /Germany \(EEA\)/u);
+  assert.match(config, /PUBLIC_HOSTING_PROVIDER/u);
+  assert.match(config, /PUBLIC_EMAIL_PROVIDER/u);
+  assert.doesNotMatch(config, /Hetzner Online GmbH|Zoho Corporation GmbH|Germany \(EEA\)/u);
   assert.match(governance, /"provider": "Hetzner Online GmbH"/u);
   assert.match(governance, /"dpaStatus": "executed"/u);
   assert.match(governance, /"provider": "Zoho Corporation GmbH"/u);

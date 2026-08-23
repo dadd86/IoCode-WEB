@@ -289,7 +289,12 @@ const copyStatusId = `copy-status-${locale}`;
         formStatus.dataset.state = "prepared";
       }
       if (submitButton) submitButton.disabled = false;
-      window.location.assign(mailto);
+      const mailtoReady = new CustomEvent("iocode:mailto-ready", {
+        bubbles: true,
+        cancelable: true,
+        detail: { mailto }
+      });
+      if (form.dispatchEvent(mailtoReady)) window.location.assign(mailto);
     });
   }
 

@@ -33,7 +33,7 @@ La Fase 9F añade un segundo bloqueo formal: faltan la dirección postal, forma 
 5. Ejecutar Lighthouse móvil/desktop para ES, EN, DE y `/es/impressum/` con todos los presupuestos en verde.
 6. Completar y firmar la matriz física iPhone, iPad y Android sobre el mismo SHA.
 7. Confirmar cero incidentes P0/P1, cero CSP violations y rollback disponible al digest anterior.
-8. Completar y aprobar todas las variables `PUBLIC_LEGAL_*` y `PUBLIC_PRIVACY_*` sin valores de ejemplo.
+8. Verificar la identidad §5 DDG versionada y completar las variables de aprobación, autoridad y proveedores sin valores de ejemplo.
 9. Identificar proveedores reales, firmar o evaluar DPA Art. 28, revisar subencargados y verificar EEE/adecuación/DPF/SCC+TIA.
 10. Ejecutar `npm run internal:qa:phase-9f` y `npm run internal:qa:config:prod` sobre el mismo artefacto aprobado.
 

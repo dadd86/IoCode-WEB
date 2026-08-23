@@ -16,15 +16,13 @@ test("localized legal routes use the required canonical slugs", async () => {
   assert.match(routes, /\/de\/datenschutz\//u);
 });
 
-test("production legal approval requires identity and provider disclosures", async () => {
+test("production legal approval requires authority and provider disclosures", async () => {
   const config = await read("src/config/legal.ts");
   for (const variable of [
     "PUBLIC_LEGAL_APPROVED",
     "PUBLIC_PRIVACY_APPROVED",
-    "PUBLIC_LEGAL_FORM",
     "PUBLIC_PRIVACY_AUTHORITY_NAME",
     "PUBLIC_PRIVACY_AUTHORITY_URL",
-    "PUBLIC_LEGAL_STREET",
     "PUBLIC_HOSTING_PROVIDER",
     "PUBLIC_EMAIL_PROVIDER",
     "PUBLIC_DNS_PROVIDER",

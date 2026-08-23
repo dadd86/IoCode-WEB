@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import test from "node:test";
 import { scanText } from "../../tools/qa-privacy-gate.mjs";
 
@@ -24,6 +28,34 @@ for (const [name, fixture] of [
     assert.deepEqual(scanText(fixture), []);
   });
 }
+
+test("G-01 seventh fixture never renders an exact denylist token", async () => {
+  const token = decoded("c2Vuc2l0aXZlLWV4YWN0LWZpeHR1cmUtdmFsdWU=");
+  const root = await mkdtemp(join(tmpdir(), "iocode-privacy-log-"));
+  try {
+    await mkdir(join(root, "src"));
+    await writeFile(join(root, "src", "fixture.txt"), `public prefix\n${token}\npublic suffix`, "utf8");
+
+    const result = spawnSync(
+      process.execPath,
+      [resolve("tools/qa-privacy-gate.mjs"), root],
+      {
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          PRIVACY_DENYLIST_CONTENT: token,
+          PRIVACY_DENYLIST_REQUIRED: "1"
+        }
+      }
+    );
+    const output = `${result.stdout}${result.stderr}`;
+    assert.equal(result.status, 1);
+    assert.match(output, /src\/fixture\.txt:2 \[EXACT_DENYLIST_MATCH\]/u);
+    assert.ok(!output.includes(token));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 test("G-01 classifies network and version false positives", () => {
   const allowed = [

@@ -26,6 +26,7 @@ function check(id, condition, evidence) {
 const governance = JSON.parse(await text("config/privacy-governance.json"));
 const routes = await text("src/i18n/routes.ts");
 const legalConfig = await text("src/config/legal.ts");
+const legalProfile = await text("src/data/legal-profile.ts");
 const legalData = await text("src/data/legal.ts");
 const legalPage = await text("src/components/LegalPage.astro");
 const footer = await text("src/components/Footer.astro");
@@ -67,8 +68,9 @@ check(
   "9.42-imprint",
   legalBuildValid &&
     routes.includes('path: { es: "/es/aviso-legal/", en: "/en/imprint/", de: "/de/impressum/" }') &&
+    legalConfig.includes("publicLegalProfile") &&
     ["legalForm", "street", "postalCode", "email", "vatId"].every((field) =>
-      legalConfig.includes(field)
+      legalProfile.includes(field)
     ) &&
     footer.includes('getLocalizedPath("imprint", locale)'),
   "Tres Impressum canónicos, estructura §5 DDG y footer permanente."

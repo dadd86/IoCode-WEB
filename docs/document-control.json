@@ -205,6 +205,10 @@
       "type": "adr"
     },
     {
+      "path": "adr/0009-separate-technical-and-publication-gates.md",
+      "type": "adr"
+    },
+    {
       "path": "audits/R0_BASELINE.md",
       "type": "historical"
     },

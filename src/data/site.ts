@@ -1,5 +1,6 @@
 import type { RouteKey } from "../i18n/routes";
 import { siteUrl } from "../config/environment";
+import { publicLegalProfile } from "./legal-profile";
 
 export type LocalizedText = {
   es: string;
@@ -20,18 +21,18 @@ export type OfferCatalogItem = {
 };
 
 export const siteConfig = {
-  name: "IoCode SOLUTIONS",
-  legalName: "Diego Armando Diaz Devia",
+  name: publicLegalProfile.businessName,
+  legalName: publicLegalProfile.providerName,
   url: siteUrl,
-  email: "contact@iocode-solutions.com",
+  email: publicLegalProfile.email,
   logoPath: "/logo/iocode-logo.png",
   logoWebpPath: "/logo/iocode-logo-512.webp",
   logoSmallWebpPath: "/logo/iocode-logo-256.webp",
   logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb?v=572076acb6cb",
   location: {
-    city: "Hamburg",
-    region: "Hamburg",
-    country: "Germany"
+    city: publicLegalProfile.city,
+    region: publicLegalProfile.region,
+    country: publicLegalProfile.country
   },
   availableLanguages: ["Spanish", "English", "German"],
   tagline: {
@@ -163,7 +164,7 @@ export const siteConfig = {
   ] satisfies OfferCatalogItem[],
   socialLinks: [],
   contactPerson: {
-    name: "Diego Armando Diaz Devia",
+    name: publicLegalProfile.providerName,
     shortName: "Diego Diaz",
     role: {
       es: "Programador de PLC y desarrollador de aplicaciones especializado en automatización industrial e Industria 4.0.",

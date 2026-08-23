@@ -18,6 +18,7 @@ No se reescribe el historial por P3. El titular acepta conscientemente su perman
 2. GitHub debe mantener activadas las opciones **Keep my email address private** y **Block command line pushes that expose my email**.
 3. El gate G-01 bloquea correos de proveedores personales en fuentes, documentación, configuración, tests y artefactos.
 4. La lista exacta privada se conserva fuera de Git y se inyecta en CI mediante un secreto.
+5. La identidad de este repositorio seguirá siendo `Diego Armando Diaz Devia <contact@iocode-solutions.com>`. Aunque GitHub asigne una dirección `noreply` al activar la privacidad, no se usará aquí: el correo corporativo coincide con el canal público del Impressum y evita introducir una tercera identidad en el historial.
 
 La activación de las opciones de cuenta es una acción OWNER y debe verificarse antes del siguiente push. Esta decisión no afirma que el dato desaparezca de copias históricas ni sustituye la higiene de identidades futuras.
 
@@ -27,6 +28,7 @@ La activación de las opciones de cuenta es una acción OWNER y debe verificarse
 - No se rompen forks ni clones existentes.
 - P3 permanece visible en commits históricos y se acepta ese riesgo residual.
 - Todo commit nuevo debe usar la identidad corporativa verificada.
+- La dirección `noreply` de GitHub queda reservada para operaciones web de la plataforma y no sustituye la identidad local configurada para este repositorio.
 - Cualquier aparición futura de P3 en contenido debe bloquearse como S0.
 
 ## Alternativas rechazadas

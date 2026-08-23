@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import axe from "axe-core";
 
 const siteUrl = "https://iocode-solutions.com";
+const isProduction = process.env.PUBLIC_DEPLOY_ENV === "production";
 const locales = ["es", "en", "de"] as const;
 const routeGroups = [
   ["/es/", "/en/", "/de/"],
@@ -104,7 +105,13 @@ test.describe("Fase 9B - SEO técnico recíproco en 27 rutas", () => {
     expect(await indexResponse.text()).toContain(`<loc>${siteUrl}/sitemap.xml</loc>`);
     const sitemap = await sitemapResponse.text();
     for (const { path } of localizedRoutes) expect(sitemap).toContain(`<loc>${siteUrl}${path}</loc>`);
-    expect(await robotsResponse.text()).toContain(`Sitemap: ${siteUrl}/sitemap-index.xml`);
+    const robots = await robotsResponse.text();
+    if (isProduction) {
+      expect(robots).toContain(`Sitemap: ${siteUrl}/sitemap-index.xml`);
+    } else {
+      expect(robots).toContain("Disallow: /");
+      expect(robots).not.toContain("Sitemap:");
+    }
   });
 });
 
@@ -186,12 +193,14 @@ test.describe("Fase 9B - responsive, interacción y WCAG 2.1 AA", () => {
 
   test("formulario móvil prepara mailto sin backend", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === "chromium-desktop", "Gate de interacción móvil.");
+    await page.addInitScript(() => {
+      document.addEventListener("iocode:mailto-ready", (event) => event.preventDefault());
+    });
     await page.goto("/es/contacto/", { waitUntil: "domcontentloaded" });
     await page.locator("#nombre-es").fill("QA Mobile");
     await page.locator("#correo-es").fill("qa@example.com");
     await page.locator("#tipoProyecto-es").selectOption({ index: 1 });
     await page.locator("#mensaje-es").fill("Mensaje de validación accesible con longitud suficiente para el formulario.");
-    await page.locator("#contactForm").evaluate((form: HTMLFormElement) => form.addEventListener("submit", (event) => event.preventDefault(), { once: true }));
     await page.locator('#contactForm button[type="submit"]').click();
     await expect(page.locator("#contactForm")).toHaveAttribute("data-last-mailto", /^mailto:contact@iocode-solutions\.com/u);
   });

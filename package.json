@@ -26,7 +26,7 @@
     "internal:qa:phase-9b:static": "node --test tests/unit/i18n-contract.test.mjs && node tools/qa-phase-9b.mjs",
     "internal:qa:phase-9b:e2e": "node tools/run-phase-9b-e2e.mjs",
     "internal:qa:phase-9c:static": "node tools/qa-phase-9c.mjs && npm run internal:qa:assets:6 && npm run internal:qa:logo3d-version:6 && npm run internal:qa:budgets:6 && npm run internal:qa:bundle:6 && npm run internal:qa:hero3d-review:6",
-    "internal:qa:phase-9c:e2e": "playwright test tests/e2e/phase-9c-hero-resilience.spec.ts --project=chromium-desktop --project=chromium-mobile --project=webkit-iphone --project=webkit-ipad",
+    "internal:qa:phase-9c:e2e": "node tools/run-phase-9c-e2e.mjs",
     "internal:qa:phase-9c": "npm run internal:qa:phase-9c:static && npm run internal:qa:headers:6 && npm run internal:qa:phase-9c:e2e && npm run internal:qa:lighthouse:6",
     "internal:qa:phase-9d:predeploy": "npm run check && npm run internal:typecheck:src && npm run internal:typecheck:tests && npm run build && npm run audit:prod:strict",
     "internal:qa:phase-9d:smoke": "node tools/run-phase-9d-e2e.mjs",

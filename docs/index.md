@@ -43,6 +43,7 @@
 - [ADR-0006](adr/0006-production-hosting.md): elección de VPS Docker frente a hosting administrado.
 - [ADR-0007](adr/0007-commit-message-traceability.md): divergencia documentada entre el mensaje y el diff de `14e70ef`.
 - [ADR-0008](adr/0008-retain-history-and-mitigate-email-exposure.md): aceptación consciente de P3 histórico y controles preventivos sin reescritura.
+- [ADR-0009](adr/0009-separate-technical-and-publication-gates.md): salud técnica verde independiente y publicación bloqueada visiblemente por X-LEGAL.
 - [Gate R-PRIVACIDAD / G-01](testing/r-privacy-gate.tdd.md): patrones, lista exacta privada, fixtures y falsos positivos IPv4.
 - [Lote R-POST-PRIVACY](audits/R_POST_PRIVACY_DEBT.md): inventarios congelados, contratos de expectativa y ocho defectos de README pendientes.
 - [CHANGELOG](../CHANGELOG.md): entregas.

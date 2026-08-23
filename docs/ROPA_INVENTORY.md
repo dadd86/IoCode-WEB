@@ -8,7 +8,7 @@
 
 IoCode SOLUTIONS mantiene un RAT completo. No se invoca la excepción del artículo 30(5): aunque la organización pueda tener menos de 250 personas, la publicación del sitio, los logs técnicos y la gestión de correo son actividades recurrentes y no meramente ocasionales. El registro también facilita demostrar responsabilidad proactiva.
 
-Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTIONS es el nombre comercial. La identidad y dirección de servicio son datos públicos del aviso. Canal operativo: `PUBLIC_PRIVACY_EMAIL`. La autoridad competente no se deduce de la dirección de servicio: X1 permanece pendiente por la diferencia entre residencia y dirección de servicio. X1, X2 y la aprobación formal mantienen bloqueada la publicación definitiva.
+Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTIONS es el nombre comercial. La identidad, dirección de servicio y canal operativo son contenido público versionado en `src/data/legal-profile.ts`. La autoridad competente no se deduce de la dirección de servicio: X1 permanece pendiente por la diferencia entre residencia y dirección de servicio. X1, X2 y la aprobación formal mantienen bloqueada la publicación definitiva.
 
 ## RAT-01 — Entrega del sitio y seguridad
 

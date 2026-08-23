@@ -6,7 +6,7 @@
 
 ## Canal y responsabilidad
 
-Canal público: valor aprobado de `PUBLIC_PRIVACY_EMAIL`, inicialmente `contact@iocode-solutions.com`. El responsable legal es dueño del caso; el responsable técnico sólo localiza datos y preserva seguridad. No se crea portal ni base de datos pública para DSAR.
+Canal público: correo versionado en `src/data/legal-profile.ts`, coincidente con el canal del Impressum. El responsable legal es dueño del caso; el responsable técnico sólo localiza datos y preserva seguridad. No se crea portal ni base de datos pública para DSAR.
 
 ## Procedimiento DSAR
 

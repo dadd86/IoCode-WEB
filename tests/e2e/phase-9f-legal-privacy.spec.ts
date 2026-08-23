@@ -66,7 +66,7 @@ test("privacidad expone proveedores, autoridad, derechos y versión", async ({ p
   await expect(page.getByRole("table")).toBeVisible();
   await expect(page.getByText("Aufsichtsbehörde", { exact: true })).toBeVisible();
   await expect(page.getByText("Betroffenenrechte", { exact: false })).toBeVisible();
-  await expect(page.getByText("2026-08-05.1", { exact: true })).toBeVisible();
+  await expect(page.getByText("2026-08-23.1", { exact: true })).toBeVisible();
 });
 
 test("alias histórico inglés redirige al imprint canónico", async ({ request }) => {

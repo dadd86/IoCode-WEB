@@ -53,7 +53,8 @@ function walk(directory) {
       return walk(filePath);
     }
 
-    return entry.isFile() ? [filePath] : [];
+    const isLinkedFile = entry.isSymbolicLink() && statSync(filePath).isFile();
+    return entry.isFile() || isLinkedFile ? [filePath] : [];
   });
 }
 

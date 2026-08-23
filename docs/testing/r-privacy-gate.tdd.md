@@ -22,8 +22,13 @@ Se escanean `src/`, `docs/`, `config/`, `tools/`, `tests/`, `public/`, las tres 
 | Dirección pública de servicio | Negativo | Pasa |
 | USt-IdNr. pública | Negativo | Pasa |
 | Correo corporativo público | Negativo | Pasa |
+| Coincidencia sintética de la lista exacta | Positivo | Falla con ruta, línea y `EXACT_DENYLIST_MATCH`; la salida no contiene el token |
 
-Los tres positivos se conservan codificados en el test y sólo se materializan en memoria. Así se prueba el detector sin añadir al repositorio una muestra reutilizable como dato real.
+Los valores positivos sensibles se conservan codificados en el test y sólo se materializan durante su ejecución. Así se prueba el detector sin añadir al repositorio una muestra reutilizable como dato real. El séptimo fixture ejecuta la CLI real, comprueba código 1 y afirma que stdout/stderr no contienen el token exacto.
+
+## Contrato de salida segura
+
+Cada hallazgo imprime únicamente `ruta:línea [regla]`. Los objetos internos de hallazgo tampoco conservan el valor coincidente. La capa exacta no concatena, serializa ni entrega el token a la salida, incluso cuando CI termina con error.
 
 ## Análisis de falsos positivos IPv4
 

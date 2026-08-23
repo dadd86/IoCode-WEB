@@ -2,6 +2,8 @@ import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 const siteUrl = "https://iocode-solutions.com";
+const deployEnvironment = process.env.PUBLIC_DEPLOY_ENV || "production";
+const isProduction = deployEnvironment === "production";
 const distRoot = resolve("dist");
 const locales = ["es", "en", "de"];
 const marketingGroups = [
@@ -96,8 +98,15 @@ for (const [groupKey, ...paths] of allGroups) {
       const html = await readFile(htmlPath(path), "utf8");
       assertMetadata(html, path, locales[index], paths);
       if (legalGroups.some(([key]) => key === groupKey)) {
-        if (!html.includes('data-legal-status="complete"')) fail(`${path}: datos legales incompletos.`);
-        if (/name="robots"\s+content="[^"]*noindex/iu.test(html)) fail(`${path}: noindex en producción.`);
+        const isComplete = html.includes('data-legal-status="complete"');
+        const isNoIndex = /name="robots"\s+content="[^"]*noindex/iu.test(html);
+        const hasVisibleDraftNotice = html.includes('class="legalNotice"');
+        if (isProduction && !isComplete) fail(`${path}: datos legales incompletos.`);
+        if (isProduction && isNoIndex) fail(`${path}: noindex en producción.`);
+        if (!isProduction && isComplete) fail(`${path}: estado legal completo fuera de producción.`);
+        if (!isProduction && (!isNoIndex || !hasVisibleDraftNotice)) {
+          fail(`${path}: preview legal sin noindex o aviso visible.`);
+        }
       }
       evidence.push({ group: groupKey, locale: locales[index], path, canonical: absolute(path) });
     } catch (error) {
@@ -145,11 +154,17 @@ const [sitemap, sitemapIndex, robots] = await Promise.all([
 if (!sitemap.startsWith("<?xml") || !sitemap.includes("</urlset>")) fail("sitemap.xml no tiene estructura XML completa.");
 for (const [, ...paths] of allGroups) for (const path of paths) if (!sitemap.includes(`<loc>${absolute(path)}</loc>`)) fail(`sitemap.xml: falta ${path}.`);
 if (!sitemapIndex.includes(`<loc>${siteUrl}/sitemap.xml</loc>`)) fail("sitemap-index.xml no referencia el sitemap de rutas.");
-if (!robots.includes(`Sitemap: ${siteUrl}/sitemap-index.xml`)) fail("robots.txt no referencia el índice absoluto.");
+if (isProduction && !robots.includes(`Sitemap: ${siteUrl}/sitemap-index.xml`)) {
+  fail("robots.txt no referencia el índice absoluto.");
+}
+if (!isProduction && (!robots.includes("Disallow: /") || robots.includes("Sitemap:"))) {
+  fail("robots.txt de preview debe bloquear rastreo y omitir el sitemap.");
+}
 
 const report = {
   schemaVersion: 1,
   phase: "9B",
+  deployEnvironment,
   status: errors.length === 0 ? "passed" : "failed",
   marketingRoutesChecked: evidence.filter(({ group }) => marketingGroups.some(([key]) => key === group)).length,
   legalRoutesChecked: evidence.filter(({ group }) => legalGroups.some(([key]) => key === group)).length,

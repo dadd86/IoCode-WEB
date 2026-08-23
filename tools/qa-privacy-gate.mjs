@@ -40,6 +40,14 @@ const legalPdfName = new RegExp(
 );
 const ipv4 = /\b(?:\d{1,3}\.){3}\d{1,3}\b/gu;
 
+function lineAt(content, index) {
+  return content.slice(0, index).split("\n").length;
+}
+
+function finding(id, file, content, index) {
+  return { id, file, line: lineAt(content, index) };
+}
+
 function validIpv4(value) {
   return value.split(".").every((part) => Number(part) >= 0 && Number(part) <= 255);
 }
@@ -61,13 +69,13 @@ export function scanText(content, file = "fixture.txt") {
   for (const rule of rules) {
     rule.pattern.lastIndex = 0;
     for (const match of content.matchAll(rule.pattern)) {
-      findings.push({ id: rule.id, file, index: match.index ?? 0 });
+      findings.push(finding(rule.id, file, content, match.index ?? 0));
     }
   }
 
   legalPdfName.lastIndex = 0;
   for (const match of content.matchAll(legalPdfName)) {
-    findings.push({ id: "PRIVATE_LEGAL_PDF", file, index: match.index ?? 0 });
+    findings.push(finding("PRIVATE_LEGAL_PDF", file, content, match.index ?? 0));
   }
 
   ipv4.lastIndex = 0;
@@ -76,10 +84,29 @@ export function scanText(content, file = "fixture.txt") {
     const index = match.index ?? 0;
     const context = content.slice(Math.max(0, index - 50), index + value.length + 50);
     if (validIpv4(value) && !allowedIpv4(value, context, file)) {
-      findings.push({ id: "SERVER_IPV4", file, index });
+      findings.push(finding("SERVER_IPV4", file, content, index));
     }
   }
   return findings;
+}
+
+export function scanExactMatches(content, denylist, file = "fixture.txt") {
+  const findings = [];
+  for (const token of denylist) {
+    let offset = content.indexOf(token);
+    while (offset !== -1) {
+      findings.push(finding("EXACT_DENYLIST_MATCH", file, content, offset));
+      offset = content.indexOf(token, offset + token.length);
+    }
+  }
+  return findings;
+}
+
+export function formatFinding(item) {
+  if (item.id === "EXACT_DENYLIST_MISSING") {
+    return "EXACT_DENYLIST_MISSING: CI requires non-empty PRIVACY_DENYLIST_CONTENT.";
+  }
+  return `${item.file}:${item.line} [${item.id}]`;
 }
 
 async function collectFiles(path) {
@@ -118,7 +145,7 @@ export async function scanRepository(root = ROOT) {
   const findings = [];
 
   if (process.env.PRIVACY_DENYLIST_REQUIRED === "1" && denylist.length === 0) {
-    findings.push({ id: "EXACT_DENYLIST_MISSING", file: "CI", index: 0 });
+    findings.push({ id: "EXACT_DENYLIST_MISSING", file: "CI", line: 0 });
   }
 
   for (const path of [...new Set(paths)]) {
@@ -126,13 +153,7 @@ export async function scanRepository(root = ROOT) {
     if (SKIPPED_FILES.has(file) || !TEXT_EXTENSIONS.has(extname(path).toLowerCase())) continue;
     const content = await readFile(path, "utf8");
     findings.push(...scanText(content, file));
-    for (const token of denylist) {
-      let offset = content.indexOf(token);
-      while (offset !== -1) {
-        findings.push({ id: "EXACT_DENYLIST_MATCH", file, index: offset });
-        offset = content.indexOf(token, offset + token.length);
-      }
-    }
+    findings.push(...scanExactMatches(content, denylist, file));
   }
   return findings;
 }
@@ -141,13 +162,7 @@ async function main() {
   const findings = await scanRepository(resolve(process.argv[2] || ROOT));
   if (findings.length) {
     console.error("Privacy gate: FAILED");
-    for (const finding of findings) {
-      if (finding.id === "EXACT_DENYLIST_MISSING") {
-        console.error("- EXACT_DENYLIST_MISSING: CI requires non-empty PRIVACY_DENYLIST_CONTENT.");
-      } else {
-        console.error(`- ${finding.id}: ${finding.file}`);
-      }
-    }
+    for (const item of findings) console.error(`- ${formatFinding(item)}`);
     process.exitCode = 1;
     return;
   }

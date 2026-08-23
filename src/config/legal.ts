@@ -1,4 +1,5 @@
 import { deployEnvironment } from "./environment";
+import { publicLegalProfile } from "../data/legal-profile";
 
 const value = (input: string | undefined): string => input?.trim() || "";
 const enabled = (input: string | undefined): boolean => input === "true";
@@ -15,22 +16,8 @@ export type PublicProviderDisclosure = {
 export const legalConfig = {
   approved: enabled(environment.PUBLIC_LEGAL_APPROVED),
   privacyApproved: enabled(environment.PUBLIC_PRIVACY_APPROVED),
-  providerName: value(environment.PUBLIC_LEGAL_NAME) || "Diego Armando Diaz Devia",
-  businessName: value(environment.PUBLIC_LEGAL_BUSINESS_NAME) || "IoCode SOLUTIONS",
-  legalForm: value(environment.PUBLIC_LEGAL_FORM) || "Einzelunternehmen",
-  street:
-    value(environment.PUBLIC_LEGAL_STREET) ||
-    "c/o IP-Management #11289, Ludwig-Erhard-Straße 18",
-  postalCode: value(environment.PUBLIC_LEGAL_POSTAL_CODE) || "20459",
-  city: value(environment.PUBLIC_LEGAL_CITY) || "Hamburg",
-  country: value(environment.PUBLIC_LEGAL_COUNTRY) || "Germany",
-  email: value(environment.PUBLIC_LEGAL_EMAIL) || "contact@iocode-solutions.com",
-  privacyEmail:
-    value(environment.PUBLIC_PRIVACY_EMAIL) ||
-    value(environment.PUBLIC_LEGAL_EMAIL) ||
-    "contact@iocode-solutions.com",
-  phone: value(environment.PUBLIC_LEGAL_PHONE),
-  vatId: value(environment.PUBLIC_LEGAL_VAT_ID) || "DE461105535",
+  ...publicLegalProfile,
+  privacyEmail: publicLegalProfile.email,
   supervisoryAuthorityName: value(environment.PUBLIC_PRIVACY_AUTHORITY_NAME),
   supervisoryAuthorityUrl: value(environment.PUBLIC_PRIVACY_AUTHORITY_URL),
   legalVersion: "2026-08-23.1"
@@ -39,19 +26,15 @@ export const legalConfig = {
 export const publicProviderDisclosures: PublicProviderDisclosure[] = [
   {
     service: "hosting",
-    provider: value(environment.PUBLIC_HOSTING_PROVIDER) || "Hetzner Online GmbH",
-    processingLocation: value(environment.PUBLIC_HOSTING_LOCATION) || "Germany (EEA)",
-    transferSafeguard:
-      value(environment.PUBLIC_HOSTING_TRANSFER_SAFEGUARD) ||
-      "EEA hosting; Article 28 DPA executed"
+    provider: value(environment.PUBLIC_HOSTING_PROVIDER),
+    processingLocation: value(environment.PUBLIC_HOSTING_LOCATION),
+    transferSafeguard: value(environment.PUBLIC_HOSTING_TRANSFER_SAFEGUARD)
   },
   {
     service: "email",
-    provider: value(environment.PUBLIC_EMAIL_PROVIDER) || "Zoho Corporation GmbH",
-    processingLocation: value(environment.PUBLIC_EMAIL_LOCATION) || "EEA data centres; support access may occur from India",
-    transferSafeguard:
-      value(environment.PUBLIC_EMAIL_TRANSFER_SAFEGUARD) ||
-      "Article 28 DPA executed 2026-08-19; Zoho DPA section 5.2 requires a valid transfer basis"
+    provider: value(environment.PUBLIC_EMAIL_PROVIDER),
+    processingLocation: value(environment.PUBLIC_EMAIL_LOCATION),
+    transferSafeguard: value(environment.PUBLIC_EMAIL_TRANSFER_SAFEGUARD)
   },
   {
     service: "dns",
@@ -70,16 +53,6 @@ export const publicProviderDisclosures: PublicProviderDisclosure[] = [
 const requiredLegalValues: Array<[string, string]> = [
   ["PUBLIC_LEGAL_APPROVED", legalConfig.approved ? "true" : ""],
   ["PUBLIC_PRIVACY_APPROVED", legalConfig.privacyApproved ? "true" : ""],
-  ["PUBLIC_LEGAL_NAME", value(environment.PUBLIC_LEGAL_NAME)],
-  ["PUBLIC_LEGAL_BUSINESS_NAME", value(environment.PUBLIC_LEGAL_BUSINESS_NAME)],
-  ["PUBLIC_LEGAL_FORM", legalConfig.legalForm],
-  ["PUBLIC_LEGAL_STREET", legalConfig.street],
-  ["PUBLIC_LEGAL_POSTAL_CODE", legalConfig.postalCode],
-  ["PUBLIC_LEGAL_CITY", value(environment.PUBLIC_LEGAL_CITY)],
-  ["PUBLIC_LEGAL_COUNTRY", value(environment.PUBLIC_LEGAL_COUNTRY)],
-  ["PUBLIC_LEGAL_EMAIL", value(environment.PUBLIC_LEGAL_EMAIL)],
-  ["PUBLIC_PRIVACY_EMAIL", legalConfig.privacyEmail],
-  ["PUBLIC_LEGAL_VAT_ID", legalConfig.vatId],
   ["PUBLIC_PRIVACY_AUTHORITY_NAME", legalConfig.supervisoryAuthorityName],
   ["PUBLIC_PRIVACY_AUTHORITY_URL", legalConfig.supervisoryAuthorityUrl]
 ];

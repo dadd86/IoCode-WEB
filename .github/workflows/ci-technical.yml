@@ -1,0 +1,77 @@
+name: Technical branch gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - carmonita
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: technical-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  technical-gate:
+    name: Technical branch gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PUBLIC_DEPLOY_ENV: preview
+      PUBLIC_SITE_URL: https://iocode-solutions.com
+      PRIVACY_DENYLIST_CONTENT: ${{ secrets.PRIVACY_DENYLIST_CONTENT }}
+      PRIVACY_DENYLIST_REQUIRED: "1"
+      ASTRO_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+      - name: Use locked Node runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Locked install
+        run: npm ci
+      - name: Types, contracts and privacy gate
+        run: |
+          npm run check
+          npm run internal:typecheck:src
+          npm run internal:typecheck:tests
+          npm run internal:env:test
+          npm run internal:docs:test
+          node --test tests/unit/ci-gate-separation.test.mjs
+          node --test tests/unit/phase-9a-contract.test.mjs
+      - name: Static build and technical contracts
+        run: |
+          npm run build
+          npm run internal:qa:privacy
+          npm run internal:qa:phase-9b:static
+          npm run internal:qa:phase-9c:static
+          npm run internal:qa:phase-9f:static
+          npm run internal:validate:dist-sitemap
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Responsive, SEO and WCAG browser gate
+        run: |
+          node Docker/node-static-server.mjs &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          export PLAYWRIGHT_BASE_URL=http://127.0.0.1:8080
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8080/health >/dev/null && break
+            sleep 0.25
+          done
+          curl --fail --silent http://127.0.0.1:8080/health >/dev/null
+          npm run internal:qa:phase-9b:e2e
+          npm run internal:qa:phase-9c:e2e
+          npm run internal:qa:phase-9d:flaky
+          npm run internal:qa:phase-9f:e2e
+      - name: Production HTTP contract gate
+        run: npm run internal:qa:phase-9d:http
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
