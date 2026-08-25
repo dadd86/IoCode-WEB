@@ -60,7 +60,7 @@ const actions: HeroAction[] = [
 
 <section class="hero3d hero3d--home" aria-labelledby="homeHeroTitle">
   <div class="container hero3d__grid">
-    <header class="hero3d__content">
+    <div class="hero3d__content">
       {content.eyebrow && (
         <p class="eyebrow hero3d__eyebrow">{content.eyebrow}</p>
       )}
@@ -80,7 +80,7 @@ const actions: HeroAction[] = [
           content.heading
         )}
       </h1>
-    </header>
+    </div>
 
     <div class="hero3d__visualStack">
       <Hero3D locale={locale} />

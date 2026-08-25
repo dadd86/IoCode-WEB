@@ -15,6 +15,14 @@
   --color-primary-strong: #38bdf8;
   --color-secondary: #8b5cf6;
   --color-accent: #14f195;
+  --color-on-accent: #03111d;
+
+  --color-danger: #fca5a5;
+  --color-danger-soft: rgba(252, 165, 165, 0.16);
+  --color-success: #34d399;
+  --color-success-soft: rgba(52, 211, 153, 0.16);
+  --color-warning: #fbbf24;
+  --color-warning-soft: rgba(251, 191, 36, 0.16);
 
   --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.35);
   --shadow-card: 0 18px 50px rgba(0, 0, 0, 0.25);
