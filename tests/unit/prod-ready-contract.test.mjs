@@ -16,7 +16,8 @@ test("sole-proprietor identity has one versioned source without deployment overr
   for (const variable of [
     "PUBLIC_LEGAL_NAME", "PUBLIC_LEGAL_BUSINESS_NAME", "PUBLIC_LEGAL_FORM",
     "PUBLIC_LEGAL_STREET", "PUBLIC_LEGAL_POSTAL_CODE", "PUBLIC_LEGAL_CITY",
-    "PUBLIC_LEGAL_COUNTRY", "PUBLIC_LEGAL_EMAIL", "PUBLIC_LEGAL_VAT_ID"
+    "PUBLIC_LEGAL_COUNTRY", "PUBLIC_LEGAL_EMAIL", "PUBLIC_LEGAL_VAT_ID",
+    "PUBLIC_LEGAL_APPROVED", "PUBLIC_PRIVACY_APPROVED"
   ]) {
     assert.doesNotMatch(`${config}\n${productionEnv}`, new RegExp(variable, "u"));
   }
@@ -24,11 +25,9 @@ test("sole-proprietor identity has one versioned source without deployment overr
   assert.match(config, /\.\.\.publicLegalProfile/u);
   assert.match(profile, /legalForm: "Einzelunternehmen"/u);
   assert.match(profile, /vatId: "DE461105535"/u);
-  assert.match(config, /legalVersion: "2026-08-23\.1"/u);
+  assert.match(config, /legalVersion: "2026-09-05.3"/u);
   assert.doesNotMatch(`${config}\n${legalPage}`, /legalRepresentative|registerName|registerNumber|contentResponsible/iu);
   assert.doesNotMatch(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
-  assert.match(config, /PUBLIC_LEGAL_APPROVED/u);
-  assert.match(config, /PUBLIC_PRIVACY_APPROVED/u);
 });
 
 test("executed Hetzner and Zoho DPAs are disclosed without overclaiming provider evidence", async () => {
@@ -38,15 +37,13 @@ test("executed Hetzner and Zoho DPAs are disclosed without overclaiming provider
     read("src/data/legal.ts")
   ]);
 
-  assert.match(config, /PUBLIC_HOSTING_PROVIDER/u);
-  assert.match(config, /PUBLIC_EMAIL_PROVIDER/u);
-  assert.doesNotMatch(config, /Hetzner Online GmbH|Zoho Corporation GmbH|Germany \(EEA\)/u);
+  assert.doesNotMatch(config, /Hetzner Online GmbH|Zoho Corporation B\.V\.|Germany \(EEA\)/u);
   assert.match(governance, /"provider": "Hetzner Online GmbH"/u);
   assert.match(governance, /"dpaStatus": "executed"/u);
-  assert.match(governance, /"provider": "Zoho Corporation GmbH"/u);
+  assert.match(governance, /"provider": "Zoho Corporation B\.V\."/u);
   assert.match(governance, /"dpaStatus": "executed-2026-08-19"/u);
   assert.match(governance, /BSI C5 Type 2/u);
-  assert.match(legalCopy, /Schedule 2/u);
+  assert.match(legalCopy, /Article 46\(2\)\(c\) GDPR/u);
   assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /27001:2022/u);
   assert.doesNotMatch(
     legalCopy,
@@ -55,18 +52,18 @@ test("executed Hetzner and Zoho DPAs are disclosed without overclaiming provider
   assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /TÜV Rheinland/iu);
 });
 
-test("supervisory authority remains an explicit X1 blocker", async () => {
-  const [config, legalCopy, ropa] = await Promise.all([
-    read("src/config/legal.ts"),
+test("supervisory authority is resolved to the controller's actual NRW establishment", async () => {
+  const [profile, legalCopy, ropa] = await Promise.all([
+    read("src/data/legal-profile.ts"),
     read("src/data/legal.ts"),
     read("docs/ROPA_INVENTORY.md")
   ]);
 
-  assert.match(config, /PUBLIC_PRIVACY_AUTHORITY_NAME/u);
-  assert.match(config, /PUBLIC_PRIVACY_AUTHORITY_URL/u);
-  assert.doesNotMatch(config, /datenschutz-hamburg\.de/u);
-  assert.ok((legalCopy.match(/X1/gu) || []).length >= 3);
-  assert.match(ropa, /X1 permanece pendiente/u);
+  assert.match(profile, /Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen/u);
+  assert.match(profile, /https:\/\/www\.ldi\.nrw\.de/u);
+  assert.doesNotMatch(`${profile}\n${legalCopy}\n${ropa}`, /\bX1\b/u);
+  assert.match(legalCopy, /supervisory authority/iu);
+  assert.match(ropa, /Aachen/u);
 });
 
 test("requested short privacy routes redirect to localized canonical pages", async () => {
@@ -85,10 +82,9 @@ test("requested short privacy routes redirect to localized canonical pages", asy
 });
 
 test("contact UX adds a honeypot and honest mail-client states while remaining backend-free", async () => {
-  const [component, ui, legalCopy] = await Promise.all([
+  const [component, ui] = await Promise.all([
     read("src/components/ContactForm.astro"),
-    read("src/i18n/ui.ts"),
-    read("src/data/legal.ts")
+    read("src/i18n/ui.ts")
   ]);
 
   for (const token of [
@@ -105,7 +101,6 @@ test("contact UX adds a honeypot and honest mail-client states while remaining b
   assert.match(ui, /contactSending/u);
   assert.match(ui, /contactPrepared/u);
   assert.match(ui, /contactError/u);
-  assert.match(legalCopy, /navigator\.clipboard\.writeText/u);
   assert.doesNotMatch(component, /\baction\s*=/u);
   assert.doesNotMatch(component, /\bfetch\s*\(/u);
   await assert.rejects(access("src/pages/api/contact.ts"));

@@ -21,6 +21,7 @@ for (const [expected, fixture] of positives) {
 
 for (const [name, fixture] of [
   ["public service address", "Ludwig-Erhard-Str. 18, 20459 Hamburg"],
+  ["public supervisory authority address", "Kavalleriestraße 2–4, 40213 Düsseldorf"],
   ["public VAT identifier", "DE461105535"],
   ["public contact mailbox", "contact@iocode-solutions.com"]
 ]) {

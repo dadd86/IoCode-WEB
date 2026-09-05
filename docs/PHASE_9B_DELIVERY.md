@@ -32,6 +32,8 @@ Las 27 rutas comerciales originales permanecen estables. Se añaden seis rutas l
 
 ## Contrato legal de publicación
 
+> **Nota histórica (superseded 2026-09-05):** esta sección describe el estado del gate legal en la fecha de esta entrega (2026-08-05), cuando el contenido era un borrador pendiente de aprobación y las variables `PUBLIC_LEGAL_*`/`PUBLIC_PRIVACY_*` citadas abajo todavía existían. Esa arquitectura fue retirada en la consolidación de la Fase 9F: la identidad §5 DDG y el aviso de privacidad son ahora contenido final versionado en `src/data/legal-profile.ts` y `src/data/legal.ts`, sin variables de entorno ni gate de aprobación. Los comandos con `$env:PUBLIC_LEGAL_*` de más abajo ya no aplican; se conservan sin modificar como registro histórico de lo entregado en 9B.
+
 El repositorio contiene la identidad del titular, la dirección postal de Hamburgo, el correo y la USt-IdNr. como valores públicos del borrador. Producción continúa bloqueada hasta confirmar la forma jurídica, los proveedores de correo/DNS/registro, sus ubicaciones y garantías, el DPA de hosting y las aprobaciones `PUBLIC_LEGAL_APPROVED=true` y `PUBLIC_PRIVACY_APPROVED=true`. Si falta alguno, las páginas legales emiten `noindex`, muestran estado draft y `qa-production-config.mjs` falla. No se inventan datos ni se declara asesoramiento jurídico.
 
 La estructura se basa en la identificación exigida por [§ 5 DDG](https://www.gesetze-im-internet.de/ddg/__5.html) y la información al interesado de [artículo 13 RGPD](https://eur-lex.europa.eu/eli/reg/2016/679/2016-05-04/eng). El propietario debe validar contenido, actividad, registros, identificación fiscal, autoridad competente y plazos reales antes de publicación.

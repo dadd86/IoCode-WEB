@@ -107,9 +107,9 @@ const offerCatalogItems = siteConfig.offerCatalog.map((offer) => ({
       "@id": `${siteConfig.url}/#organization`
     },
     areaServed: [
-      siteConfig.location.city,
-      siteConfig.location.region,
-      siteConfig.location.country,
+      siteConfig.businessLocation.city,
+      siteConfig.businessLocation.region,
+      siteConfig.businessLocation.country,
       "European Union"
     ]
   }
@@ -159,9 +159,9 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
     description: siteConfig.businessDescription[locale],
     address: {
       "@type": "PostalAddress",
-      addressLocality: siteConfig.location.city,
-      addressRegion: siteConfig.location.region,
-      addressCountry: siteConfig.location.country
+      addressLocality: siteConfig.legalServiceAddress.city,
+      addressRegion: siteConfig.legalServiceAddress.region,
+      addressCountry: siteConfig.legalServiceAddress.country
     },
     contactPoint: {
       "@type": "ContactPoint",
@@ -169,9 +169,9 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
       contactType: siteConfig.contactPoint.contactType[locale],
       availableLanguage: siteConfig.availableLanguages,
       areaServed: [
-        siteConfig.location.city,
-        siteConfig.location.region,
-        siteConfig.location.country,
+        siteConfig.businessLocation.city,
+        siteConfig.businessLocation.region,
+        siteConfig.businessLocation.country,
         "European Union"
       ]
     },
@@ -196,16 +196,16 @@ const structuredDataGraph: Array<Record<string, unknown>> = [
       itemListElement: offerCatalogItems
     },
     areaServed: [
-      siteConfig.location.city,
-      siteConfig.location.region,
-      siteConfig.location.country,
+      siteConfig.businessLocation.city,
+      siteConfig.businessLocation.region,
+      siteConfig.businessLocation.country,
       "European Union"
     ],
     address: {
       "@type": "PostalAddress",
-      addressLocality: siteConfig.location.city,
-      addressRegion: siteConfig.location.region,
-      addressCountry: siteConfig.location.country
+      addressLocality: siteConfig.businessLocation.city,
+      addressRegion: siteConfig.businessLocation.region,
+      addressCountry: siteConfig.businessLocation.country
     },
     ...organizationSameAs
   },
@@ -269,9 +269,9 @@ if (pageServiceOffer) {
       "@id": `${siteConfig.url}/#organization`
     },
     areaServed: [
-      siteConfig.location.city,
-      siteConfig.location.region,
-      siteConfig.location.country,
+      siteConfig.businessLocation.city,
+      siteConfig.businessLocation.region,
+      siteConfig.businessLocation.country,
       "European Union"
     ]
   });
@@ -295,9 +295,9 @@ if (routeKey === "contact") {
     knowsAbout: siteConfig.contactPerson.knowsAbout[locale],
     address: {
       "@type": "PostalAddress",
-      addressLocality: siteConfig.location.city,
-      addressRegion: siteConfig.location.region,
-      addressCountry: siteConfig.location.country
+      addressLocality: siteConfig.businessLocation.city,
+      addressRegion: siteConfig.businessLocation.region,
+      addressCountry: siteConfig.businessLocation.country
     }
   });
 }

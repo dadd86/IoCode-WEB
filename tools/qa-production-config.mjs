@@ -10,24 +10,6 @@ const forbiddenPatterns = [
 ];
 const textExtensions = new Set([".html", ".css", ".js", ".mjs", ".json", ".xml", ".txt", ".svg"]);
 const findings = [];
-const requiredLegalVariables = [
-  "PUBLIC_LEGAL_APPROVED",
-  "PUBLIC_PRIVACY_APPROVED",
-  "PUBLIC_PRIVACY_AUTHORITY_NAME",
-  "PUBLIC_PRIVACY_AUTHORITY_URL",
-  "PUBLIC_HOSTING_PROVIDER",
-  "PUBLIC_HOSTING_LOCATION",
-  "PUBLIC_HOSTING_TRANSFER_SAFEGUARD",
-  "PUBLIC_EMAIL_PROVIDER",
-  "PUBLIC_EMAIL_LOCATION",
-  "PUBLIC_EMAIL_TRANSFER_SAFEGUARD",
-  "PUBLIC_DNS_PROVIDER",
-  "PUBLIC_DNS_LOCATION",
-  "PUBLIC_DNS_TRANSFER_SAFEGUARD",
-  "PUBLIC_REGISTRAR_PROVIDER",
-  "PUBLIC_REGISTRAR_LOCATION",
-  "PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD"
-];
 
 async function walk(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -51,18 +33,6 @@ if (process.env.PUBLIC_DEPLOY_ENV !== "production") {
   findings.push("PUBLIC_DEPLOY_ENV debe ser production para este gate.");
 }
 
-for (const variable of requiredLegalVariables) {
-  const configuredValue = process.env[variable]?.trim() || "";
-  if (
-    !configuredValue ||
-    /REPLACE_WITH|DRAFT|PENDING|EXAMPLE|\bQA\b|\bTEST\b/iu.test(configuredValue) ||
-    ((variable === "PUBLIC_LEGAL_APPROVED" || variable === "PUBLIC_PRIVACY_APPROVED") &&
-      configuredValue !== "true")
-  ) {
-    findings.push(`${variable} debe contener el dato legal aprobado para producción.`);
-  }
-}
-
 try {
   const governance = JSON.parse(
     await readFile(resolve("config/privacy-governance.json"), "utf8")
@@ -73,7 +43,6 @@ try {
   }
 
   for (const provider of governance.providers || []) {
-    if (provider.productionGate === "feature-disabled") continue;
     if (
       provider.productionGate !== "ready" ||
       provider.dpaStatus === "pending" ||
@@ -108,10 +77,7 @@ for (const legalPath of [
   "de/datenschutz/index.html"
 ]) {
   try {
-    const html = await readFile(join(root, legalPath), "utf8");
-    if (!html.includes('data-legal-status="complete"') || /noindex/iu.test(html)) {
-      findings.push(`${legalPath}: perfil legal incompleto o noindex en build de producción.`);
-    }
+    await readFile(join(root, legalPath), "utf8");
   } catch {
     findings.push(`${legalPath}: falta la página legal.`);
   }

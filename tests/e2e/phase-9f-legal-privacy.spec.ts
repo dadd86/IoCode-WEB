@@ -53,20 +53,42 @@ test("el release no crea cookies ni almacenamiento web persistente", async ({ pa
   for (const path of ["/es/", "/en/contact/", "/de/datenschutz/"]) {
     await page.goto(path, { waitUntil: "networkidle" });
     expect(await context.cookies(), path).toEqual([]);
-    const storage = await page.evaluate(() => ({
-      local: window.localStorage.length,
-      session: window.sessionStorage.length
-    }));
-    expect(storage, path).toEqual({ local: 0, session: 0 });
+    const storage = await page.evaluate(async () => {
+      const databases =
+        "databases" in indexedDB ? await indexedDB.databases() : [];
+      const registrations =
+        "serviceWorker" in navigator
+          ? await navigator.serviceWorker.getRegistrations()
+          : [];
+      return {
+        local: window.localStorage.length,
+        session: window.sessionStorage.length,
+        indexedDbDatabases: databases.length,
+        serviceWorkerRegistrations: registrations.length
+      };
+    });
+    expect(storage, path).toEqual({
+      local: 0,
+      session: 0,
+      indexedDbDatabases: 0,
+      serviceWorkerRegistrations: 0
+    });
   }
 });
 
-test("privacidad expone proveedores, autoridad, derechos y versión", async ({ page }) => {
+test("privacidad expone responsable, contacto, derechos, autoridad y versión", async ({ page }) => {
   await page.goto("/de/datenschutz/", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("table")).toBeVisible();
-  await expect(page.getByText("Aufsichtsbehörde", { exact: true })).toBeVisible();
-  await expect(page.getByText("Betroffenenrechte", { exact: false })).toBeVisible();
-  await expect(page.getByText("2026-08-23.1", { exact: true })).toBeVisible();
+  await expect(page.getByText("Anbieterkennzeichnung gemäß § 5 DDG", { exact: true })).toBeVisible();
+  await expect(page.getByText("Beschwerderecht bei einer Aufsichtsbehörde", { exact: true })).toBeVisible();
+  await expect(page.getByText("Rechte der betroffenen Person", { exact: false })).toBeVisible();
+  await expect(page.getByText("Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen", { exact: false })).toBeVisible();
+  await expect(page.getByText("2026-09-05.3", { exact: true })).toBeVisible();
+});
+
+test("impressum expone contacto directo con teléfono verificable", async ({ page }) => {
+  await page.goto("/de/impressum/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator('a[href^="tel:+4915734353705"]')).toBeVisible();
+  await expect(page.getByText("DE461105535", { exact: true })).toBeVisible();
 });
 
 test("alias histórico inglés redirige al imprint canónico", async ({ request }) => {

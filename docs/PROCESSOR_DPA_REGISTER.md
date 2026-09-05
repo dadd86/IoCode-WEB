@@ -2,17 +2,16 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting, email, DNS/CDN, registrar y Search Console | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-08-23 |
+| 9.44/9.48 | Due diligence de encargados y transferencias internacionales | Hosting y email | ES, EN, DE | Contratos de proveedor y `config/privacy-governance.json` | 2026-09-05 |
 
 ## Estado actual
 
 | Servicio | Proveedor | Rol/DPA | Ubicación | Transferencia | Gate |
 |---|---|---|---|---|---|
-| Hosting | Hetzner Online GmbH | Encargado; DPA Art. 28 ejecutado | Alemania (EEE) | Hosting EEE; subencargados sujetos al contrato | Listo respecto de DPA; aprobación global sigue bloqueada |
-| Email | Zoho Corporation GmbH | Encargado; DPA firmado el 19.08.2026 | Datos en centros del EEE | Schedule 2: acceso del grupo desde India para soporte y depuración; § 5.2 obliga a Zoho a garantizar base válida | Listo respecto de DPA; aprobación global sigue bloqueada |
-| DNS/CDN | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
-| Registrar | PENDIENTE | Determinar encargado o responsable independiente | PENDIENTE | PENDIENTE | Bloqueado |
-| Search Console | PENDIENTE entidad contractual | Evaluar términos/DPA | PENDIENTE | DPF o SCC/TIA por verificar | Desactivado |
+| Hosting | Hetzner Online GmbH | Encargado; DPA Art. 28 ejecutado | Alemania (EEE) | Ninguna; hosting confinado al EEE | Listo |
+| Email | Zoho Corporation B.V. | Encargado; DPA firmado el 19.08.2026 | Datos en centros del EEE | Schedule 2: acceso del grupo desde India para soporte y depuración, amparado por cláusulas contractuales tipo (art. 46.2.c RGPD); § 5.2 obliga a Zoho a garantizar base válida | Listo |
+
+El DNS/CDN y el registrador de dominio quedan fuera del alcance de este registro: procesan datos de administración del dominio bajo control directo del propio responsable, no datos personales de las personas visitantes del sitio, por lo que no constituyen un encargo del tratamiento en el sentido del art. 28 RGPD relevante para el aviso de privacidad. Esta exclusión se revisa si el proveedor cambia de función (por ejemplo, al incorporar un CDN con procesamiento de tráfico de visitantes).
 
 La selección de Hetzner y la región alemana proceden del contrato técnico. El DPA de Hetzner está ejecutado; la evidencia contractual refiere ISO 27001, § 8a BSI-KritisV y BSI C5 Type 2 sin atribuir una versión de ISO que el contrato no sustenta. El DPA de Zoho está firmado y documenta almacenamiento en el EEE, además del acceso posible desde India descrito arriba. Estas evidencias corresponden a los proveedores y no certifican a IoCode SOLUTIONS. Contratos, anexos, contactos y firmas permanecen en el repositorio privado de cumplimiento.
 

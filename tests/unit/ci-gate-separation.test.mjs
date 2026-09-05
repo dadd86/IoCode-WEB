@@ -28,7 +28,7 @@ test("technical and publication checks remain independent and visible", async ()
   }
   assert.doesNotMatch(technical, /internal:qa:config:prod|docker push|upload-artifact/iu);
 
-  assert.match(publication, /^name: Publication gate - BLOCKED-BY-X-LEGAL$/mu);
+  assert.match(publication, /^name: Publication gate$/mu);
   assert.match(publication, /npm run internal:qa:config:prod/u);
   assert.ok(
     publication.indexOf("npm run internal:qa:config:prod") < publication.indexOf("docker push"),
@@ -36,7 +36,7 @@ test("technical and publication checks remain independent and visible", async ()
   );
   assert.doesNotMatch(publication, /continue-on-error:\s*true/iu);
 
-  assert.match(deploy, /Publication gate - BLOCKED-BY-X-LEGAL/u);
+  assert.match(deploy, /^\s{6}- Publication gate$/mu);
   assert.match(deploy, /workflow_run\.conclusion == 'success'/u);
   assert.match(deploy, /workflow_run\.head_branch == 'master'/u);
 

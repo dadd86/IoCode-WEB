@@ -16,8 +16,14 @@ test("localized legal routes use the required canonical slugs", async () => {
   assert.match(routes, /\/de\/datenschutz\//u);
 });
 
-test("production legal approval requires authority and provider disclosures", async () => {
-  const config = await read("src/config/legal.ts");
+test("legal identity and content are versioned source, not environment-gated", async () => {
+  const [config, envExample, envProduction] = await Promise.all([
+    read("src/config/legal.ts"),
+    read(".env.example"),
+    read(".env.production.example")
+  ]);
+
+  assert.match(config, /\.\.\.publicLegalProfile/u);
   for (const variable of [
     "PUBLIC_LEGAL_APPROVED",
     "PUBLIC_PRIVACY_APPROVED",
@@ -28,14 +34,14 @@ test("production legal approval requires authority and provider disclosures", as
     "PUBLIC_DNS_PROVIDER",
     "PUBLIC_REGISTRAR_PROVIDER"
   ]) {
-    assert.ok(config.includes(variable), `missing gate ${variable}`);
+    assert.doesNotMatch(`${config}\n${envExample}\n${envProduction}`, new RegExp(variable, "u"));
   }
 });
 
 test("governance inventory contains treatments, providers and no non-essential terminal storage", async () => {
   const governance = JSON.parse(await read("config/privacy-governance.json"));
-  assert.equal(governance.treatments.length, 5);
-  assert.equal(governance.providers.length, 5);
+  assert.equal(governance.treatments.length, 4);
+  assert.equal(governance.providers.length, 2);
   assert.equal(governance.consentBanner.required, false);
   assert.ok(governance.terminalTechnologies.every((item) => "consentRequired" in item));
   assert.ok(
@@ -56,15 +62,14 @@ test("RAT is maintained and DSAR uses the GDPR one-month deadline", async () => 
   assert.match(operations, /Verificar identidad de forma proporcional/u);
 });
 
-test("verified DPAs and unresolved providers have distinct gate states", async () => {
+test("all disclosed providers are DPA-verified and the governance approval is closed", async () => {
   const governance = JSON.parse(await read("config/privacy-governance.json"));
   const productionGate = await read("tools/qa-production-config.mjs");
-  assert.equal(governance.controllerApproval, "pending");
-  const ready = governance.providers.filter((provider) => provider.productionGate === "ready");
-  const unresolved = governance.providers.filter((provider) => provider.productionGate !== "ready");
-  assert.deepEqual(ready.map((provider) => provider.service), ["hosting", "email"]);
-  assert.ok(ready.every((provider) => provider.dpaStatus.startsWith("executed")));
-  assert.ok(unresolved.every((provider) => ["blocked", "feature-disabled"].includes(provider.productionGate)));
+  assert.equal(governance.controllerApproval, "approved");
+  assert.deepEqual(governance.providers.map((provider) => provider.service), ["hosting", "email"]);
+  assert.ok(governance.providers.every((provider) => provider.productionGate === "ready"));
+  assert.ok(governance.providers.every((provider) => provider.dpaStatus.startsWith("executed")));
+  assert.ok(governance.outOfScopeProviders.some((provider) => provider.service === "DNS/CDN"));
   assert.match(productionGate, /governance\.controllerApproval !== "approved"/u);
   assert.match(productionGate, /provider\.productionGate !== "ready"/u);
 });

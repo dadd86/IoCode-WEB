@@ -1,8 +1,10 @@
 # ADR-0009 — Separar salud técnica y autorización de publicación
 
+**Status: SUPERSEDED por la consolidación de la Fase 9F (2026-09-05).** X1–X4 quedaron resueltos (autoridad LDI NRW, dirección c/o validada, BFSG y consulta laboral cerradas) y `controllerApproval` pasó a `approved` en `config/privacy-governance.json`. El workflow ya no publica un check permanentemente rojo: se renombró a `Publication gate` (antes `Publication gate - BLOCKED-BY-X-LEGAL`) en `.github/workflows/ci-release.yml`. Este documento se conserva como registro histórico de la decisión de separar ambos gates mientras el bloqueo jurídico estuvo abierto; la sección "Fuentes de verdad" sigue vigente.
+
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| R-PRIVACIDAD / CI | Separación de gate técnico y gate jurídico de publicación | GitHub Actions, release y deploy | ES, EN, DE | Workflows, gate G-01 y bloqueos X-LEGAL | 2026-08-23 |
+| R-PRIVACIDAD / CI | Separación de gate técnico y gate jurídico de publicación (superseded) | GitHub Actions, release y deploy | ES, EN, DE | Workflows, gate G-01 y bloqueos X-LEGAL | 2026-09-05 |
 
 ## Problema
 

@@ -65,6 +65,7 @@
 
   --transition-fast: 160ms ease;
   --transition-normal: 240ms ease;
+  --ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 @media (max-width: 720px) {

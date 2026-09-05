@@ -18,7 +18,6 @@ import { getLocalizedPath, getStaticRouteParams } from "../../i18n/routes";
 import type { Locale } from "../../i18n/config";
 import type { RouteKey } from "../../i18n/routes";
 import { siteConfig } from "../../data/site";
-import { legalProfileProductionReady } from "../../config/legal";
 
 export function getStaticPaths() {
   return getStaticRouteParams();
@@ -35,9 +34,6 @@ const languageTag: Record<Locale, string> = {
 
 const routesWithStandardCards: RouteKey[] = ["services", "plc", "robotics", "about"];
 const isLegalRoute = routeKey === "imprint" || routeKey === "privacy";
-const pageRobots = isLegalRoute && !legalProfileProductionReady
-  ? "noindex, nofollow, noarchive"
-  : undefined;
 
 const projectStructuredData =
   routeKey === "projects"
@@ -97,7 +93,6 @@ const skillStructuredData =
   routeKey={routeKey}
   title={content.title}
   description={content.description}
-  robots={pageRobots}
   socialImageAlt={
     routeKey === "projects"
       ? portfolioPageCopy[locale].imageAlt

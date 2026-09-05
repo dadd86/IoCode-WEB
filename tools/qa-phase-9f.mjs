@@ -37,10 +37,10 @@ const changelog = await text("docs/LEGAL_CHANGELOG.md");
 
 check(
   "9.41-treatment-inventory",
-  ["web-delivery", "email-enquiries", "search-console", "external-links", "data-subject-requests"].every(
+  ["web-delivery", "email-enquiries", "external-links", "data-subject-requests"].every(
     (id) => governance.treatments.some((treatment) => treatment.id === id)
   ) && governance.treatments.every((treatment) => treatment.legalBasis && treatment.retention),
-  "Cinco tratamientos incluyen finalidad, base, destinatarios, conservación y transferencias."
+  "Cuatro tratamientos incluyen finalidad, base, destinatarios, conservación y transferencias."
 );
 
 const legalRoutes = [
@@ -59,7 +59,6 @@ for (const [file, canonicalPath] of legalRoutes) {
       `<link rel="canonical" href="https?://[^"/]+${canonicalPath.replaceAll("/", "\\/")}">`,
       "u"
     ).test(html);
-    legalBuildValid &&= html.includes("data-legal-status=");
   } catch {
     legalBuildValid = false;
   }
@@ -81,30 +80,30 @@ check(
   [
     "Article 6(1)(f)",
     "Article 6(1)(b)",
-    "Article 14 GDPR",
-    "Access, rectification, erasure",
-    "Data portability",
-    "automated decision-making"
+    "Article 15 GDPR",
+    "Article 17 GDPR",
+    "Article 20 GDPR",
+    "supervisory authority"
   ].every((term) => legalData.includes(term)) &&
-    legalPage.includes("supervisoryAuthorityUrl") &&
-    legalPage.includes("privacyEmail"),
-  "Política trilingüe Art. 13/14 con bases, conservación, derechos y autoridad."
+    legalPage.includes("supervisoryAuthority") &&
+    legalPage.includes("authorityIntro"),
+  "Política trilingüe Art. 13 con bases, conservación, derechos y autoridad resuelta."
 );
 
 check(
   "9.44-processors-dpa",
-  ["hosting", "email", "DNS/CDN", "domain registrar", "Google Search Console"].every((service) =>
+  ["hosting", "email"].every((service) =>
     governance.providers.some((provider) => provider.service === service)
   ) &&
-    governance.providers.every((provider) => provider.dpaStatus) &&
+    governance.providers.every((provider) => provider.dpaStatus === "executed" || provider.dpaStatus.startsWith("executed")) &&
     dpa.includes("Checklist Art. 28"),
-  "Registro de proveedores no inventa contratos y bloquea los pendientes."
+  "Registro de proveedores documenta únicamente contratos ejecutados y verificados."
 );
 
 check(
   "9.45-ropa",
   ropa.includes("No se invoca la excepción del artículo 30(5)") &&
-    ["RAT-01", "RAT-02", "RAT-03", "RAT-04", "RAT-05"].every((id) => ropa.includes(id)),
+    ["RAT-01", "RAT-02", "RAT-03", "RAT-04"].every((id) => ropa.includes(id)),
   "RAT completo mantenido por recurrencia del tratamiento."
 );
 
@@ -172,11 +171,11 @@ check(
 
 check(
   "9.50-legal-governance",
-  legalConfig.includes('legalVersion: "2026-08-23.1"') &&
-    changelog.includes("2026-08-23.1") &&
+  legalConfig.includes('legalVersion: "2026-09-05.3"') &&
+    changelog.includes("2026-09-05.3") &&
     changelog.includes("Responsable") &&
     legalPage.includes("versionSummary"),
-  "Versión visible, changelog y flujo de aprobación implantados."
+  "Versión visible, changelog y aprobación formal registrados."
 );
 
 const failed = checks.filter((item) => item.status === "failed");

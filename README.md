@@ -157,11 +157,9 @@ Key variables:
 | --- | --- |
 | `PUBLIC_DEPLOY_ENV` | `local` · `preview` · `production` — drives indexing and URL validation |
 | `PUBLIC_SITE_URL` | Must equal `https://iocode-solutions.com` exactly when `PUBLIC_DEPLOY_ENV=production`, or the build throws |
-| `PUBLIC_LEGAL_APPROVED` | Gates Impressum publication (§5 DDG) |
-| `PUBLIC_PRIVACY_APPROVED` | Gates privacy notice publication (GDPR Art. 13) |
-| `PUBLIC_LEGAL_*` | Imprint fields — legal name, form, representative, address, VAT ID, register |
-| `PUBLIC_HOSTING_*` / `PUBLIC_EMAIL_*` / `PUBLIC_DNS_*` / `PUBLIC_REGISTRAR_*` | Processor disclosure triads: provider, location, transfer safeguard |
 | `ENABLE_HSTS` / `ENABLE_COOP` / `ENABLE_UPGRADE_INSECURE_REQUESTS` | Runtime header toggles |
+
+Legal identity and privacy content (imprint, providers, supervisory authority) are versioned source data in `src/data/legal-profile.ts` and `src/data/legal.ts` — not environment variables. There is nothing to configure per deployment; the same finalized content ships everywhere.
 
 `npm run internal:env:check` verifies that your `.env` and `compose.yml` declare the same variables — environment drift is a test failure here, not a production incident.
 
@@ -187,6 +185,16 @@ Compose refuses to start without these, so production cannot accidentally run a 
 Deployment normally happens through CI: `ci-release.yml` builds and pushes, then `deploy.yml` fires on `workflow_run` completion and re-checks that CI succeeded, the branch was `master`, and the event was a push. Manual deploy and rollback go through `production-operation.yml`, which regex-validates the release SHA and the image digest before doing anything.
 
 See [`docs/PRODUCTION_OPERATIONS.md`](docs/PRODUCTION_OPERATIONS.md), [`docs/RUNBOOK.md`](docs/RUNBOOK.md) and [`docs/DISASTER_RECOVERY.md`](docs/DISASTER_RECOVERY.md).
+
+### Packaging a clean source archive
+
+To hand off or archive the repository without compiled artifacts, dependencies or local state, use `git archive` — it packages only tracked files and never includes `.git`, `node_modules`, `dist` or `test-results` regardless of what exists in the working tree:
+
+```bash
+git archive --format=zip -o iocode-source-$(git rev-parse --short HEAD).zip HEAD
+```
+
+Do not `zip -r .` or similar from the working directory — that captures whatever local build/test output happens to exist alongside the source.
 
 ---
 

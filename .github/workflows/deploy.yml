@@ -3,7 +3,7 @@ name: Deploy verified master to production
 on:
   workflow_run:
     workflows:
-      - Publication gate - BLOCKED-BY-X-LEGAL
+      - Publication gate
     types:
       - completed
 

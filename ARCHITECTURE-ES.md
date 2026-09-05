@@ -36,7 +36,7 @@ Es un **sitio completamente estático**: `output: "static"` en `astro.config.mjs
 
 **CSP por hashes SHA-256 calculados por respuesta.** En lugar de `'unsafe-inline'` o un esquema de nonces que exigiría renderizado dinámico, el servidor estático analiza cada documento HTML saliente, extrae el contenido de los `<script>` y `<style>` en línea, los hashea e inyecta las fuentes `'sha256-…'` resultantes en la cabecera `Content-Security-Policy`. Esto consigue una política estricta en un sitio totalmente estático — documentado como ADR 0004.
 
-**Cumplimiento normativo con puerta en tiempo de compilación.** El contenido legal y de privacidad está tras los flags `PUBLIC_LEGAL_APPROVED` y `PUBLIC_PRIVACY_APPROVED`. La indexación en buscadores se habilita únicamente cuando `PUBLIC_DEPLOY_ENV === "production"`; cualquier otro entorno emite `noindex, nofollow, noarchive` y una política robots `Disallow: /`. Una compilación de producción con un `PUBLIC_SITE_URL` erróneo lanza una excepción durante la configuración en lugar de publicar un canonical incorrecto.
+**Cumplimiento normativo como dato versionado, no como flag de entorno.** El contenido legal y de privacidad (identidad §5 DDG, aviso de privacidad, autoridad de control) vive como datos TypeScript finales en `src/data/legal-profile.ts` y `src/data/legal.ts` — el mismo contenido se publica en local, preview y producción, sin variables `PUBLIC_LEGAL_*` que lo condicionen. La indexación en buscadores se habilita únicamente cuando `PUBLIC_DEPLOY_ENV === "production"`; cualquier otro entorno emite `noindex, nofollow, noarchive` y una política robots `Disallow: /`. Una compilación de producción con un `PUBLIC_SITE_URL` erróneo lanza una excepción durante la configuración en lugar de publicar un canonical incorrecto.
 
 ### Matriz tecnológica
 
@@ -483,9 +483,9 @@ Un despliegue de preview no puede ser indexado por accidente. Ese es uno de los 
 
 ### 5.6 Cumplimiento normativo — DACH y UE
 
-**§5 DDG (Impressum).** El contenido del aviso legal se ensambla a partir de variables `PUBLIC_LEGAL_*` que cubren nombre legal, nombre comercial, forma jurídica, representante, calle, código postal, ciudad, país, email, teléfono, NIF-IVA, nombre del registro y número de registro — un superconjunto de los campos obligatorios del §5 DDG. La publicación está condicionada a `PUBLIC_LEGAL_APPROVED`.
+**§5 DDG (Impressum).** El contenido del aviso legal se define directamente en `src/data/legal-profile.ts` — nombre legal, denominación comercial, forma jurídica, dirección de servicio, teléfono, email y NIF-IVA — un objeto TypeScript versionado que cubre exactamente los campos obligatorios del §5 DDG, sin representante ni datos de registro porque no existen (Einzelunternehmen sin inscripción en el Registro Mercantil).
 
-**RGPD Artículo 13 (información en la recogida de datos).** Las tríadas `PUBLIC_*_PROVIDER`, `PUBLIC_*_LOCATION` y `PUBLIC_*_TRANSFER_SAFEGUARD` para hosting, email, DNS y registrador se corresponden directamente con el deber del Artículo 13 de declarar destinatarios y transferencias a terceros países. Condicionadas a `PUBLIC_PRIVACY_APPROVED`. El valor por defecto de hosting registra `Hetzner Online GmbH`, `Germany (EEA)` y la nota `EEA processing; Article 28 DPA verification required` — una declaración honesta de que el acuerdo de encargado sigue pendiente de verificación, en lugar de una afirmación de cumplimiento sin respaldo.
+**RGPD Artículo 13 (información en la recogida de datos).** `config/privacy-governance.json` registra los encargados del tratamiento realmente contratados — Hetzner Online GmbH (hosting) y Zoho Corporation B.V. (correo) — con su DPA del artículo 28, ubicación de procesamiento y mecanismo de transferencia cuando aplica; ambos con `productionGate: "ready"` y `controllerApproval: "approved"`. El DNS/CDN y el registrador de dominio se documentan como fuera de alcance (`outOfScopeProviders`) porque tratan datos de administración del dominio, no datos personales de las personas visitantes.
 
 **TDDDG §25 (consentimiento de cookies).** No se activa. No hay cookies, ni almacenamiento local de datos personales, ni analítica, ni gestor de etiquetas, ni embebidos de terceros. El §25 exige consentimiento para almacenar o acceder a información en el equipo terminal; aquí nada lo hace, y por tanto no se requiere banner de consentimiento. La ausencia de CMP es el resultado correcto de la arquitectura, no un descuido.
 
@@ -665,11 +665,11 @@ Para un sitio estático de 38 páginas eso es suficiente, y los límites de recu
 
 Aun así, el nombre de una rama personal en la lista de disparadores de un pipeline de producción es la clase de cosa que sobrevive mucho más allá de su propósito y confunde al siguiente lector. Conviene renombrarla a algo descriptivo del rol o moverla a un patrón como `feature/**`.
 
-### 8.8 Valores legales por defecto embebidos en la orquestación
+### 8.8 Valores legales por defecto embebidos en la orquestación (resuelto 2026-09-05)
 
-`compose.yml` y `Docker/Dockerfile` portan valores de respaldo para el Impressum: nombre comercial, calle, código postal, ciudad, país, email, NIF-IVA y proveedor de hosting. Son datos públicos por ley — un Impressum existe precisamente para publicarse — de modo que esto no es un hallazgo de exposición de secretos.
+`compose.yml` y `Docker/Dockerfile` portaban valores de respaldo para el Impressum vía variables `PUBLIC_LEGAL_*`/`PUBLIC_PRIVACY_*`, con la publicación condicionada a los flags `PUBLIC_LEGAL_APPROVED`/`PUBLIC_PRIVACY_APPROVED`. El modo de fallo real: una compilación con el entorno ausente o mal configurado podía publicar silenciosamente un Impressum jurídicamente vinculante rellenado desde valores por defecto en lugar de fallar.
 
-Es un hallazgo sobre el modo de fallo. Una compilación con un entorno ausente o mal configurado publica silenciosamente un Impressum jurídicamente vinculante rellenado desde los valores por defecto en lugar de fallar. Dado que `PUBLIC_LEGAL_APPROVED` y `PUBLIC_PRIVACY_APPROVED` ya condicionan la publicación, el patrón más seguro es dejar vacíos los valores por defecto y que los flags de aprobación sean la única vía de publicación — igualando la disciplina de fallo rápido ya aplicada a `PUBLIC_SITE_URL` en §5.5.
+Auditoría legal completada: el contenido de §5 DDG y el aviso de privacidad son ahora datos TypeScript finales en `src/data/legal-profile.ts` y `src/data/legal.ts`, versionados en Git como cualquier otro contenido del sitio. No existe ruta de compilación que pueda publicar un Impressum con valores por defecto, porque no hay valores por defecto — solo el contenido aprobado. `compose.yml` y `Docker/Dockerfile` ya no declaran ninguna variable `PUBLIC_LEGAL_*`/`PUBLIC_PRIVACY_*`.
 
 ### 8.9 Superficie de scripts
 
@@ -724,9 +724,8 @@ El coste de mantenimiento es, no obstante, real: cada script `historical:` refer
 | Grupo | Variables |
 | --- | --- |
 | Despliegue | `PUBLIC_DEPLOY_ENV`, `PUBLIC_SITE_URL` |
-| Puertas de aprobación | `PUBLIC_LEGAL_APPROVED`, `PUBLIC_PRIVACY_APPROVED` |
-| Aviso legal (§5 DDG) | Contenido público versionado en `src/data/legal-profile.ts`; sin override de despliegue |
-| Privacidad (RGPD Art. 13) | `PUBLIC_HOSTING_PROVIDER`, `PUBLIC_HOSTING_LOCATION`, `PUBLIC_HOSTING_TRANSFER_SAFEGUARD`, `PUBLIC_EMAIL_PROVIDER`, `PUBLIC_EMAIL_LOCATION`, `PUBLIC_EMAIL_TRANSFER_SAFEGUARD`, `PUBLIC_DNS_PROVIDER`, `PUBLIC_DNS_LOCATION`, `PUBLIC_DNS_TRANSFER_SAFEGUARD`, `PUBLIC_REGISTRAR_PROVIDER`, `PUBLIC_REGISTRAR_LOCATION`, `PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD` |
+| Aviso legal (§5 DDG) | Contenido público versionado en `src/data/legal-profile.ts` y `src/data/legal.ts`; sin variables de entorno ni override de despliegue |
+| Privacidad (RGPD Art. 13) | Encargados y transferencias declarados en `config/privacy-governance.json` (`controllerApproval: "approved"`) |
 | Cabeceras de runtime | `ENABLE_HSTS`, `ENABLE_COOP`, `ENABLE_UPGRADE_INSECURE_REQUESTS` |
 | Runtime | `NODE_ENV`, `PORT`, `ASTRO_TELEMETRY_DISABLED` |
 | Puertos locales | `ASTRO_DEV_PORT`, `ASTRO_PREVIEW_PORT`, `WEB_PORT`, `CHOKIDAR_USEPOLLING` |

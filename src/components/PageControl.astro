@@ -27,7 +27,7 @@ const pageLabel = (current: number, total: number, label: string) =>
     .replace("{total}", String(total))} — ${label}`;
 ---
 
-<div class="pageControl" data-page-control>
+<div class={`pageControl${kind === "projects" ? " pageControl--projects" : ""}`} data-page-control>
   <div
     class="pageControl__tabs"
     role="tablist"

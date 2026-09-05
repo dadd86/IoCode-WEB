@@ -1,12 +1,7 @@
 ---
 import type { Locale } from "../i18n/config";
 import { legalCopy } from "../data/legal";
-import {
-  legalConfig,
-  legalProfileComplete,
-  missingRequiredLegalFields,
-  publicProviderDisclosures
-} from "../config/legal";
+import { legalConfig } from "../config/legal";
 
 type Props = {
   locale: Locale;
@@ -20,58 +15,48 @@ const address = [
   `${legalConfig.postalCode} ${legalConfig.city}`.trim(),
   legalConfig.country
 ].filter(Boolean);
+const authorityAddress = [
+  legalConfig.supervisoryAuthority.street,
+  `${legalConfig.supervisoryAuthority.postalCode} ${legalConfig.supervisoryAuthority.city}`.trim(),
+  legalConfig.supervisoryAuthority.country
+].filter(Boolean);
 ---
 
-<article class="legalPage" data-legal-status={legalProfileComplete ? "complete" : "draft"}>
+<article class="legalPage">
   <div class="container legalPage__content">
-    {!legalProfileComplete && (
-      <aside class="legalNotice" role="status" aria-labelledby="legal-draft-title">
-        <h2 id="legal-draft-title">{copy.incompleteTitle}</h2>
-        <p>{copy.incompleteText}</p>
-        <p><code>{missingRequiredLegalFields.join(", ")}</code></p>
-      </aside>
-    )}
-
     {kind === "imprint" ? (
       <>
         <section>
           <h2>{copy.providerTitle}</h2>
           <dl class="legalDetails">
             <div>
-              <dt>{copy.providerName}</dt>
+              <dt>{copy.labels.provider}</dt>
               <dd>{legalConfig.providerName}</dd>
             </div>
             <div>
-              <dt>{copy.businessName}</dt>
-              <dd>{legalConfig.businessName}</dd>
+              <dt>{copy.labels.businessDesignation}</dt>
+              <dd>{copy.businessDesignationText}</dd>
             </div>
             <div>
-              <dt>{copy.legalForm}</dt>
-              <dd>{legalConfig.legalForm || "—"}</dd>
+              <dt>{copy.labels.legalForm}</dt>
+              <dd>{legalConfig.legalForm}</dd>
             </div>
             <div>
-              <dt>{copy.address}</dt>
-              <dd>{address.length > 0 ? address.map((line) => <>{line}<br /></>) : "—"}</dd>
+              <dt>{copy.labels.address}</dt>
+              <dd>{address.map((line) => <>{line}<br /></>)}</dd>
             </div>
             <div>
-              <dt>{copy.contact}</dt>
+              <dt>{copy.labels.contact}</dt>
               <dd>
                 <a href={`mailto:${legalConfig.email}`}>{legalConfig.email}</a>
-                {legalConfig.phone && <><br /><a href={`tel:${legalConfig.phone}`}>{legalConfig.phone}</a></>}
+                <br />
+                <a href={`tel:${legalConfig.phone.replace(/\s+/g, "")}`}>{legalConfig.phone}</a>
               </dd>
             </div>
             <div>
-              <dt>{copy.privacyContact}</dt>
-              <dd><a href={`mailto:${legalConfig.privacyEmail}`}>{legalConfig.privacyEmail}</a></dd>
+              <dt>{copy.labels.vatId}</dt>
+              <dd>{legalConfig.vatId}</dd>
             </div>
-            {legalConfig.vatId && (
-              <div>
-                <dt>{copy.optionalRegistration}</dt>
-                <dd>
-                  <span>USt-IdNr.: {legalConfig.vatId}</span>
-                </dd>
-              </div>
-            )}
           </dl>
         </section>
         <section>
@@ -83,7 +68,8 @@ const address = [
       <>
         <section>
           <h2>{copy.providerTitle}</h2>
-          <p>{legalConfig.providerName}, {legalConfig.businessName}</p>
+          <p>{copy.privacyIntro}</p>
+          <p>{copy.businessDesignationText}</p>
           {address.map((line) => <p>{line}</p>)}
           <p><a href={`mailto:${legalConfig.email}`}>{legalConfig.email}</a></p>
         </section>
@@ -95,40 +81,15 @@ const address = [
           </section>
         ))}
         <section>
-          <h2>{copy.providerLabels.title}</h2>
-          <div class="legalTableWrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">{copy.providerLabels.service}</th>
-                  <th scope="col">{copy.providerLabels.provider}</th>
-                  <th scope="col">{copy.providerLabels.location}</th>
-                  <th scope="col">{copy.providerLabels.safeguard}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {publicProviderDisclosures.map((provider) => (
-                  <tr>
-                    <th scope="row">{copy.providerLabels.services[provider.service]}</th>
-                    <td>{provider.provider || copy.providerLabels.pending}</td>
-                    <td>{provider.processingLocation || copy.providerLabels.pending}</td>
-                    <td>{provider.transferSafeguard || copy.providerLabels.pending}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-        <section>
           <h2>{copy.authorityTitle}</h2>
-          <p>{copy.authorityText}</p>
-          {legalConfig.supervisoryAuthorityUrl && legalConfig.supervisoryAuthorityName ? (
-            <p>
-              <a href={legalConfig.supervisoryAuthorityUrl} rel="external">
-                {legalConfig.supervisoryAuthorityName}
-              </a>
-            </p>
-          ) : <p>{copy.providerLabels.pending}</p>}
+          <p>{copy.authorityIntro}</p>
+          <p>
+            {legalConfig.supervisoryAuthority.name}<br />
+            {authorityAddress.map((line) => <>{line}<br /></>)}
+            <a href={legalConfig.supervisoryAuthority.url} rel="external">
+              {legalConfig.supervisoryAuthority.url}
+            </a>
+          </p>
         </section>
         <section>
           <h2>{copy.versionTitle}</h2>

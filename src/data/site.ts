@@ -29,9 +29,19 @@ export const siteConfig = {
   logoWebpPath: "/logo/iocode-logo-512.webp",
   logoSmallWebpPath: "/logo/iocode-logo-256.webp",
   logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb?v=572076acb6cb",
-  location: {
+  // Registered §5 DDG service/notification address (Impressum). Used only for
+  // the legal-entity schema — never as a physical place of business.
+  legalServiceAddress: {
     city: publicLegalProfile.city,
     region: publicLegalProfile.region,
+    country: publicLegalProfile.country
+  },
+  // Actual place of business/establishment. Used for ProfessionalService,
+  // per-page Service and the contact Person, so structured data never implies
+  // the business operates out of a c/o mail-forwarding address.
+  businessLocation: {
+    city: "Aachen",
+    region: "Nordrhein-Westfalen",
     country: publicLegalProfile.country
   },
   availableLanguages: ["Spanish", "English", "German"],

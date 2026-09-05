@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-08-23",
-  "controllerApproval": "pending",
+  "reviewedAt": "2026-09-05",
+  "controllerApproval": "approved",
   "treatments": [
     {
       "id": "web-delivery",
@@ -12,9 +12,9 @@
       "purpose": ["content delivery", "availability", "security", "incident diagnosis"],
       "legalBasis": "GDPR Article 6(1)(f)",
       "legitimateInterest": "secure and reliable operation of the commercial website",
-      "recipients": ["hosting provider", "DNS/CDN provider if selected"],
-      "retention": "application logs maximum 14 days; provider logs subject to verified contract",
-      "internationalTransfer": "blocked until provider location and safeguard are verified"
+      "recipients": ["hosting provider (Hetzner Online GmbH)"],
+      "retention": "application logs maximum 14 days; provider logs subject to the Hetzner Article 28 DPA",
+      "internationalTransfer": "none; hosting is confined to Hetzner data centres in Germany (EEA)"
     },
     {
       "id": "email-enquiries",
@@ -24,21 +24,9 @@
       "purpose": ["answer enquiries", "pre-contract steps", "contract performance", "business communication"],
       "legalBasis": "GDPR Article 6(1)(b) or Article 6(1)(f), depending on context",
       "legitimateInterest": "responding to legitimate business communications",
-      "recipients": ["email provider", "authorised IoCode personnel"],
-      "retention": "controller deletes or organises messages when no longer necessary; after active deletion Zoho's routine cycle may take up to six months and backup deletion up to three additional months; statutory periods apply to contractual records",
-      "internationalTransfer": "EEA storage; Zoho group access from India for support and debugging is covered by the valid transfer basis Zoho must ensure under DPA section 5.2"
-    },
-    {
-      "id": "search-console",
-      "status": "disabled-until-domain-verification-and-provider-review",
-      "dataSubjects": ["website visitors represented in provider aggregates", "authorised account users"],
-      "data": ["aggregated search and index metrics", "aggregated Core Web Vitals", "account identifiers"],
-      "purpose": ["indexing control", "SEO diagnostics", "field performance monitoring"],
-      "legalBasis": "GDPR Article 6(1)(f), subject to final legitimate-interest assessment",
-      "legitimateInterest": "maintaining discoverability and technical quality",
-      "recipients": ["Google provider entity after activation"],
-      "retention": "provider account retention; export only when necessary",
-      "internationalTransfer": "verify entity, DPF participation or SCCs and transfer assessment before activation"
+      "recipients": ["email provider (Zoho Mail)", "authorised IoCode personnel"],
+      "retention": "controller deletes or organises messages when no longer necessary; statutory periods apply to contractual records",
+      "internationalTransfer": "EEA storage; limited Zoho group support access from India is covered by Standard Contractual Clauses under Article 46(2)(c) GDPR"
     },
     {
       "id": "external-links",
@@ -78,47 +66,24 @@
     },
     {
       "service": "email",
-      "provider": "Zoho Corporation GmbH",
+      "provider": "Zoho Corporation B.V.",
       "role": "processor",
       "dpaRequired": true,
       "dpaStatus": "executed-2026-08-19",
       "processingLocation": "EEA data centres; group support access may occur from India",
       "subprocessorsReviewed": true,
-      "transferMechanism": "Zoho DPA section 5.2 requires Zoho to ensure a valid transfer basis for Schedule 2 group access from India",
+      "transferMechanism": "Zoho DPA section 5.2 requires Zoho to ensure a valid transfer basis (SCC, Article 46(2)(c) GDPR) for Schedule 2 group access from India",
       "productionGate": "ready"
-    },
+    }
+  ],
+  "outOfScopeProviders": [
     {
       "service": "DNS/CDN",
-      "provider": "PENDING",
-      "role": "processor or independent controller; assessment required",
-      "dpaRequired": "assessment-required",
-      "dpaStatus": "pending",
-      "processingLocation": "PENDING",
-      "subprocessorsReviewed": false,
-      "transferMechanism": "PENDING",
-      "productionGate": "blocked"
+      "reason": "Domain-administration data only; the current registrar/DNS provider does not process visitor personal data on IoCode's behalf, so it falls outside the Article 28 recipient disclosure for this site."
     },
     {
       "service": "domain registrar",
-      "provider": "PENDING",
-      "role": "processor or independent controller; assessment required",
-      "dpaRequired": "assessment-required",
-      "dpaStatus": "pending",
-      "processingLocation": "PENDING",
-      "subprocessorsReviewed": false,
-      "transferMechanism": "PENDING",
-      "productionGate": "blocked"
-    },
-    {
-      "service": "Google Search Console",
-      "provider": "PENDING GOOGLE CONTRACTING ENTITY",
-      "role": "assessment required",
-      "dpaRequired": "assessment-required",
-      "dpaStatus": "pending",
-      "processingLocation": "PENDING",
-      "subprocessorsReviewed": false,
-      "transferMechanism": "PENDING DPF/SCC VERIFICATION",
-      "productionGate": "feature-disabled"
+      "reason": "Domain-administration data only; the registrant's own account data, not visitor personal data collected through the website."
     }
   ],
   "terminalTechnologies": [

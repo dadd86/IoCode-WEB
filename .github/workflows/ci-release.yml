@@ -1,4 +1,4 @@
-name: Publication gate - BLOCKED-BY-X-LEGAL
+name: Publication gate
 
 on:
   pull_request:
@@ -19,28 +19,12 @@ concurrency:
 
 jobs:
   publication-gate:
-    name: Publication gate - BLOCKED-BY-X-LEGAL
+    name: Publication gate
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       PUBLIC_DEPLOY_ENV: production
       PUBLIC_SITE_URL: https://iocode-solutions.com
-      PUBLIC_LEGAL_APPROVED: ${{ vars.PUBLIC_LEGAL_APPROVED }}
-      PUBLIC_PRIVACY_APPROVED: ${{ vars.PUBLIC_PRIVACY_APPROVED }}
-      PUBLIC_PRIVACY_AUTHORITY_NAME: ${{ vars.PUBLIC_PRIVACY_AUTHORITY_NAME }}
-      PUBLIC_PRIVACY_AUTHORITY_URL: ${{ vars.PUBLIC_PRIVACY_AUTHORITY_URL }}
-      PUBLIC_HOSTING_PROVIDER: ${{ vars.PUBLIC_HOSTING_PROVIDER }}
-      PUBLIC_HOSTING_LOCATION: ${{ vars.PUBLIC_HOSTING_LOCATION }}
-      PUBLIC_HOSTING_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_HOSTING_TRANSFER_SAFEGUARD }}
-      PUBLIC_EMAIL_PROVIDER: ${{ vars.PUBLIC_EMAIL_PROVIDER }}
-      PUBLIC_EMAIL_LOCATION: ${{ vars.PUBLIC_EMAIL_LOCATION }}
-      PUBLIC_EMAIL_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_EMAIL_TRANSFER_SAFEGUARD }}
-      PUBLIC_DNS_PROVIDER: ${{ vars.PUBLIC_DNS_PROVIDER }}
-      PUBLIC_DNS_LOCATION: ${{ vars.PUBLIC_DNS_LOCATION }}
-      PUBLIC_DNS_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_DNS_TRANSFER_SAFEGUARD }}
-      PUBLIC_REGISTRAR_PROVIDER: ${{ vars.PUBLIC_REGISTRAR_PROVIDER }}
-      PUBLIC_REGISTRAR_LOCATION: ${{ vars.PUBLIC_REGISTRAR_LOCATION }}
-      PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD: ${{ vars.PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD }}
       PRIVACY_DENYLIST_CONTENT: ${{ secrets.PRIVACY_DENYLIST_CONTENT }}
       PRIVACY_DENYLIST_REQUIRED: "1"
       ASTRO_TELEMETRY_DISABLED: "1"
@@ -105,22 +89,6 @@ jobs:
           docker build \
             --build-arg PUBLIC_DEPLOY_ENV=production \
             --build-arg PUBLIC_SITE_URL=https://iocode-solutions.com \
-            --build-arg PUBLIC_LEGAL_APPROVED="${PUBLIC_LEGAL_APPROVED}" \
-            --build-arg PUBLIC_PRIVACY_APPROVED="${PUBLIC_PRIVACY_APPROVED}" \
-            --build-arg PUBLIC_PRIVACY_AUTHORITY_NAME="${PUBLIC_PRIVACY_AUTHORITY_NAME}" \
-            --build-arg PUBLIC_PRIVACY_AUTHORITY_URL="${PUBLIC_PRIVACY_AUTHORITY_URL}" \
-            --build-arg PUBLIC_HOSTING_PROVIDER="${PUBLIC_HOSTING_PROVIDER}" \
-            --build-arg PUBLIC_HOSTING_LOCATION="${PUBLIC_HOSTING_LOCATION}" \
-            --build-arg PUBLIC_HOSTING_TRANSFER_SAFEGUARD="${PUBLIC_HOSTING_TRANSFER_SAFEGUARD}" \
-            --build-arg PUBLIC_EMAIL_PROVIDER="${PUBLIC_EMAIL_PROVIDER}" \
-            --build-arg PUBLIC_EMAIL_LOCATION="${PUBLIC_EMAIL_LOCATION}" \
-            --build-arg PUBLIC_EMAIL_TRANSFER_SAFEGUARD="${PUBLIC_EMAIL_TRANSFER_SAFEGUARD}" \
-            --build-arg PUBLIC_DNS_PROVIDER="${PUBLIC_DNS_PROVIDER}" \
-            --build-arg PUBLIC_DNS_LOCATION="${PUBLIC_DNS_LOCATION}" \
-            --build-arg PUBLIC_DNS_TRANSFER_SAFEGUARD="${PUBLIC_DNS_TRANSFER_SAFEGUARD}" \
-            --build-arg PUBLIC_REGISTRAR_PROVIDER="${PUBLIC_REGISTRAR_PROVIDER}" \
-            --build-arg PUBLIC_REGISTRAR_LOCATION="${PUBLIC_REGISTRAR_LOCATION}" \
-            --build-arg PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD="${PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD}" \
             --build-arg RELEASE_VERSION="${release_version}" \
             --build-arg VCS_REF="${GITHUB_SHA}" \
             --build-arg BUILD_DATE="$(git show -s --format=%cI HEAD)" \

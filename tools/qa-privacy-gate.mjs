@@ -12,7 +12,11 @@ const SCAN_TARGETS = [
   "compose.yml", "Docker"
 ];
 const SKIPPED_FILES = new Set(["tools/private-denylist.txt"]);
-const ALLOWED_POSTAL_CODE = "20459";
+// Public, legally mandatory addresses that must appear in the published site:
+// 20459 = provider's service address (§5 DDG); 40213 = LDI NRW, the named
+// supervisory authority (GDPR Art. 13(2)(f)/77) — not a private-address leak.
+const ALLOWED_POSTAL_CODES = ["20459", "40213"];
+const allowedPostalCodePattern = ALLOWED_POSTAL_CODES.join("|");
 
 const fiscalLabel = ["Steuer", "nummer"].join("");
 const fiscalAlternatives = [fiscalLabel, "Steuer-Nr", "St.-Nr", "StNr"].join("|");
@@ -20,7 +24,7 @@ const rules = [
   {
     id: "GERMAN_PRIVATE_ADDRESS",
     pattern: new RegExp(
-      String.raw`(?:Stra(?:ße|sse)|Str\.?|Weg|Platz|Allee|Gasse|Ring)\s*\d[^\r\n]{0,80}\b(?!${ALLOWED_POSTAL_CODE}\b)\d{5}\b\s+[A-ZÄÖÜ]|\b(?!${ALLOWED_POSTAL_CODE}\b)\d{5}\b\s+[A-ZÄÖÜ][^\r\n]{0,80}(?:Stra(?:ße|sse)|Str\.?|Weg|Platz|Allee|Gasse|Ring)\s*\d`,
+      String.raw`(?:Stra(?:ße|sse)|Str\.?|Weg|Platz|Allee|Gasse|Ring)\s*\d[^\r\n]{0,80}\b(?!(?:${allowedPostalCodePattern})\b)\d{5}\b\s+[A-ZÄÖÜ]|\b(?!(?:${allowedPostalCodePattern})\b)\d{5}\b\s+[A-ZÄÖÜ][^\r\n]{0,80}(?:Stra(?:ße|sse)|Str\.?|Weg|Platz|Allee|Gasse|Ring)\s*\d`,
       "giu"
     )
   },

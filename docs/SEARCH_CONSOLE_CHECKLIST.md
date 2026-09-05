@@ -14,7 +14,7 @@ La etiqueta HTML solo se usa como alternativa temporal para una propiedad de pre
 
 - `PUBLIC_DEPLOY_ENV=preview`: páginas y `robots.txt` deben emitir `noindex`/`Disallow: /`.
 - Confirmar que el dominio preview no aparece en canonicals, OG, Twitter ni sitemap del artefacto productivo.
-- Verificar la identidad §5 DDG versionada y aprobar `PUBLIC_LEGAL_APPROVED`, `PUBLIC_PRIVACY_APPROVED`, autoridad y disclosures de proveedores; el gate rechaza páginas incompletas.
+- Verificar que la identidad §5 DDG y el aviso de privacidad versionados en `src/data/legal-profile.ts` y `src/data/legal.ts` siguen reflejando los datos aprobados; `config/privacy-governance.json` debe declarar `controllerApproval: "approved"`.
 - Ejecutar build, `internal:qa:config:prod`, `internal:qa:phase-9b:static`, Playwright/Axe y Lighthouse.
 - Verificar que `/sitemap-index.xml` referencia exclusivamente `https://iocode-solutions.com/sitemap.xml`.
 

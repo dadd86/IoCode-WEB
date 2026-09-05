@@ -36,7 +36,7 @@ It is a **fully static site**: `output: "static"` in `astro.config.mjs`, served 
 
 **CSP by per-response SHA-256 hashes.** Rather than `'unsafe-inline'` or a nonce scheme requiring dynamic rendering, the static server parses each outgoing HTML document, extracts inline `<script>` and `<style>` contents, hashes them, and injects the resulting `'sha256-…'` sources into the `Content-Security-Policy` header. This achieves a strict policy on a fully static site — documented as ADR 0004.
 
-**Compliance gated at build time.** Legal and privacy content is behind `PUBLIC_LEGAL_APPROVED` and `PUBLIC_PRIVACY_APPROVED` flags. Search indexing is enabled only when `PUBLIC_DEPLOY_ENV === "production"`; every other environment emits `noindex, nofollow, noarchive` and a `Disallow: /` robots policy. A production build with a wrong `PUBLIC_SITE_URL` throws during configuration rather than shipping a bad canonical.
+**Compliance as versioned data, not an environment flag.** Legal and privacy content (§5 DDG identity, privacy notice, supervisory authority) lives as final TypeScript data in `src/data/legal-profile.ts` and `src/data/legal.ts` — the same content ships in local, preview and production, with no `PUBLIC_LEGAL_*` variables gating it. Search indexing is enabled only when `PUBLIC_DEPLOY_ENV === "production"`; every other environment emits `noindex, nofollow, noarchive` and a `Disallow: /` robots policy. A production build with a wrong `PUBLIC_SITE_URL` throws during configuration rather than shipping a bad canonical.
 
 ### Technology matrix
 
@@ -483,9 +483,9 @@ A preview deployment cannot be indexed by accident. That is one of the most comm
 
 ### 5.6 Regulatory compliance — DACH and EU
 
-**§5 DDG (Impressum).** Imprint content is assembled from `PUBLIC_LEGAL_*` variables covering legal name, business name, legal form, representative, street, postal code, city, country, email, phone, VAT ID, register name and register number — a superset of the §5 DDG mandatory fields. Publication is gated on `PUBLIC_LEGAL_APPROVED`.
+**§5 DDG (Impressum).** Imprint content is defined directly in `src/data/legal-profile.ts` — legal name, trading designation, legal form, service address, phone, email and VAT ID — a versioned TypeScript object covering exactly the §5 DDG mandatory fields, with no representative or register fields because none exist (sole proprietorship, not entered in the commercial register).
 
-**GDPR Article 13 (privacy notice).** The `PUBLIC_*_PROVIDER`, `PUBLIC_*_LOCATION` and `PUBLIC_*_TRANSFER_SAFEGUARD` triads for hosting, email, DNS and registrar map directly onto the Article 13 duty to disclose recipients and third-country transfers. Gated on `PUBLIC_PRIVACY_APPROVED`. The hosting default records `Hetzner Online GmbH`, `Germany (EEA)` and the note `EEA processing; Article 28 DPA verification required` — an honest declaration that the processor agreement still needs verifying, rather than an unsupported claim of compliance.
+**GDPR Article 13 (privacy notice).** `config/privacy-governance.json` records the processors actually under contract — Hetzner Online GmbH (hosting) and Zoho Corporation B.V. (email) — with their Article 28 DPA, processing location and transfer mechanism where relevant; both carry `productionGate: "ready"` and `controllerApproval: "approved"`. DNS/CDN and the domain registrar are documented as out of scope (`outOfScopeProviders`) because they process domain-administration data, not visitor personal data.
 
 **TDDDG §25 (cookie consent).** Not triggered. There is no cookie, no local storage of personal data, no analytics, no tag manager and no third-party embed. §25 requires consent for storing or accessing information on terminal equipment; nothing here does so, and therefore no consent banner is required. The absence of a CMP is the correct outcome of the architecture, not an oversight.
 
@@ -665,11 +665,11 @@ For a static site of 38 pages that is adequate, and the tight resource limits ar
 
 Still, a personal branch name in a production pipeline's trigger list is the kind of thing that survives long past its purpose and confuses the next reader. Either rename it to something role-descriptive or move it to a pattern such as `feature/**`.
 
-### 8.8 Legal defaults are embedded in orchestration
+### 8.8 Legal defaults embedded in orchestration (resolved 2026-09-05)
 
-`compose.yml` and `Docker/Dockerfile` carry fallback values for the Impressum: business name, street, postal code, city, country, email, VAT ID and hosting provider. These are lawfully public data — an Impressum exists precisely to be published — so this is not a secret-exposure finding.
+`compose.yml` and `Docker/Dockerfile` used to carry fallback values for the Impressum via `PUBLIC_LEGAL_*`/`PUBLIC_PRIVACY_*` variables, with publication gated on `PUBLIC_LEGAL_APPROVED`/`PUBLIC_PRIVACY_APPROVED`. The real failure mode: a build with a missing or misconfigured environment could silently ship a legally binding Impressum populated from defaults rather than failing.
 
-It is a failure-mode finding. A build with a missing or misconfigured environment silently ships a legally binding Impressum populated from defaults rather than failing. Given that `PUBLIC_LEGAL_APPROVED` and `PUBLIC_PRIVACY_APPROVED` already gate publication, the safer pattern is to leave the value defaults empty and let the approval flags be the only path to publication — matching the fail-fast discipline already applied to `PUBLIC_SITE_URL` in §5.5.
+Legal review completed: §5 DDG and privacy-notice content are now final TypeScript data in `src/data/legal-profile.ts` and `src/data/legal.ts`, versioned in Git like any other site content. There is no build path that can ship an Impressum populated from defaults, because there are no defaults left — only the approved content. `compose.yml` and `Docker/Dockerfile` no longer declare any `PUBLIC_LEGAL_*`/`PUBLIC_PRIVACY_*` variable.
 
 ### 8.9 Script surface area
 
@@ -724,9 +724,8 @@ The maintenance cost is nonetheless real: every `historical:` script references 
 | Group | Variables |
 | --- | --- |
 | Deployment | `PUBLIC_DEPLOY_ENV`, `PUBLIC_SITE_URL` |
-| Approval gates | `PUBLIC_LEGAL_APPROVED`, `PUBLIC_PRIVACY_APPROVED` |
-| Imprint (§5 DDG) | Versioned public content in `src/data/legal-profile.ts`; no deployment override |
-| Privacy (GDPR Art. 13) | `PUBLIC_HOSTING_PROVIDER`, `PUBLIC_HOSTING_LOCATION`, `PUBLIC_HOSTING_TRANSFER_SAFEGUARD`, `PUBLIC_EMAIL_PROVIDER`, `PUBLIC_EMAIL_LOCATION`, `PUBLIC_EMAIL_TRANSFER_SAFEGUARD`, `PUBLIC_DNS_PROVIDER`, `PUBLIC_DNS_LOCATION`, `PUBLIC_DNS_TRANSFER_SAFEGUARD`, `PUBLIC_REGISTRAR_PROVIDER`, `PUBLIC_REGISTRAR_LOCATION`, `PUBLIC_REGISTRAR_TRANSFER_SAFEGUARD` |
+| Imprint (§5 DDG) | Versioned public content in `src/data/legal-profile.ts` and `src/data/legal.ts`; no environment variable or deployment override |
+| Privacy (GDPR Art. 13) | Processors and transfers declared in `config/privacy-governance.json` (`controllerApproval: "approved"`) |
 | Runtime headers | `ENABLE_HSTS`, `ENABLE_COOP`, `ENABLE_UPGRADE_INSECURE_REQUESTS` |
 | Runtime | `NODE_ENV`, `PORT`, `ASTRO_TELEMETRY_DISABLED` |
 | Local ports | `ASTRO_DEV_PORT`, `ASTRO_PREVIEW_PORT`, `WEB_PORT`, `CHOKIDAR_USEPOLLING` |

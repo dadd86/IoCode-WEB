@@ -2,7 +2,7 @@
 
 | Bloque | Descripción | Ámbito | Idiomas afectados | Origen de datos | Última verificación |
 |---|---|---|---|---|---|
-| R2-recovery | Mapa del corpus documental controlado | Arquitectura, operación, seguridad y QA | ES, EN, DE | `docs/document-control.json` | 2026-07-29 |
+| R2-recovery | Mapa del corpus documental controlado | Arquitectura, operación, seguridad y QA | ES, EN, DE | `docs/document-control.json` | 2026-09-05 |
 
 ## Entrada y arquitectura
 
@@ -61,4 +61,4 @@
 frescura por `docs/document-control.json`. Los contratos vigentes son los
 documentos resumidos enlazados en “Entrada y arquitectura”.
 
-Las rutas legales están implementadas como draft controlado y permanecen `noindex` hasta resolver X1/X2, completar DNS/registrar y registrar la aprobación formal del propietario. Los DPA de Hetzner y Zoho están documentados como ejecutados; ello no desbloquea por sí solo la publicación. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.
+Las seis rutas legales son contenido final versionado (`src/data/legal-profile.ts`, `src/data/legal.ts`) e indexable como cualquier otra página del sitio: la autoridad de control quedó resuelta a la LDI NRW y `config/privacy-governance.json` declara `controllerApproval: "approved"`. Los DPA de Hetzner y Zoho están documentados como ejecutados. `security.txt` no se crea hasta demostrar DNS y recepción de correo en R5.
