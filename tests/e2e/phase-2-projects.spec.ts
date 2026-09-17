@@ -58,7 +58,7 @@ test.describe("Fase 2 - Proyectos como evidencia comercial", () => {
 
         expect(text.toLowerCase()).toMatch(/problem|problema|lösung|solution|solución/);
         expect(text.toLowerCase()).toMatch(/evidence|evidencia|nachweis/);
-        expect(text.toLowerCase()).toMatch(/claim|cautela|caution|hinweis/);
+        expect(text.toLowerCase()).toMatch(/scope|alcance|anwendungsbereich/);
 
         const links = card.locator("a");
 

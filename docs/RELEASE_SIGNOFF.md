@@ -4,7 +4,9 @@
 |---|---|---|---|---|---|---|
 | 9D | Decisión Go/No-Go previa y posterior al despliegue | QA, HTTP, Lighthouse, dispositivos y release | ES, EN, DE | CI, `qa-artifacts/phase-9d/`, DNS externo y checklist físico | 2026-08-02 | `471d17af8489b499de38504845456145847fcd61` |
 
-## Decisión actual
+**Estado: HISTORICAL / SUPERSEDED.** Este documento congela la evidencia de la Fase 9D verificada el 2026-08-02 sobre el commit `471d17af8489b499de38504845456145847fcd61` (build de 38 páginas, datos legales QA temporales). Los bloqueos de identidad legal (§5 DDG), DPA de proveedores y datos temporales descritos abajo ya se resolvieron en fases posteriores — ver `docs/LEGAL_CHANGELOG.md`. La fuente vigente de release readiness es la ejecución actual de `npm run internal:qa:phase-9f`, el privacy gate (`internal:qa:privacy`) y `npm run internal:qa:phase-9d:smoke` sobre el build actual, no esta tabla histórica.
+
+## Decisión registrada el 2026-08-02
 
 **NO-GO para publicación en producción.**
 

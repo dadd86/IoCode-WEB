@@ -97,17 +97,11 @@ for (const [groupKey, ...paths] of allGroups) {
     try {
       const html = await readFile(htmlPath(path), "utf8");
       assertMetadata(html, path, locales[index], paths);
-      if (legalGroups.some(([key]) => key === groupKey)) {
-        const isComplete = html.includes('data-legal-status="complete"');
-        const isNoIndex = /name="robots"\s+content="[^"]*noindex/iu.test(html);
-        const hasVisibleDraftNotice = html.includes('class="legalNotice"');
-        if (isProduction && !isComplete) fail(`${path}: datos legales incompletos.`);
-        if (isProduction && isNoIndex) fail(`${path}: noindex en producción.`);
-        if (!isProduction && isComplete) fail(`${path}: estado legal completo fuera de producción.`);
-        if (!isProduction && (!isNoIndex || !hasVisibleDraftNotice)) {
-          fail(`${path}: preview legal sin noindex o aviso visible.`);
-        }
-      }
+      // Legal pages are final, versioned content shipped identically in every
+      // environment (see docs/LEGAL_CHANGELOG.md) — they follow the same
+      // per-environment robots policy as every other route via BaseLayout's
+      // defaultRobotsDirective, with no legal-specific draft/complete state
+      // machine to check separately.
       evidence.push({ group: groupKey, locale: locales[index], path, canonical: absolute(path) });
     } catch (error) {
       fail(`${path}: no se pudo leer ${htmlPath(path)} (${error.message}).`);

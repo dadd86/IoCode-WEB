@@ -34,7 +34,7 @@ const requiredFields = [
   "useCases",
   "relatedServices",
   "relatedProjects",
-  "caution"
+  "scope"
 ];
 
 const forbiddenClaimPatterns = [
@@ -155,7 +155,7 @@ if (skillGroups) {
         }
       }
 
-      for (const field of ["searchIntent", "businessProblem", "businessValue", "caution"]) {
+      for (const field of ["searchIntent", "businessProblem", "businessValue", "scope"]) {
         if (typeof skill[field] !== "string" || skill[field].trim().length < 35) {
           modelErrors.push(`${locale}/${skill.title}: ${field} debe ser texto explícito.`);
         }
@@ -277,7 +277,7 @@ for (const requiredCardToken of [
   "skill.relatedProjects",
   "skill.proficiency",
   "skill.evidence",
-  "skill.caution"
+  "skill.scope"
 ]) {
   if (!cardSource.includes(requiredCardToken)) {
     routesErrors.push(`SkillCard no muestra ${requiredCardToken}.`);

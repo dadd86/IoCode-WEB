@@ -41,6 +41,5 @@ test("technical and publication checks remain independent and visible", async ()
   assert.match(deploy, /workflow_run\.head_branch == 'master'/u);
 
   assert.match(phase9b, /const isProduction = deployEnvironment === "production"/u);
-  assert.match(phase9b, /preview legal sin noindex o aviso visible/u);
   assert.match(phase9b, /robots\.txt de preview debe bloquear rastreo/u);
 });

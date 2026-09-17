@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 const ROOT = resolve(import.meta.dirname, "..");
 const TEXT_EXTENSIONS = new Set([
   "", ".astro", ".css", ".env", ".html", ".js", ".json", ".md", ".mjs",
-  ".sh", ".svg", ".ts", ".tsx", ".txt", ".yml", ".yaml"
+  ".sh", ".svg", ".ts", ".tsx", ".txt", ".xml", ".yml", ".yaml"
 ]);
 const SCAN_TARGETS = [
   "src", "docs", "config", "tools", "tests", "public", "package.json",
@@ -14,8 +14,10 @@ const SCAN_TARGETS = [
 const SKIPPED_FILES = new Set(["tools/private-denylist.txt"]);
 // Public, legally mandatory addresses that must appear in the published site:
 // 20459 = provider's service address (§5 DDG); 40213 = LDI NRW, the named
-// supervisory authority (GDPR Art. 13(2)(f)/77) — not a private-address leak.
-const ALLOWED_POSTAL_CODES = ["20459", "40213"];
+// supervisory authority (GDPR Art. 13(2)(f)/77); 45127 = Zoho Corporation GmbH,
+// the disclosed Art. 28 email processor; 91710 = Hetzner Online GmbH, the
+// disclosed Art. 28 hosting processor. None of these are private-address leaks.
+const ALLOWED_POSTAL_CODES = ["20459", "40213", "45127", "91710"];
 const allowedPostalCodePattern = ALLOWED_POSTAL_CODES.join("|");
 
 const fiscalLabel = ["Steuer", "nummer"].join("");
@@ -147,6 +149,7 @@ export async function scanRepository(root = ROOT) {
   const paths = (await Promise.all(targets.map((target) => collectFiles(resolve(root, target))))).flat();
   const denylist = await readDenylist(root);
   const findings = [];
+  let scannedFiles = 0;
 
   if (process.env.PRIVACY_DENYLIST_REQUIRED === "1" && denylist.length === 0) {
     findings.push({ id: "EXACT_DENYLIST_MISSING", file: "CI", line: 0 });
@@ -156,21 +159,52 @@ export async function scanRepository(root = ROOT) {
     const file = relative(root, path).replaceAll("\\", "/");
     if (SKIPPED_FILES.has(file) || !TEXT_EXTENSIONS.has(extname(path).toLowerCase())) continue;
     const content = await readFile(path, "utf8");
+    scannedFiles += 1;
     findings.push(...scanText(content, file));
     findings.push(...scanExactMatches(content, denylist, file));
   }
-  return findings;
+  return { findings, scannedFiles, targets };
 }
 
 async function main() {
-  const findings = await scanRepository(resolve(process.argv[2] || ROOT));
+  const explicitRoot = process.argv[2];
+  const root = resolve(explicitRoot || ROOT);
+
+  // internal:qa:privacy runs twice in CI: once before the build (dist/ does
+  // not exist yet by design) and once after (dist/ must exist and be
+  // scanned, or the "production leak gate" step is checking nothing).
+  // PRIVACY_GATE_REQUIRE_DIST=1 opts into the post-build assertion.
+  if (!explicitRoot && process.env.PRIVACY_GATE_REQUIRE_DIST === "1") {
+    try {
+      await stat(resolve(root, "dist"));
+    } catch {
+      console.error("Privacy gate: FAILED");
+      console.error("- dist/ no existe. Ejecuta `npm run build` antes de este gate.");
+      process.exitCode = 1;
+      return;
+    }
+  }
+
+  const { findings, scannedFiles, targets } = await scanRepository(root);
+
+  console.log(`Privacy gate: targets inspeccionados: ${targets.join(", ")}`);
+  console.log(`Privacy gate: archivos inspeccionados: ${scannedFiles}`);
+
+  if (scannedFiles === 0) {
+    console.error("Privacy gate: FAILED — 0 archivos inspeccionados (raíz vacía o invocación incorrecta).");
+    process.exitCode = 1;
+    return;
+  }
+
   if (findings.length) {
     console.error("Privacy gate: FAILED");
+    console.error(`- coincidencias prohibidas: ${findings.length}`);
     for (const item of findings) console.error(`- ${formatFinding(item)}`);
     process.exitCode = 1;
     return;
   }
-  console.log("Privacy gate: PASSED (structural patterns and available exact denylist)." );
+
+  console.log("Privacy gate: PASSED (structural patterns and available exact denylist).");
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await main();

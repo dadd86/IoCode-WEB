@@ -32,7 +32,7 @@ It is a **fully static site**: `output: "static"` in `astro.config.mjs`, served 
 
 ### The three decisions that define this architecture
 
-**Static-first with no backend.** The contact form composes a `mailto:` URI in the browser and hands it to the user's mail client — `window.location.assign(mailto)`. No message ever touches project infrastructure. This removes an entire class of concerns at a stroke: no form endpoint to rate-limit, no submission database to secure, no processor agreement for a form service, no GDPR data-subject rights over stored enquiries.
+**Static-first with no backend.** The contact form composes a `mailto:` URI in the browser and hands it to the user's mail client — `window.location.assign(mailto)`. No message ever touches project infrastructure: no form endpoint to rate-limit, no submission database to secure, no processor agreement for a third-party form service. This does not mean the correspondence is free of GDPR obligations: the email transits the sender's own provider and lands in the corporate mailbox hosted on Zoho Mail, where the Article 28 processor agreement and the data subject's rights over the stored message do apply — see `docs/PROCESSOR_DPA_REGISTER.md` and `docs/PRIVACY_OPERATIONS.md`.
 
 **CSP by per-response SHA-256 hashes.** Rather than `'unsafe-inline'` or a nonce scheme requiring dynamic rendering, the static server parses each outgoing HTML document, extracts inline `<script>` and `<style>` contents, hashes them, and injects the resulting `'sha256-…'` sources into the `Content-Security-Policy` header. This achieves a strict policy on a fully static site — documented as ADR 0004.
 
@@ -485,7 +485,7 @@ A preview deployment cannot be indexed by accident. That is one of the most comm
 
 **§5 DDG (Impressum).** Imprint content is defined directly in `src/data/legal-profile.ts` — legal name, trading designation, legal form, service address, phone, email and VAT ID — a versioned TypeScript object covering exactly the §5 DDG mandatory fields, with no representative or register fields because none exist (sole proprietorship, not entered in the commercial register).
 
-**GDPR Article 13 (privacy notice).** `config/privacy-governance.json` records the processors actually under contract — Hetzner Online GmbH (hosting) and Zoho Corporation B.V. (email) — with their Article 28 DPA, processing location and transfer mechanism where relevant; both carry `productionGate: "ready"` and `controllerApproval: "approved"`. DNS/CDN and the domain registrar are documented as out of scope (`outOfScopeProviders`) because they process domain-administration data, not visitor personal data.
+**GDPR Article 13 (privacy notice).** `config/privacy-governance.json` records the processors actually under contract — Hetzner Online GmbH (hosting) and Zoho Corporation GmbH (email) — with their Article 28 DPA, processing location and transfer mechanism where relevant; both carry `productionGate: "ready"` and `controllerApproval: "approved"`. DNS/CDN and the domain registrar are documented as out of scope (`outOfScopeProviders`) because they process domain-administration data, not visitor personal data.
 
 **TDDDG §25 (cookie consent).** Not triggered. There is no cookie, no local storage of personal data, no analytics, no tag manager and no third-party embed. §25 requires consent for storing or accessing information on terminal equipment; nothing here does so, and therefore no consent banner is required. The absence of a CMP is the correct outcome of the architecture, not an oversight.
 

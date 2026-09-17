@@ -8,8 +8,8 @@
 
 | Servicio | Proveedor | Rol/DPA | Ubicación | Transferencia | Gate |
 |---|---|---|---|---|---|
-| Hosting | Hetzner Online GmbH | Encargado; DPA Art. 28 ejecutado | Alemania (EEE) | Ninguna; hosting confinado al EEE | Listo |
-| Email | Zoho Corporation B.V. | Encargado; DPA firmado el 19.08.2026 | Datos en centros del EEE | Schedule 2: acceso del grupo desde India para soporte y depuración, amparado por cláusulas contractuales tipo (art. 46.2.c RGPD); § 5.2 obliga a Zoho a garantizar base válida | Listo |
+| Hosting | Hetzner Online GmbH (Industriestr. 25, 91710 Gunzenhausen) | Encargado; DPA Art. 28 versión 1.2 (16.02.2026), firmado el 04.08.2026 | UE/EEE | Ninguna; hosting confinado al EEE | Listo |
+| Email | Zoho Corporation GmbH (II. Hagen 7, 45127 Essen); DPA ref. `4AC8C6031-...` | Encargado; DPA firmado el 19.08.2026 | Almacenamiento principal en centros del EEE | Acceso del grupo desde India limitado a soporte y depuración cuando sea necesario; § 5.2 del DPA obliga a Zoho a garantizar una base válida conforme al Capítulo V RGPD para cualquier transferencia resultante — el Schedule 1 recoge cláusulas de tratamiento del art. 28 RGPD, que por sí solas no se presentan aquí como prueba de esa base para un acceso concreto | Listo |
 
 El DNS/CDN y el registrador de dominio quedan fuera del alcance de este registro: procesan datos de administración del dominio bajo control directo del propio responsable, no datos personales de las personas visitantes del sitio, por lo que no constituyen un encargo del tratamiento en el sentido del art. 28 RGPD relevante para el aviso de privacidad. Esta exclusión se revisa si el proveedor cambia de función (por ejemplo, al incorporar un CDN con procesamiento de tráfico de visitantes).
 

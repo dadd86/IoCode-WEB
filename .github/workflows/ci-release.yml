@@ -51,7 +51,7 @@ jobs:
       - name: Production build and leak gate
         run: |
           npm run build
-          npm run internal:qa:privacy
+          PRIVACY_GATE_REQUIRE_DIST=1 npm run internal:qa:privacy
           npm run internal:qa:config:prod
           npm run internal:qa:phase-9b:static
           npm run internal:qa:phase-9c:static

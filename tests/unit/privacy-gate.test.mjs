@@ -22,6 +22,8 @@ for (const [expected, fixture] of positives) {
 for (const [name, fixture] of [
   ["public service address", "Ludwig-Erhard-Str. 18, 20459 Hamburg"],
   ["public supervisory authority address", "Kavalleriestraße 2–4, 40213 Düsseldorf"],
+  ["public processor address", "II. Hagen 7, 45127 Essen"],
+  ["public hosting processor address", "Industriestr. 25, 91710 Gunzenhausen"],
   ["public VAT identifier", "DE461105535"],
   ["public contact mailbox", "contact@iocode-solutions.com"]
 ]) {
@@ -53,6 +55,23 @@ test("G-01 seventh fixture never renders an exact denylist token", async () => {
     assert.equal(result.status, 1);
     assert.match(output, /src\/fixture\.txt:2 \[EXACT_DENYLIST_MATCH\]/u);
     assert.ok(!output.includes(token));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("G-02 an explicit root with no matching files fails instead of silently passing", async () => {
+  const root = await mkdtemp(join(tmpdir(), "iocode-privacy-empty-"));
+  try {
+    // Regression test for a real methodology bug: an explicit root whose
+    // SCAN_TARGETS resolve to nothing (e.g. passing "dist" itself as root)
+    // must never report a silent 0-file PASS.
+    const result = spawnSync(process.execPath, [resolve("tools/qa-privacy-gate.mjs"), root], {
+      encoding: "utf8"
+    });
+    assert.equal(result.status, 1);
+    assert.match(`${result.stdout}${result.stderr}`, /archivos inspeccionados: 0/u);
+    assert.match(`${result.stdout}${result.stderr}`, /FAILED/u);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

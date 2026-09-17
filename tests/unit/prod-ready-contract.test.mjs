@@ -25,7 +25,7 @@ test("sole-proprietor identity has one versioned source without deployment overr
   assert.match(config, /\.\.\.publicLegalProfile/u);
   assert.match(profile, /legalForm: "Einzelunternehmen"/u);
   assert.match(profile, /vatId: "DE461105535"/u);
-  assert.match(config, /legalVersion: "2026-09-05.3"/u);
+  assert.match(config, /legalVersion: "2026-09-13\.2"/u);
   assert.doesNotMatch(`${config}\n${legalPage}`, /legalRepresentative|registerName|registerNumber|contentResponsible/iu);
   assert.doesNotMatch(productionGate, /PUBLIC_LEGAL_VAT_ID/u);
 });
@@ -37,19 +37,21 @@ test("executed Hetzner and Zoho DPAs are disclosed without overclaiming provider
     read("src/data/legal.ts")
   ]);
 
-  assert.doesNotMatch(config, /Hetzner Online GmbH|Zoho Corporation B\.V\.|Germany \(EEA\)/u);
+  assert.doesNotMatch(config, /Hetzner Online GmbH|Zoho Corporation GmbH|Germany \(EEA\)/u);
   assert.match(governance, /"provider": "Hetzner Online GmbH"/u);
   assert.match(governance, /"dpaStatus": "executed"/u);
-  assert.match(governance, /"provider": "Zoho Corporation B\.V\."/u);
+  assert.match(governance, /"provider": "Zoho Corporation GmbH"/u);
   assert.match(governance, /"dpaStatus": "executed-2026-08-19"/u);
   assert.match(governance, /BSI C5 Type 2/u);
-  assert.match(legalCopy, /Article 46\(2\)\(c\) GDPR/u);
+  assert.match(governance, /TÜV Rheinland/u);
+  assert.match(legalCopy, /Chapter V GDPR/u);
+  assert.doesNotMatch(legalCopy, /Schedule 1|Schedule 2/u);
   assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /27001:2022/u);
   assert.doesNotMatch(
-    legalCopy,
+    `${governance}\n${legalCopy}`,
     /IoCode SOLUTIONS (?:está|is|ist) (?:certificada|certified|zertifiziert)/iu
   );
-  assert.doesNotMatch(`${config}\n${governance}\n${legalCopy}`, /TÜV Rheinland/iu);
+  assert.match(governance, /not (?:an )?IoCode SOLUTIONS certification|not IoCode certification/u);
 });
 
 test("supervisory authority is resolved to the controller's actual NRW establishment", async () => {

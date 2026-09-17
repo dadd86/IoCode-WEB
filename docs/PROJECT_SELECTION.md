@@ -77,7 +77,7 @@ No publicar si el proyecto:
 - afirma producción, precisión, ahorro, disponibilidad o impacto sin evidencia;
 - carece de una versión completa en ES, EN o DE;
 - presenta una demo, ejercicio o caso académico como implantación real;
-- contradice su `status`, `evidenceLevel`, `claimLevel` o `caution`.
+- contradice su `status`, `evidenceLevel`, `claimLevel` o `scope`.
 
 ## Modelo mínimo de datos
 
@@ -99,7 +99,7 @@ No crear un modelo paralelo en la documentación. La entrada debe cumplir el tip
   status: "technical-case",
   evidenceLevel: "documentation-only",
   claimLevel: "technical-demonstration",
-  caution: "...",
+  scope: "...",
   publicLinks: [],
   featured: false
 }

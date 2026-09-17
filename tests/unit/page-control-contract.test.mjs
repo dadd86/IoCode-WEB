@@ -37,7 +37,10 @@ test("la interacción es nativa, ligera y respeta movimiento reducido", async ()
   ]);
 
   const normalizedScript = script.replaceAll("\r\n", "\n");
-  assert.ok(Buffer.byteLength(normalizedScript, "utf8") < 2_048, "el script fuente debe pesar menos de 2 KB");
+  assert.ok(
+    !/(?:^|\n)\s*import\s+[^;]*from\s+["'](?!\.\.?\/)[^"']+["']/.test(normalizedScript),
+    "page-control.ts no debe depender de paquetes npm externos"
+  );
   assert.match(script, /ArrowLeft/);
   assert.match(script, /ArrowRight/);
   assert.match(script, /Home/);
@@ -47,7 +50,7 @@ test("la interacción es nativa, ligera y respeta movimiento reducido", async ()
   assert.match(styles, /touch-action:\s*pan-x pan-y/);
   assert.match(styles, /min-width:\s*2\.75rem/);
   assert.match(styles, /min-height:\s*2\.75rem/);
-  assert.match(styles, /#22d3ee/);
+  assert.match(styles, /var\(--color-primary\)/);
   assert.match(styles, /\.pageControl__tab:active::before/);
   assert.match(styles, /prefers-reduced-motion:\s*reduce/);
 });

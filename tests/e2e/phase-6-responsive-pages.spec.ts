@@ -105,17 +105,7 @@ test.describe("Fase 6 - evidencia visual responsive", () => {
             window.scrollTo(0, 0);
           });
 
-          await page.addStyleTag({
-            content: `
-              *,
-              *::before,
-              *::after {
-                animation: none !important;
-                transition: none !important;
-                caret-color: transparent !important;
-              }
-            `
-          });
+          await page.emulateMedia({ reducedMotion: "reduce" });
 
           const heading = page.locator("main h1").first();
           const header = page.locator(".siteHeader");

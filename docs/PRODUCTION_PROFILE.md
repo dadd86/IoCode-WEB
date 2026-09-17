@@ -13,8 +13,8 @@
 | Idiomas | Español, inglés y alemán |
 | Dominio canónico | `https://iocode-solutions.com` |
 | Variante | `https://www.iocode-solutions.com` redirige con 308 al dominio sin `www` |
-| Hosting elegido | VPS Linux de Hetzner en Alemania/UE, Docker Compose, Nginx TLS y origen estático interno |
-| Región primaria | Alemania (UE); ciudad y proveedor se registran en el inventario privado al contratarse |
+| Destino de hosting previsto | VPS Linux de Hetzner dentro de la UE/EEE, Docker Compose, Nginx TLS y origen estático interno; ubicación final por verificar durante el aprovisionamiento/despliegue. |
+| Región objetivo | UE/EEE; país, ciudad y proveedor exactos se registrarán en el inventario privado cuando exista la infraestructura real. |
 | Tráfico de diseño inicial | 100 000 solicitudes/mes; pico sostenido 20 solicitudes/s; transferencia objetivo menor de 100 GB/mes |
 | Escalado | CDN opcional delante del VPS cuando el percentil 95 supere 15 solicitudes/s durante 15 minutos o 70 % de transferencia mensual |
 | Disponibilidad objetivo | 99,9 % mensual, excluyendo mantenimiento anunciado |

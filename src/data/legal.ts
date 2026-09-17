@@ -40,7 +40,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       legalForm: "Forma jurídica",
       address: "Dirección postal",
       contact: "Contacto",
-      vatId: "Número de identificación fiscal (IVA)"
+      vatId: "Número de identificación fiscal (IVA, § 27a UStG)"
     },
     businessDesignationText:
       `${publicLegalProfile.providerName}, operando bajo el nombre comercial «${publicLegalProfile.businessName}» (no inscrito en el Registro Mercantil)`,
@@ -59,8 +59,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "2. Alojamiento y registros técnicos del servidor",
         paragraphs: [
-          "Este sitio web está alojado por Hetzner Online GmbH, Alemania. Para entregar cada página, la conexión TCP/HTTP procesa de forma transitoria la dirección IP de origen, la fecha y hora, el recurso solicitado y los encabezados del navegador (protocolo, agente de usuario); es el mínimo técnico necesario para transmitir una respuesta por internet. De ese tráfico, la aplicación conserva únicamente marca de tiempo, código de estado HTTP, bytes transferidos y duración de la solicitud, sin registrar la dirección IP, la ruta completa, parámetros, referer, agente de usuario ni cabeceras de autorización.",
-          "La base jurídica es el interés legítimo en un funcionamiento seguro y estable del sitio web (art. 6.1.f RGPD). Con Hetzner Online GmbH existe un contrato de encargo del tratamiento conforme al art. 28 RGPD; el alojamiento se realiza exclusivamente en centros de datos situados en Alemania (UE). Los registros de aplicación descritos arriba se rotan y eliminan como máximo a los 14 días; no se afirman aquí plazos de retención propios de Hetzner que no consten expresamente en su DPA."
+          "Este sitio web está alojado por Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Alemania. Para entregar cada página, la conexión TCP/HTTP procesa de forma transitoria la dirección IP de origen, la fecha y hora, el recurso solicitado y los encabezados del navegador (protocolo, agente de usuario); es el mínimo técnico necesario para transmitir una respuesta por internet. De ese tráfico, la aplicación conserva únicamente marca de tiempo, código de estado HTTP, bytes transferidos y duración de la solicitud, sin registrar la dirección IP, la ruta completa, parámetros, referer, agente de usuario ni cabeceras de autorización.",
+          "La base jurídica es el interés legítimo en un funcionamiento seguro y estable del sitio web (art. 6.1.f RGPD). Con Hetzner Online GmbH existe un contrato de encargo del tratamiento conforme al art. 28 RGPD; el alojamiento se realiza en centros de datos situados en la Unión Europea/EEE conforme a dicho contrato de encargo del tratamiento. Los registros de aplicación descritos arriba se rotan y eliminan como máximo a los 14 días; no se afirman aquí plazos de retención propios de Hetzner que no consten expresamente en su DPA."
         ]
       },
       {
@@ -68,7 +68,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         paragraphs: [
           "El formulario de contacto de este sitio web no transmite datos a ningún servidor de IoCode SOLUTIONS. Genera localmente, en el navegador de la persona, un enlace mailto prerrellenado; el envío solo se produce cuando la persona lo confirma desde su propio cliente de correo.",
           "Cuando se produce un contacto por correo electrónico, el nombre, la dirección de correo, el tipo de proyecto y el mensaje se tratan exclusivamente para gestionar la consulta. La base jurídica es el art. 6.1.b RGPD cuando la consulta sirve para la preparación o ejecución de un contrato, o el art. 6.1.f RGPD (interés legítimo en responder a consultas empresariales) en el resto de los casos. Los datos se eliminan en cuanto dejan de ser necesarios y, como máximo, al finalizar los plazos legales de conservación aplicables.",
-          "El buzón de correo empresarial se gestiona a través de Zoho Mail (Zoho Corporation B.V., Países Bajos/UE). Con Zoho existe un contrato de encargo del tratamiento conforme al art. 28 RGPD; los datos de correo se almacenan en centros de datos del Espacio Económico Europeo. Para tareas de soporte técnico, entidades del grupo Zoho en India pueden acceder de forma limitada a dichos datos; este acceso está amparado por cláusulas contractuales tipo (art. 46.2.c RGPD)."
+          "El buzón de correo empresarial se gestiona a través de Zoho Mail (Zoho Corporation GmbH, II. Hagen 7, 45127 Essen, Alemania). Con Zoho existe un contrato de encargo del tratamiento conforme al art. 28 RGPD; el almacenamiento principal de los datos de correo se realiza en centros de datos del Espacio Económico Europeo. Entidades del grupo Zoho pueden acceder a los datos cuando sea necesario, incluidas entidades en India para tareas de soporte y depuración; cualquier transferencia internacional derivada de ese acceso está sujeta a las garantías exigidas por el Capítulo V RGPD. La persona interesada puede solicitar información adicional sobre dichas garantías, o una copia de las mismas cuando estén disponibles, escribiendo a la dirección de contacto indicada en este aviso.",
+          "Con independencia de cuándo el responsable considera que un correo deja de ser necesario, una vez iniciada su eliminación en el buzón, el ciclo técnico ordinario de limpieza de los servidores primarios de Zoho tiene lugar aproximadamente cada seis meses, y la eliminación de las copias de seguridad puede tardar hasta tres meses adicionales. Estos plazos son el ciclo técnico del encargado tras la eliminación, no una política general de conservación del responsable."
         ]
       },
       {
@@ -100,8 +101,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       "Sin perjuicio de cualquier otro recurso administrativo o judicial, las personas interesadas tienen derecho a presentar una reclamación ante una autoridad de control en materia de protección de datos. La autoridad competente para el responsable del tratamiento es:",
     versionTitle: "Versión del documento",
     versionSummary:
-      "Versión 2026-09-05.3 — versión revisada y aprobada en su totalidad del aviso legal y la política de privacidad.",
-    lastUpdated: "Última actualización: 5 de septiembre de 2026."
+      "Versión 2026-09-13.2 — versión vigente del aviso legal y la política de privacidad.",
+    lastUpdated: "Última actualización: 13 de septiembre de 2026."
   },
   en: {
     providerTitle: "Provider identification pursuant to section 5 DDG",
@@ -111,7 +112,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       legalForm: "Legal form",
       address: "Postal address",
       contact: "Contact",
-      vatId: "VAT identification number"
+      vatId: "VAT identification number (§ 27a UStG)"
     },
     businessDesignationText:
       `${publicLegalProfile.providerName}, trading as "${publicLegalProfile.businessName}" (not entered in the German commercial register)`,
@@ -130,8 +131,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "2. Hosting and server logs",
         paragraphs: [
-          "This website is hosted by Hetzner Online GmbH, Germany. To deliver each page, the TCP/HTTP connection transiently processes the originating IP address, date and time, the resource requested, and the browser's request headers (protocol, user agent) — the technical minimum needed to transmit a response over the internet. Of that traffic, the application retains only the timestamp, HTTP status code, bytes transferred and request duration; it does not log the IP address, full path, query parameters, referrer, user agent or authorization headers.",
-          "The legal basis is the legitimate interest in a secure and functional website (Article 6(1)(f) GDPR). A data processing agreement under Article 28 GDPR is in place with Hetzner Online GmbH; hosting takes place exclusively in data centres within Germany (EU). The application logs described above are rotated and deleted within 14 days at most; no Hetzner-specific retention period is claimed here beyond what is expressly stated in its DPA."
+          "This website is hosted by Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Germany. To deliver each page, the TCP/HTTP connection transiently processes the originating IP address, date and time, the resource requested, and the browser's request headers (protocol, user agent) — the technical minimum needed to transmit a response over the internet. Of that traffic, the application retains only the timestamp, HTTP status code, bytes transferred and request duration; it does not log the IP address, full path, query parameters, referrer, user agent or authorization headers.",
+          "The legal basis is the legitimate interest in a secure and functional website (Article 6(1)(f) GDPR). A data processing agreement under Article 28 GDPR is in place with Hetzner Online GmbH; hosting takes place in data centres within the European Union/EEA under that data processing agreement. The application logs described above are rotated and deleted within 14 days at most; no Hetzner-specific retention period is claimed here beyond what is expressly stated in its DPA."
         ]
       },
       {
@@ -139,7 +140,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         paragraphs: [
           "The contact form on this website sends no data to an IoCode SOLUTIONS server. It generates a pre-filled mailto link locally in the visitor's browser; the message is only sent once the person confirms it in their own email client.",
           "Where contact is made by email, the name, email address, project type and message are processed solely to handle the enquiry. The legal basis is Article 6(1)(b) GDPR where the enquiry serves to prepare or perform a contract, or Article 6(1)(f) GDPR (legitimate interest in responding to business enquiries) in all other cases. Data is deleted once it is no longer required, and at the latest after statutory retention periods expire.",
-          "The business email mailbox is operated through Zoho Mail (Zoho Corporation B.V., Netherlands/EU). A data processing agreement under Article 28 GDPR is in place with Zoho; email data is stored in data centres within the European Economic Area. For technical support purposes, limited access may occur from Zoho group entities in India; this access is safeguarded by Standard Contractual Clauses (Article 46(2)(c) GDPR)."
+          "The business email mailbox is operated through Zoho Mail (Zoho Corporation GmbH, II. Hagen 7, 45127 Essen, Germany). A data processing agreement under Article 28 GDPR is in place with Zoho; primary storage of email data takes place in data centres within the European Economic Area. Zoho group entities may access the data when necessary, including entities in India for support and debugging purposes; any resulting international transfer is subject to the safeguards required under Chapter V GDPR. Data subjects may request further information about those safeguards, or a copy of them where available, by writing to the contact address given in this notice.",
+          "Independently of when the controller considers an email no longer necessary, once deletion is initiated in the mailbox, Zoho's ordinary technical clean-up cycle for primary servers takes place roughly every six months, and backup deletion may take up to three further months. These are the processor's technical timeframes after deletion, not a general retention policy set by the controller."
         ]
       },
       {
@@ -171,8 +173,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       "Without prejudice to any other administrative or judicial remedy, data subjects have the right to lodge a complaint with a data protection supervisory authority. The authority competent for the controller is:",
     versionTitle: "Document version",
     versionSummary:
-      "Version 2026-09-05.3 — fully reviewed and approved version of the imprint and privacy notice.",
-    lastUpdated: "Last updated: 5 September 2026."
+      "Version 2026-09-13.2 — current version of the imprint and privacy notice.",
+    lastUpdated: "Last updated: 13 September 2026."
   },
   de: {
     providerTitle: "Anbieterkennzeichnung gemäß § 5 DDG",
@@ -182,7 +184,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       legalForm: "Rechtsform",
       address: "Ladungsfähige Anschrift",
       contact: "Kontakt",
-      vatId: "Umsatzsteuer-Identifikationsnummer"
+      vatId: "Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG"
     },
     businessDesignationText:
       `${publicLegalProfile.providerName} handelnd unter „${publicLegalProfile.businessName}“ (nicht im Handelsregister eingetragen)`,
@@ -201,8 +203,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       {
         title: "2. Hosting und Server-Protokolle",
         paragraphs: [
-          "Diese Website wird bei Hetzner Online GmbH, Deutschland, gehostet. Zur Auslieferung jeder Seite verarbeitet die TCP/HTTP-Verbindung vorübergehend die anfragende IP-Adresse, Datum und Uhrzeit, die abgerufene Ressource sowie die Anfrage-Header des Browsers (Protokoll, User-Agent) – das technisch notwendige Minimum zur Übertragung einer Antwort über das Internet. Von diesem Datenverkehr speichert die Anwendung ausschließlich Zeitstempel, HTTP-Statuscode, übertragene Bytes und Anfragedauer; IP-Adresse, vollständiger Pfad, Query-Parameter, Referrer, User-Agent und Autorisierungs-Header werden nicht protokolliert.",
-          "Rechtsgrundlage ist das berechtigte Interesse an einem sicheren und funktionsfähigen Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO). Mit Hetzner Online GmbH besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO; das Hosting erfolgt ausschließlich in Rechenzentren in Deutschland (EU). Die oben beschriebenen Anwendungs-Logs werden spätestens nach 14 Tagen rotiert und gelöscht; es werden keine über den DPA von Hetzner hinausgehenden Aufbewahrungsfristen des Anbieters behauptet."
+          "Diese Website wird bei Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Deutschland, gehostet. Zur Auslieferung jeder Seite verarbeitet die TCP/HTTP-Verbindung vorübergehend die anfragende IP-Adresse, Datum und Uhrzeit, die abgerufene Ressource sowie die Anfrage-Header des Browsers (Protokoll, User-Agent) – das technisch notwendige Minimum zur Übertragung einer Antwort über das Internet. Von diesem Datenverkehr speichert die Anwendung ausschließlich Zeitstempel, HTTP-Statuscode, übertragene Bytes und Anfragedauer; IP-Adresse, vollständiger Pfad, Query-Parameter, Referrer, User-Agent und Autorisierungs-Header werden nicht protokolliert.",
+          "Rechtsgrundlage ist das berechtigte Interesse an einem sicheren und funktionsfähigen Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO). Mit Hetzner Online GmbH besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO; das Hosting erfolgt in Rechenzentren innerhalb der Europäischen Union/des EWR gemäß diesem Auftragsverarbeitungsvertrag. Die oben beschriebenen Anwendungs-Logs werden spätestens nach 14 Tagen rotiert und gelöscht; es werden keine über den DPA von Hetzner hinausgehenden Aufbewahrungsfristen des Anbieters behauptet."
         ]
       },
       {
@@ -210,7 +212,8 @@ export const legalCopy: Record<Locale, LegalCopy> = {
         paragraphs: [
           "Das Kontaktformular dieser Website übermittelt keine Daten an einen Server von IoCode SOLUTIONS. Es erzeugt lokal im Browser der Person einen vorausgefüllten mailto-Link; der eigentliche Versand erfolgt erst, wenn die Person diesen im eigenen E-Mail-Programm bestätigt.",
           "Bei einer Kontaktaufnahme per E-Mail werden Name, E-Mail-Adresse, Projektart und Nachricht ausschließlich zur Bearbeitung der Anfrage verarbeitet. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, sofern die Anfrage der Anbahnung oder Durchführung eines Vertrags dient, oder Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung geschäftlicher Anfragen) in allen übrigen Fällen. Die Daten werden gelöscht, sobald sie zur Bearbeitung nicht mehr erforderlich sind, spätestens jedoch nach Ablauf gesetzlicher Aufbewahrungsfristen.",
-          "Der geschäftliche E-Mail-Posteingang wird über Zoho Mail (Zoho Corporation B.V., Niederlande/EU) betrieben. Mit Zoho besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO; die E-Mail-Daten werden in Rechenzentren innerhalb des Europäischen Wirtschaftsraums gespeichert. Im Rahmen des technischen Supports kann in begrenztem Umfang ein Zugriff durch Zoho-Konzerngesellschaften in Indien erfolgen; dieser Zugriff ist über Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO) abgesichert."
+          "Der geschäftliche E-Mail-Posteingang wird über Zoho Mail (Zoho Corporation GmbH, II. Hagen 7, 45127 Essen, Deutschland) betrieben. Mit Zoho besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO; die primäre Speicherung der E-Mail-Daten erfolgt in Rechenzentren innerhalb des Europäischen Wirtschaftsraums. Zoho-Konzerngesellschaften können bei Bedarf auf die Daten zugreifen, einschließlich Gesellschaften in Indien im Rahmen von Support und Fehlerbehebung; jede daraus resultierende internationale Übermittlung unterliegt den nach Kapitel V DSGVO erforderlichen Garantien. Betroffene Personen können weitere Informationen zu diesen Garantien oder, soweit verfügbar, eine Kopie davon über die in diesem Hinweis genannte Kontaktadresse anfordern.",
+          "Unabhängig davon, wann der Verantwortliche eine E-Mail als nicht mehr erforderlich ansieht, durchläuft nach Einleitung der Löschung im Postfach der reguläre technische Bereinigungszyklus der primären Server von Zoho etwa alle sechs Monate, und die Löschung von Backups kann bis zu drei weitere Monate in Anspruch nehmen. Dies sind die technischen Fristen des Auftragsverarbeiters nach der Löschung, keine allgemeine Aufbewahrungsrichtlinie des Verantwortlichen."
         ]
       },
       {
@@ -242,7 +245,7 @@ export const legalCopy: Record<Locale, LegalCopy> = {
       "Unbeschadet eines anderweitigen verwaltungsrechtlichen oder gerichtlichen Rechtsbehelfs steht betroffenen Personen das Recht auf Beschwerde bei einer Datenschutzaufsichtsbehörde zu. Zuständig für den Verantwortlichen ist:",
     versionTitle: "Version des Dokuments",
     versionSummary:
-      "Version 2026-09-05.3 — vollständig geprüfte und freigegebene Fassung des Impressums und der Datenschutzerklärung.",
-    lastUpdated: "Stand: 5. September 2026."
+      "Version 2026-09-13.2 — aktuelle Fassung des Impressums und der Datenschutzerklärung.",
+    lastUpdated: "Stand: 13. September 2026."
   }
 };

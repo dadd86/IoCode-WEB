@@ -223,7 +223,7 @@ IoCode-WEB/
 ├── src/
 │   ├── assets/                   # tokens · global · components · pages · hero3d
 │   ├── components/               # 20 .astro components — zero framework islands
-│   ├── config/                   # environment.ts (guards) · legal.ts (approval gates)
+│   ├── config/                   # environment.ts (guards) · legal.ts (versioned identity re-export)
 │   ├── data/                     # 10 typed content modules
 │   ├── i18n/                     # config · routes (11 keys × 3 locales) · ui
 │   ├── layouts/BaseLayout.astro
@@ -294,7 +294,6 @@ Tracked in detail in [`ARCHITECTURE.md` §8](ARCHITECTURE.md#8-known-limitations
 - **No `/.well-known/security.txt`** (RFC 9116). `SECURITY.md` exists but is not served as a discoverable contact. The `robots.txt.ts` route demonstrates the pattern to add it.
 - **Two conflicting Lighthouse floors** — `browser-qa` sets 0.50, `performance-qa` sets 0.90 desktop. Document which one gates a release.
 - **Inconsistent dependency pinning** — most packages are exact, but `@types/node`, `sharp`, `chrome-launcher` and `gltf-validator` use caret ranges. `allowScripts` also names `sharp@0.34.5` while the manifest requests `^0.35.3`.
-- **Legal defaults embedded in `compose.yml` and the Dockerfile** — a misconfigured build ships an Impressum from fallbacks rather than failing. Consider empty defaults with the approval flags as the only publication path.
 - **No CDN** — Nginx and the origin share a host, with a `0.50` CPU and `256m` memory limit behind a `20r/s` per-IP rate limit.
 - **`carmonita` in the CI trigger list** — harmless, since `deploy.yml` filters on `master`, but worth renaming.
 

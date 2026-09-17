@@ -14,7 +14,7 @@
       "legitimateInterest": "secure and reliable operation of the commercial website",
       "recipients": ["hosting provider (Hetzner Online GmbH)"],
       "retention": "application logs maximum 14 days; provider logs subject to the Hetzner Article 28 DPA",
-      "internationalTransfer": "none; hosting is confined to Hetzner data centres in Germany (EEA)"
+      "internationalTransfer": "none; hosting is confined to Hetzner data centres within the EU/EEA under the Article 28 DPA"
     },
     {
       "id": "email-enquiries",
@@ -26,7 +26,7 @@
       "legitimateInterest": "responding to legitimate business communications",
       "recipients": ["email provider (Zoho Mail)", "authorised IoCode personnel"],
       "retention": "controller deletes or organises messages when no longer necessary; statutory periods apply to contractual records",
-      "internationalTransfer": "EEA storage; limited Zoho group support access from India is covered by Standard Contractual Clauses under Article 46(2)(c) GDPR"
+      "internationalTransfer": "EEA storage; Zoho group entities may access data when necessary, including from India for support and debugging; any resulting transfer is subject to Chapter V GDPR safeguards"
     },
     {
       "id": "external-links",
@@ -55,24 +55,28 @@
     {
       "service": "hosting",
       "provider": "Hetzner Online GmbH",
+      "address": "Industriestr. 25, 91710 Gunzenhausen, Germany",
       "role": "processor",
       "dpaRequired": true,
       "dpaStatus": "executed",
-      "processingLocation": "Germany (EEA)",
-      "securityEvidence": "contractual evidence refers to ISO 27001 certification, section 8a BSI-KritisV and BSI C5 Type 2; this is provider evidence, not IoCode certification",
+      "dpaVersion": "1.2 (2026-02-16), signed 2026-08-04",
+      "processingLocation": "EU/EEA",
+      "securityEvidence": "contractual evidence refers to ISO 27001 certification, section 8a BSI-KritisV and a BSI C5 Type 2 attestation independently audited by TÜV Rheinland; this is Hetzner's own provider evidence, not an IoCode SOLUTIONS certification",
       "subprocessorsReviewed": false,
       "transferMechanism": "EEA hosting; Article 28 DPA executed",
       "productionGate": "ready"
     },
     {
       "service": "email",
-      "provider": "Zoho Corporation B.V.",
+      "provider": "Zoho Corporation GmbH",
+      "address": "II. Hagen 7, 45127 Essen, Germany",
       "role": "processor",
       "dpaRequired": true,
       "dpaStatus": "executed-2026-08-19",
+      "dpaReference": "4AC8C6031-...",
       "processingLocation": "EEA data centres; group support access may occur from India",
       "subprocessorsReviewed": true,
-      "transferMechanism": "Zoho DPA section 5.2 requires Zoho to ensure a valid transfer basis (SCC, Article 46(2)(c) GDPR) for Schedule 2 group access from India",
+      "transferMechanism": "Zoho DPA requires Zoho to ensure a Chapter V GDPR-compliant safeguard for any international transfer, including India group access for support/debugging; Schedule 1's Article 28 processing clauses alone are not asserted here as sufficient proof of that safeguard for a specific access instance",
       "productionGate": "ready"
     }
   ],

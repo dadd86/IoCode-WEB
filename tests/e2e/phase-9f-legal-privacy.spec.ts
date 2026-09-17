@@ -82,7 +82,25 @@ test("privacidad expone responsable, contacto, derechos, autoridad y versión", 
   await expect(page.getByText("Beschwerderecht bei einer Aufsichtsbehörde", { exact: true })).toBeVisible();
   await expect(page.getByText("Rechte der betroffenen Person", { exact: false })).toBeVisible();
   await expect(page.getByText("Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen", { exact: false })).toBeVisible();
-  await expect(page.getByText("2026-09-05.3", { exact: true })).toBeVisible();
+  await expect(page.getByText("2026-09-13.2", { exact: true })).toBeVisible();
+});
+
+test("ninguna ruta pública menciona estados de gobernanza legal ya superados", async ({ page }) => {
+  const staleStrings = [
+    "X-LEGAL",
+    "legal approval pending",
+    "aprobación jurídica pendiente",
+    "juristische Freigabe ausstehend",
+    "production block",
+    "Produktionsblock"
+  ];
+  for (const path of ["/es/habilidades/", "/en/skills/", "/de/faehigkeiten/", "/de/datenschutz/"]) {
+    await page.goto(path, { waitUntil: "domcontentloaded" });
+    const body = await page.locator("body").innerText();
+    for (const needle of staleStrings) {
+      expect(body.includes(needle), `${path} still mentions "${needle}"`).toBe(false);
+    }
+  }
 });
 
 test("impressum expone contacto directo con teléfono verificable", async ({ page }) => {

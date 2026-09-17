@@ -29,7 +29,7 @@ export const siteConfig = {
   logoWebpPath: "/logo/iocode-logo-512.webp",
   logoSmallWebpPath: "/logo/iocode-logo-256.webp",
   logo3dPath: "/logo/3d/iocode_solutions_logo_extruded_3d.glb?v=572076acb6cb",
-  // Registered §5 DDG service/notification address (Impressum). Used only for
+// Contracted public §5 DDG service/notification address (Impressum). Used only for
   // the legal-entity schema — never as a physical place of business.
   legalServiceAddress: {
     city: publicLegalProfile.city,

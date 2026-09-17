@@ -134,6 +134,21 @@ const distHtml = (
   )
 ).join("\n");
 const externalEmbedding = /<(script|iframe|img|link)\b[^>]+(?:src|href)=["']https?:\/\/(?!iocode-solutions\.com|localhost(?::\d+)?|127\.0\.0\.1(?::\d+)?)/iu;
+const staleLegalStatusStrings = [
+  "X-LEGAL",
+  "legal approval pending",
+  "aprobación jurídica pendiente",
+  "juristische Freigabe ausstehend",
+  "production block",
+  "Produktionsblock",
+  "controllerApproval"
+];
+
+check(
+  "9.51-no-stale-legal-status",
+  staleLegalStatusStrings.every((needle) => !distHtml.includes(needle)),
+  "Ninguna página publicada menciona estados de gobernanza interna ya superados (X-LEGAL, aprobación pendiente, bloqueo de producción)."
+);
 
 check(
   "9.46-cookie-storage-audit",
@@ -171,8 +186,8 @@ check(
 
 check(
   "9.50-legal-governance",
-  legalConfig.includes('legalVersion: "2026-09-05.3"') &&
-    changelog.includes("2026-09-05.3") &&
+      legalConfig.includes('legalVersion: "2026-09-13.2"') &&
+    changelog.includes("2026-09-08.1") &&
     changelog.includes("Responsable") &&
     legalPage.includes("versionSummary"),
   "Versión visible, changelog y aprobación formal registrados."

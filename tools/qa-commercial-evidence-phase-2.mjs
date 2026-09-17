@@ -26,7 +26,7 @@ const requiredFields = [
   "capabilities",
   "evidenceLevel",
   "claimLevel",
-  "caution",
+  "scope",
   "publicLinks",
   "featured",
   "seoTitle",
@@ -245,7 +245,7 @@ if (projects) {
         }
       }
 
-      for (const field of ["summary", "problem", "solution", "technicalRole", "businessValue", "caution"]) {
+      for (const field of ["summary", "problem", "solution", "technicalRole", "businessValue", "scope"]) {
         if (typeof project[field] !== "string" || project[field].trim().length < 20) {
           modelErrors.push(`${locale}/${project.title}: ${field} debe ser texto explícito.`);
         }

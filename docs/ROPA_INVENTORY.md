@@ -8,7 +8,7 @@
 
 IoCode SOLUTIONS mantiene un RAT completo. No se invoca la excepción del artículo 30(5): aunque la organización pueda tener menos de 250 personas, la publicación del sitio, los logs técnicos y la gestión de correo son actividades recurrentes y no meramente ocasionales. El registro también facilita demostrar responsabilidad proactiva.
 
-Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTIONS es el nombre comercial. La identidad, dirección de servicio y canal operativo son contenido público versionado en `src/data/legal-profile.ts`. El responsable ejerce su actividad real desde Aachen (Renania del Norte-Westfalia); la dirección de servicio en Hamburgo es únicamente la dirección de notificación (`c/o IP-Management`) exigida para la ladungsfähige Anschrift del § 5 DDG. Por el establecimiento efectivo en NRW, la autoridad de control competente es la Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW); esta determinación queda cerrada y ya no depende de la dirección de servicio.
+Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTIONS es el nombre comercial. La identidad, dirección de servicio y canal operativo son contenido público versionado en `src/data/legal-profile.ts`. El responsable ejerce su actividad real desde Aachen (Renania del Norte-Westfalia); la dirección de servicio en Hamburgo es únicamente la dirección de notificación (`c/o IP-Management`) exigida para la ladungsfähige Anschrift del § 5 DDG. Por el establecimiento efectivo en NRW, la autoridad de control competente es la Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW); esta determinación queda cerrada y ya no depende de la dirección de servicio. La validez de la dirección de notificación de Hamburgo como ladungsfähige Anschrift del § 5 DDG está respaldada por el certificado del proveedor del servicio de recepción de correspondencia y por una Post- und Zustellungsvollmacht (poder de recepción de notificaciones judiciales y administrativas) a favor del responsable; ambos documentos son evidencia privada de cumplimiento y no se publican en el repositorio.
 
 ## RAT-01 — Entrega del sitio y seguridad
 
@@ -19,7 +19,7 @@ Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTION
 | Finalidad | Entrega, disponibilidad, seguridad y diagnóstico |
 | Base | Art. 6.1.f RGPD; interés legítimo en operación segura |
 | Destinatarios | Hetzner Online GmbH (hosting) |
-| Transferencia | Ninguna; alojamiento confinado a centros de datos de Hetzner en Alemania (EEE) |
+| Transferencia | Ninguna; alojamiento dentro de la UE/EEE conforme al DPA de Hetzner. |
 | Conservación | Logs mínimos: máximo 14 días; evidencia de incidente mientras sea necesaria y documentada |
 | Medidas | TLS, CSP, logs sin identificadores, filesystem read-only, mínimos privilegios, release inmutable |
 
@@ -31,8 +31,8 @@ Responsable: persona física que opera como `Einzelunternehmen`; IoCode SOLUTION
 | Datos | Nombre, email, tipo de proyecto, mensaje y metadatos del correo |
 | Finalidad | Respuesta, medidas precontractuales, contrato y comunicación empresarial |
 | Base | Art. 6.1.b o 6.1.f RGPD según contexto |
-| Destinatarios | Zoho Corporation B.V. como encargado y personal autorizado |
-| Transferencia | Datos almacenados en el EEE; Schedule 2 permite acceso del grupo desde India para soporte y depuración; § 5.2 del DPA obliga a Zoho a garantizar base válida |
+| Destinatarios | Zoho Corporation GmbH como encargado y personal autorizado |
+| Transferencia | Almacenamiento principal en el EEE; entidades del grupo Zoho, incluidas las de India, pueden acceder cuando sea necesario para soporte y depuración; § 5.2 del DPA obliga a Zoho a garantizar una base válida conforme al Capítulo V RGPD para cualquier transferencia resultante |
 | Conservación | El responsable elimina u organiza mensajes cuando dejan de ser necesarios; tras borrado activo, el ciclo ordinario de Zoho puede tardar hasta seis meses y los backups hasta tres meses adicionales; plazos legales aplicables si existe contrato |
 | Medidas | `mailto:` local, sin backend ni base de datos, minimización de campos y acceso restringido al buzón |
 

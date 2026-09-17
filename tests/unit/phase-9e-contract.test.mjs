@@ -4,7 +4,11 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "../..");
-const read = (path) => readFile(resolve(root, path), "utf8");
+// Normalize CRLF to LF: the directive this test inspects is a config value,
+// not a byte-exact artifact, so the check must not depend on the checkout's
+// line-ending style (Windows checkouts of an LF-committed file read back as CRLF).
+const read = async (path) =>
+  (await readFile(resolve(root, path), "utf8")).replace(/\r\n/gu, "\n");
 
 test("the production monitor covers localized availability, DNS and TLS", async () => {
   const config = JSON.parse(await read("config/observability.json"));
