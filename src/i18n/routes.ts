@@ -59,7 +59,7 @@ export const routeAlternates: Record<RouteKey, LocalizedRoute> = {
   },
   skills: {
     key: "skills",
-    label: { es: "Habilidades", en: "Skills", de: "Fähigkeiten" },
+    label: { es: "Capacidades", en: "Expertise", de: "Kompetenzen" },
     slug: { es: "habilidades", en: "skills", de: "faehigkeiten" },
     path: { es: "/es/habilidades/", en: "/en/skills/", de: "/de/faehigkeiten/" }
   },

@@ -14,7 +14,7 @@
 [![Nginx](https://img.shields.io/badge/Nginx-TLS%201.2%2F1.3-009639?logo=nginx&logoColor=white)](https://nginx.org/)
 [![i18n](https://img.shields.io/badge/i18n-ES%20·%20EN%20·%20DE-blue)](src/i18n/routes.ts)
 
-[Architecture (EN)](ARCHITECTURE.md) · [Arquitectura (ES)](docs/es/ARCHITECTURE.md) · [Runbook](docs/RUNBOOK.md) · [ADRs](docs/adr/)
+[Architecture (EN)](ARCHITECTURE-EN.md) · [Arquitectura (ES)](ARCHITECTURE-ES.md) · [Runbook](docs/RUNBOOK.md) · [ADRs](docs/adr/)
 
 </div>
 
@@ -22,13 +22,30 @@
 
 ## What this is
 
-The commercial site for IoCode SOLUTIONS — PLC programming, industrial robotics, software and data engineering for the DACH market. Thirty-three localised content routes across Spanish, English and German, thirty-eight generated pages, and a WebGL hero that degrades gracefully to a static image.
+The commercial site for IoCode SOLUTIONS — industrial automation, PLC engineering, industrial robotics, software and data engineering for the DACH market. Thirty-three localized primary content routes and localized project detail pages span Spanish, English and German; the verified static build totals 66 generated pages, including per-locale error pages, plus a WebGL hero that degrades gracefully to a static image.
 
 It is fully static. No database, no session store, no login, no application cookie, no server-side rendering at request time.
 
+### Commercial content model
+
+`src/data/skills.ts` and `src/data/projects.ts` encode two different kinds of commercial evidence. A skill is an aggregated capability, backed by a public GitHub project, by documented professional experience and vendor certificates, or both — skills never force a fake project association just to fill the field. `src/data/projects.ts` holds the eight currently selected public projects:
+
+| Project | Repository |
+| --- | --- |
+| IoCode-WEB | [dadd86/IoCode-WEB](https://github.com/dadd86/IoCode-WEB) |
+| TechWizards | [dadd86/TechWizards](https://github.com/dadd86/TechWizards) |
+| HotelSOL | [dadd86/HotelSOL](https://github.com/dadd86/HotelSOL) |
+| WoodShops | [dadd86/AA5-FP056-_WoodShops](https://github.com/dadd86/AA5-FP056-_WoodShops) |
+| Vehicle rental | [dadd86/AA2-FP056-_AlquilerVehiculos](https://github.com/dadd86/AA2-FP056-_AlquilerVehiculos) |
+| The Javengers | [dadd86/The-Javengers---IntellJ](https://github.com/dadd86/The-Javengers---IntellJ) |
+| MySQL Workbench | [dadd86/MySQL-Workbench-Forward-Engineering](https://github.com/dadd86/MySQL-Workbench-Forward-Engineering) |
+| RompeCajas | [dadd86/JuegoRompeCajas](https://github.com/dadd86/JuegoRompeCajas) |
+
+`searchIntent`, `claimLevel`, `evidenceLevel` and the `ProjectCapability` slugs are internal SEO/editorial governance identifiers — they stay in the typed models but are never rendered raw; the UI resolves them to localized, human-readable labels. ES/EN/DE copy carries the same meaning and commercial strength in each language rather than a literal translation.
+
 ### Why the architecture matters here
 
-**Two runtime dependencies.** `astro` and `three`. That's the entire production dependency surface for a 38-page trilingual site with a 3D hero — which is why `npm audit --omit=dev` can be a hard release gate rather than a source of noise. Supply-chain controls back it up: `.npmrc` sets `strict-allow-scripts=true`, and `package.json` names exactly which packages may run install scripts.
+**Two runtime dependencies.** `astro` and `three`. That's the entire production dependency surface for a 66-page trilingual site with a 3D hero — which is why `npm audit --omit=dev` can be a hard release gate rather than a source of noise. Supply-chain controls back it up: `.npmrc` sets `strict-allow-scripts=true`, and `package.json` names exactly which packages may run install scripts.
 
 **No backend, by design.** The contact form composes a `mailto:` URI in the browser and hands it to the user's mail client. No enquiry ever touches project infrastructure — which removes the form endpoint, the submission database, the processor agreement and the data-subject rights over stored messages, all at once.
 
@@ -264,7 +281,7 @@ Enforced as environment variables on the `performance-qa` service, not as adviso
 | Three.js runtime (gzip) | 190 KB |
 | GLB ideal / blocker | 250 KB / 500 KB |
 
-See [`ARCHITECTURE.md` §4.3](ARCHITECTURE.md#43-performance-budgets) for the complete table and variable names.
+See [`ARCHITECTURE-EN.md` §4.3](ARCHITECTURE-EN.md#43-performance-budgets) for the complete table and variable names.
 
 ---
 
@@ -272,8 +289,8 @@ See [`ARCHITECTURE.md` §4.3](ARCHITECTURE.md#43-performance-budgets) for the co
 
 | Document | Language | Contents |
 | --- | --- | --- |
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | English | Full specification: stack, topology, islands, 3D pipeline, security, compliance, Docker, QA |
-| [`docs/es/ARCHITECTURE.md`](docs/es/ARCHITECTURE.md) | Spanish | 1:1 equivalent of the above |
+| [`ARCHITECTURE-EN.md`](ARCHITECTURE-EN.md) | English | Full specification: stack, topology, islands, 3D pipeline, security, compliance, Docker, QA |
+| [`ARCHITECTURE-ES.md`](ARCHITECTURE-ES.md) | Spanish | 1:1 equivalent of the above |
 | [`docs/adr/`](docs/adr/) | Spanish | 6 architecture decision records |
 | [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Spanish | Operational procedures |
 | [`docs/PRODUCTION_OPERATIONS.md`](docs/PRODUCTION_OPERATIONS.md) | Spanish | Deploy, rollback, monitoring |
@@ -283,13 +300,13 @@ See [`ARCHITECTURE.md` §4.3](ARCHITECTURE.md#43-performance-budgets) for the co
 | [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md) | Spanish | Performance methodology |
 | [`docs/I18N.md`](docs/I18N.md) | Spanish | Internationalisation contract |
 
-> **Note on document placement.** `docs/ARCHITECTURE.md` already exists as a 157-line Spanish summary carrying the project's own control header. Decide whether it is superseded by the pair above or kept as a short-form entry point — and add the control header to whichever files remain, so `npm run internal:docs:lint` passes. See [`ARCHITECTURE.md` §8.1](ARCHITECTURE.md#81-deliverable-path-collision-with-existing-documentation).
+> **Note on document placement.** `docs/ARCHITECTURE.md` already exists as a 157-line Spanish summary carrying the project's own control header. Decide whether it is superseded by the pair above or kept as a short-form entry point — and add the control header to whichever files remain, so `npm run internal:docs:lint` passes. See [`ARCHITECTURE-EN.md` §8.1](ARCHITECTURE-EN.md#81-deliverable-path-collision-with-existing-documentation).
 
 ---
 
 ## Open items
 
-Tracked in detail in [`ARCHITECTURE.md` §8](ARCHITECTURE.md#8-known-limitations-and-architectural-risks). None break the build.
+Tracked in detail in [`ARCHITECTURE-EN.md` §8](ARCHITECTURE-EN.md#8-known-limitations-and-architectural-risks). None break the build.
 
 - **No `/.well-known/security.txt`** (RFC 9116). `SECURITY.md` exists but is not served as a discoverable contact. The `robots.txt.ts` route demonstrates the pattern to add it.
 - **Two conflicting Lighthouse floors** — `browser-qa` sets 0.50, `performance-qa` sets 0.90 desktop. Document which one gates a release.

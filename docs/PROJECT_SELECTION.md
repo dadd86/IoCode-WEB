@@ -15,13 +15,15 @@ Este documento contiene el contrato editorial vigente.
 
 ## Clasificación obligatoria
 
-Antes de redactar, clasificar el proyecto según el modelo real:
+Antes de redactar, clasificar el proyecto según el modelo real (`Project` en
+`src/data/projects.ts`):
 
-- `status`: `public`, `private`, `academic`, `technical-case`, `local-demo`,
-  `documentation-only` o `in-progress`.
-- `evidenceLevel`: tipo de evidencia realmente disponible.
-- `claimLevel`: `verified`, `user-provided`, `technical-demonstration`,
-  `inferred-capability` o `not-publicly-verifiable`.
+- `claimLevel`: `verified` (los artefactos públicos respaldan las
+  afirmaciones técnicas principales) o `technical-demonstration` (los
+  artefactos públicos demuestran una capacidad técnica concreta sin implicar
+  despliegue comercial en producción). No existen otros valores.
+- `evidenceLevel`: no se declara por proyecto; el modelo lo fija
+  automáticamente a `"public-repository"` en `createProject()`.
 - `featured`: decisión editorial, no prueba de calidad.
 
 ### Público
@@ -30,11 +32,10 @@ Puede incluir enlaces solo si el destino es público, estable, pertinente y fue
 revisado. El texto debe distinguir demostración técnica de producto o despliegue
 real.
 
-### Privado o anonimizado
-
-No expone repositorio, cliente, credenciales, IP, topología, tags PLC, capturas,
-datos, métricas ni detalles operativos identificables. Debe llevar una cautela
-explícita y usar `publicLinks: []`.
+El modelo `Project` actual requiere un enlace de repositorio: `publicLinks` se
+genera siempre a partir de `repository` en `createProject()`, sin ninguna
+variante que produzca `publicLinks: []`. Las experiencias confidenciales o sin
+evidencia pública no son elegibles como Project bajo este modelo.
 
 ### Interno, académico, demo local o solo documentación
 
@@ -54,7 +55,7 @@ Puntuar cada criterio de 0 a 5 y conservar la evidencia usada:
 | Seguridad y privacidad | ¿Evita secretos, datos personales y contexto sensible? |
 | Claridad comercial | ¿Explica valor sin promesas no demostradas? |
 | Diferenciación | ¿Añade una señal distinta al resto del portafolio? |
-| Multilingüe | ¿Mantiene alcance y cautelas equivalentes en ES, EN y DE? |
+| Multilingüe | ¿Mantiene el mismo `scope` y nivel de evidencia en ES, EN y DE? |
 
 La media orienta, pero no sustituye los no-go:
 
@@ -77,12 +78,17 @@ No publicar si el proyecto:
 - afirma producción, precisión, ahorro, disponibilidad o impacto sin evidencia;
 - carece de una versión completa en ES, EN o DE;
 - presenta una demo, ejercicio o caso académico como implantación real;
-- contradice su `status`, `evidenceLevel`, `claimLevel` o `scope`.
+- contradice su `evidenceLevel`, `claimLevel` o `scope`.
 
 ## Modelo mínimo de datos
 
-No crear un modelo paralelo en la documentación. La entrada debe cumplir el tipo
-`Project` existente:
+No crear un modelo paralelo en la documentación. El ejemplo siguiente ilustra,
+para un único idioma, los campos que produce el tipo `Project` existente en
+`src/data/projects.ts`: los campos de `copy` (título, resumen, problema,
+solución, etc.) más los campos compartidos del `ProjectSeed` que los envuelve
+(`capabilities`, `claimLevel`, `repository`, `featured`). No es literalmente
+ni `Project` ni `ProjectSeed`: `key` y `path` los deriva `createProject()`, y
+`evidenceLevel`/`publicLinks` se explican debajo.
 
 ```ts
 {
@@ -94,31 +100,39 @@ No crear un modelo paralelo en la documentación. La entrada debe cumplir el tip
   solution: "...",
   technicalRole: "...",
   businessValue: "...",
+  evidenceSummary: "...",
   technologies: ["..."],
   capabilities: ["software-architecture"],
-  status: "technical-case",
-  evidenceLevel: "documentation-only",
   claimLevel: "technical-demonstration",
   scope: "...",
-  publicLinks: [],
-  featured: false
+  repository: "nombre-del-repositorio-en-github",
+  featured: false,
+  seoTitle: "...",
+  seoDescription: "...",
+  keywords: ["..."],
+  imageAlt: "..."
 }
 ```
 
+`evidenceLevel` no se declara por proyecto: el modelo lo fija automáticamente
+a `"public-repository"` en `createProject()`. `schemaType` se repite igual en
+cada copy, pero `createProject()` lo sobrescribe siempre a
+`"SoftwareSourceCode"`, así que su valor por proyecto no tiene efecto.
+
 Los campos de copy se definen para `es`, `en` y `de` en el mismo `ProjectSeed`.
-Tecnologías, capacidades, estado, evidencia, claims, enlaces y `featured` se
-comparten para evitar divergencias entre idiomas.
+Tecnologías, capacidades, claimLevel, enlaces y `featured` se comparten para
+evitar divergencias entre idiomas.
 
 ## Procedimiento de alta
 
 1. Reunir la evidencia disponible y registrar su origen.
 2. Aplicar clasificación, puntuación y no-go.
-3. Definir `status`, `evidenceLevel` y `claimLevel` sin elevar el alcance real.
-4. Redactar problema, solución, rol, valor y cautela en ES, EN y DE.
+3. Definir `claimLevel` sin elevar el alcance real.
+4. Redactar problema, solución, rol, valor y `scope` en ES, EN y DE.
 5. Añadir enlaces solo después de comprobar acceso público y contenido.
 6. Crear el `ProjectSeed` en `src/data/projects.ts`.
-7. Revisar que `toProject()` produzca las tres variantes completas.
-8. Verificar que claims, tecnologías, enlaces y cautelas sean coherentes.
+7. Revisar que `createProject()` produzca las tres variantes completas.
+8. Verificar que claims, tecnologías, enlaces y `scope` sean coherentes.
 9. Probar la tarjeta/página en los tres idiomas y todos los tamaños soportados.
 10. Ejecutar los gates indicados al final.
 
@@ -141,8 +155,7 @@ Responsable de revisión:
 Fecha:
 Origen de evidencia:
 
-Status:
-EvidenceLevel:
+EvidenceLevel: public-repository (fijo, no editable)
 ClaimLevel:
 
 Relevancia:          /5

@@ -2,7 +2,7 @@
 import type { Locale } from "../i18n/config";
 import type { SkillGroup } from "../data/skills";
 import { getProjectByKey } from "../data/projects";
-import { getLocalizedPath } from "../i18n/routes";
+import { getLocalizedPath, routeAlternates } from "../i18n/routes";
 
 type Props = {
   skill: SkillGroup;
@@ -26,7 +26,10 @@ const { skill, labels, locale, tabId, active = false } = Astro.props;
   data-page-control-panel={tabId ? "" : undefined}
 >
   <div class="skillBlock__header">
-    <p class="skillBlock__intent">{labels.skillSearchIntent}</p>
+    {/* The eyebrow shows the skill's own proficiency level rather than the
+       internal `searchIntent` SEO field, which stays in the data model for
+       governance/testing but is never rendered to visitors. */}
+    <p class="skillBlock__intent">{skill.proficiency}</p>
     <h2>{skill.title}</h2>
   </div>
 
@@ -42,17 +45,10 @@ const { skill, labels, locale, tabId, active = false } = Astro.props;
     </div>
 
     <div>
-      <dt>{labels.skillProficiency}</dt>
-      <dd>{skill.proficiency}</dd>
-    </div>
-
-    <div>
       <dt>{labels.skillEvidence}</dt>
       <dd>{skill.evidence}</dd>
     </div>
   </dl>
-
-  <p class="skillBlock__searchIntent">{skill.searchIntent}</p>
 
   <section class="skillBlock__section" aria-label={labels.skillTechnologies}>
     <h3>{labels.skillTechnologies}</h3>
@@ -72,23 +68,28 @@ const { skill, labels, locale, tabId, active = false } = Astro.props;
     <h3>{labels.skillRelatedServices}</h3>
     <div class="skillLinks">
       {skill.relatedServices.map((routeKey) => (
-        <a href={getLocalizedPath(routeKey, locale)}>{routeKey}</a>
+        <a href={getLocalizedPath(routeKey, locale)}>{routeAlternates[routeKey].label[locale]}</a>
       ))}
     </div>
   </section>
 
-  <section class="skillBlock__section" aria-label={labels.skillRelatedProjects}>
-    <h3>{labels.skillRelatedProjects}</h3>
-    <div class="skillLinks">
-      {skill.relatedProjects.map((projectKey) => (
-        <a href={getProjectByKey(projectKey, locale).path}>
-          {getProjectByKey(projectKey, locale).title}
-        </a>
-      ))}
-    </div>
-  </section>
+  {skill.relatedProjects.length > 0 && (
+    <section class="skillBlock__section" aria-label={labels.skillRelatedProjects}>
+      <h3>{labels.skillRelatedProjects}</h3>
+      <div class="skillLinks">
+        {skill.relatedProjects.map((projectKey) => {
+          const relatedProject = getProjectByKey(projectKey, locale);
+          return (
+            <a href={relatedProject.path}>
+              {relatedProject.title}
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )}
 
-  <p class="skillCaution">
+  <p class="skillScope">
     <strong>{labels.scope}</strong>
     {skill.scope}
   </p>

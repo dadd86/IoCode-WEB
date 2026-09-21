@@ -1056,6 +1056,10 @@ textarea.input {
 
 .servicePathCard {
   display: grid;
+  /* 3 direct children (header, tag list, button): the middle row absorbs
+     whatever extra height the outer grid stretch adds, so the button always
+     lands on a shared bottom line regardless of title/description length. */
+  grid-template-rows: auto 1fr auto;
   align-content: start;
   gap: 1.1rem;
   padding: clamp(1.2rem, 2.6vw, 1.7rem);
@@ -1069,6 +1073,12 @@ textarea.input {
 .servicePathCard ul {
   display: flex;
   flex-wrap: wrap;
+  /* The tag grid row is 1fr (see .servicePathCard above), so it absorbs
+     whatever height the header's variable title/description adds. Packing
+     tags to the end keeps the leftover space above them, anchoring the tag
+     block's bottom edge — and the gap before the CTA — at the same height
+     across every card in a row, regardless of description length. */
+  align-content: flex-end;
   gap: 0.5rem;
   list-style: none;
 }
@@ -1089,6 +1099,11 @@ textarea.input {
 .servicePathCard .button {
   justify-self: start;
   margin-top: 0.25rem;
+  /* A wrapped CTA label grows only that card's button row, which shifts the
+     shared tags-bottom anchor point (see .servicePathCard ul) out of line
+     with its row siblings. Reverted below, where each card is alone in its
+     row and the button is already full-width. */
+  white-space: nowrap;
 }
 
 .evidencePanel {
@@ -1124,6 +1139,7 @@ textarea.input {
 
   .servicePathCard .button {
     width: 100%;
+    white-space: normal;
   }
 }
 
@@ -1505,7 +1521,8 @@ textarea.input {
   padding-bottom: clamp(4rem, 8vw, 7rem);
 }
 
-.processCta__panel {
+.processCta__panel,
+.portfolioCta__panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.5rem, 4vw, 3rem);
@@ -1519,7 +1536,14 @@ textarea.input {
   box-shadow: var(--shadow-card);
 }
 
-.processCta__panel h2 {
+/* Reuses the Process page's CTA panel visuals; the Projects page has no
+   preceding dedicated CTA section, so it needs its own top spacing. */
+.portfolioCta__panel {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+}
+
+.processCta__panel h2,
+.portfolioCta__panel h2 {
   margin: 0 0 0.75rem;
   max-width: 20ch;
   font-size: clamp(1.8rem, 4vw, 3.2rem);
@@ -1527,7 +1551,8 @@ textarea.input {
   letter-spacing: -0.055em;
 }
 
-.processCta__panel p {
+.processCta__panel p,
+.portfolioCta__panel p {
   max-width: 68ch;
   color: var(--color-text-muted);
   line-height: 1.75;
@@ -1535,7 +1560,8 @@ textarea.input {
 
 @media (max-width: 980px) {
   .processHero__grid,
-  .processCta__panel {
+  .processCta__panel,
+  .portfolioCta__panel {
     grid-template-columns: 1fr;
   }
 
@@ -1606,7 +1632,8 @@ textarea.input {
   }
 
   .processCta__panel .buttonGroup,
-  .processCta__panel .button {
+  .processCta__panel .button,
+  .portfolioCta__panel .button {
     width: 100%;
   }
 }
@@ -1667,8 +1694,7 @@ textarea.input {
   text-transform: uppercase;
 }
 
-.skillBlock__searchIntent,
-.skillCaution {
+.skillScope {
   color: var(--color-text-muted);
 }
 

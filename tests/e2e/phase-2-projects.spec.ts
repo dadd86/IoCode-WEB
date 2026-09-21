@@ -22,7 +22,11 @@ const forbiddenTexts = [
   "review rating",
   "cliente real",
   "producción certificada",
-  "mejora del"
+  "mejora del",
+  // Internal governance enums must never render raw; the status chip and
+  // evidence list show localized human labels instead.
+  "public-repository",
+  "technical-demonstration"
 ];
 
 test.describe("Fase 2 - Proyectos como evidencia comercial", () => {
@@ -56,9 +60,10 @@ test.describe("Fase 2 - Proyectos como evidencia comercial", () => {
 
         expect(text.length).toBeGreaterThan(300);
 
-        expect(text.toLowerCase()).toMatch(/problem|problema|lösung|solution|solución/);
-        expect(text.toLowerCase()).toMatch(/evidence|evidencia|nachweis/);
-        expect(text.toLowerCase()).toMatch(/scope|alcance|anwendungsbereich/);
+        expect(text.toLowerCase()).toMatch(/problem|problema|lösung|solution|solución|challenge|reto|herausforderung/);
+        expect(text.toLowerCase()).toMatch(/evidence|evidencia|nachweis|inspect|revisar/);
+        expect(text.toLowerCase()).toMatch(/in practice|en la práctica|in der praxis/);
+        expect(text.toLowerCase()).toMatch(/verified code|código verificable|prüfbarer code|technical demonstration|demostración técnica|technische demonstration/);
 
         const links = card.locator("a");
 

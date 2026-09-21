@@ -26,8 +26,17 @@ const forbiddenTexts = [
   "review rating",
   "cliente real",
   "producción certificada",
-  "mejora del"
+  "mejora del",
+  // searchIntent is internal SEO governance metadata and must never reach
+  // customer-facing copy.
+  "search intent",
+  "intención de búsqueda",
+  "suchintention"
 ];
+
+// Raw i18n route keys must never leak as link text; SkillCard must render
+// the localized route label instead.
+const rawRouteKeys = ["plc", "robotics", "services", "process", "contact", "skills", "projects", "privacy", "home", "about", "imprint"];
 
 function normalizeText(value: string): string {
   return value
@@ -92,6 +101,13 @@ test.describe("Fase 3 - Habilidades por intención de búsqueda", () => {
           if (href) {
             expect(href.startsWith("/") || href.startsWith("https://")).toBe(true);
           }
+
+          // Case-sensitive on purpose: several EN route labels are properly
+          // capitalized versions of their key ("Services" vs "services"),
+          // which must not be confused with the raw, unlocalized key itself.
+          const linkText = (await link.innerText()).trim();
+
+          expect(rawRouteKeys.includes(linkText)).toBe(false);
         }
       }
     });

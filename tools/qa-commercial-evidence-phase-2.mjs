@@ -349,12 +349,16 @@ if (!cardSource.includes("project.businessValue")) {
   routesErrors.push("ProjectCard no muestra project.businessValue.");
 }
 
-if (!cardSource.includes("project.evidenceLevel")) {
-  routesErrors.push("ProjectCard no muestra project.evidenceLevel.");
+// evidenceLevel is a fixed internal governance value ("public-repository")
+// redundant with the visible GitHub link; it must not be rendered raw.
+if (cardSource.includes("project.evidenceLevel")) {
+  routesErrors.push("ProjectCard expone project.evidenceLevel como copy pública; debe permanecer interno.");
 }
 
+// claimLevel is used to select a localized status-chip label, not displayed
+// as a raw enum value.
 if (!cardSource.includes("project.claimLevel")) {
-  routesErrors.push("ProjectCard no muestra project.claimLevel.");
+  routesErrors.push("ProjectCard no usa project.claimLevel para el estado localizado.");
 }
 
 if (!pageSource.includes("ItemList") || !pageSource.includes("project.schemaType")) {

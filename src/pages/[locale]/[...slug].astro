@@ -9,6 +9,7 @@ import PageControl from "../../components/PageControl.astro";
 import ContactForm from "../../components/ContactForm.astro";
 import BusinessValueSections from "../../components/BusinessValueSections.astro";
 import ProcessMethod from "../../components/ProcessMethod.astro";
+import Button from "../../components/Button.astro";
 import LegalPage from "../../components/LegalPage.astro";
 import { pageContent } from "../../data/pageContent";
 import { portfolioPageCopy, projects } from "../../data/projects";
@@ -146,6 +147,19 @@ const skillStructuredData =
             />
           ))}
         </PageControl>
+
+        {/* Confidential/industrial work has no public repository, so it is
+           routed to Contact rather than modeled as a ninth Project. */}
+        <div class="portfolioCta__panel">
+          <div>
+            <h2>{portfolioPageCopy[locale].confidentialCta.heading}</h2>
+            <p>{portfolioPageCopy[locale].confidentialCta.text}</p>
+          </div>
+          <Button
+            href={getLocalizedPath("contact", locale)}
+            label={portfolioPageCopy[locale].confidentialCta.ctaLabel}
+          />
+        </div>
       </div>
     </section>
   ) : null}

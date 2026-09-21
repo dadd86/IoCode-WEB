@@ -263,6 +263,12 @@ Five CSS files under `src/assets/`, layered by scope: `tokens.css` (design token
 
 Content lives in ten typed TypeScript modules under `src/data/` — `site`, `navigation`, `pageContent`, `projects`, `skills`, `contact`, `legal`, `heroPanels`, `processSections`, `phase1Sections`. Content is therefore type-checked and refactorable, at the cost of requiring a rebuild to change copy. There is no CMS and no content collection.
 
+### 3.5 Skills and Projects content model
+
+`src/data/skills.ts` and `src/data/projects.ts` encode two distinct evidence shapes. A `SkillGroup` (skills.ts) is aggregated capability evidence spanning zero or more repositories: its `relatedProjects` array links to entries in `projects.ts`, and an empty array is a valid, intentional state — it means no current repository substantively demonstrates that capability, not a missing link (see `industrial-automation` in `skills.ts`, whose evidence is professional experience and certificates only). A `Project` (projects.ts) is individual implementation evidence for a single repository; `createProject()` derives it from an author-facing `ProjectSeed`, hardcoding `evidenceLevel: "public-repository"` and the canonical `https://github.com/dadd86/${seed.repository}` link so the seed cannot omit or fork the repository reference.
+
+Both modules carry fields that exist for SEO/editorial governance and are never rendered as raw strings: `SkillGroup.searchIntent` (sourced per locale from `SkillSeed.copy[locale].searchIntent`), `Project.evidenceLevel`, `Project.claimLevel`. Components either omit them entirely or resolve them into localized, human-readable copy — `ProjectCard.astro` maps `claimLevel` to `labels.claimLevelVerified` / `labels.claimLevelTechnicalDemonstration` (`src/i18n/ui.ts`) instead of printing the enum value. Likewise, related-link labels are resolved through `routeAlternates[key].label[locale]` (`src/i18n/routes.ts`) rather than the raw route key, so a related-service link always renders the localized label. `tools/qa-search-intent-skills-phase-3.mjs`, `tools/qa-commercial-evidence-phase-2.mjs`, and the Playwright suites `tests/e2e/phase-2-projects.spec.ts` / `tests/e2e/phase-3-skills.spec.ts` assert these internal identifiers never appear as literal substrings in rendered page text.
+
 ---
 
 ## 4. 3D Rendering and Performance Pipeline

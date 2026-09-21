@@ -263,6 +263,12 @@ Cinco ficheros CSS bajo `src/assets/`, estratificados por ámbito: `tokens.css` 
 
 El contenido reside en diez módulos TypeScript tipados bajo `src/data/` — `site`, `navigation`, `pageContent`, `projects`, `skills`, `contact`, `legal`, `heroPanels`, `processSections`, `phase1Sections`. El contenido queda por tanto verificado por tipos y es refactorizable, al coste de exigir una recompilación para cambiar un texto. No hay CMS ni content collection.
 
+### 3.5 Modelo de contenido de Skills y Projects
+
+`src/data/skills.ts` y `src/data/projects.ts` codifican dos formas de evidencia distintas. Un `SkillGroup` (skills.ts) es evidencia de capacidad agregada, que puede abarcar cero o más repositorios: su array `relatedProjects` enlaza con entradas de `projects.ts`, y un array vacío es un estado válido e intencional — significa que ningún repositorio actual demuestra de forma sustantiva esa capacidad, no un enlace olvidado (ver `industrial-automation` en `skills.ts`, cuya evidencia es experiencia profesional y certificados únicamente). Un `Project` (projects.ts) es evidencia de implementación individual para un único repositorio; `createProject()` lo deriva de un `ProjectSeed` de cara al autor, fijando `evidenceLevel: "public-repository"` y el enlace canónico `https://github.com/dadd86/${seed.repository}`, de modo que el seed no puede omitir ni alterar la referencia al repositorio.
+
+Ambos módulos incluyen campos que existen para gobernanza SEO/editorial y que nunca se renderizan como texto plano: `SkillGroup.searchIntent` (procedente, por idioma, de `SkillSeed.copy[locale].searchIntent`), `Project.evidenceLevel`, `Project.claimLevel`. Los componentes los omiten por completo o los resuelven en copy localizado y legible — `ProjectCard.astro` traduce `claimLevel` a `labels.claimLevelVerified` / `labels.claimLevelTechnicalDemonstration` (`src/i18n/ui.ts`) en lugar de imprimir el valor del enum. Del mismo modo, las etiquetas de enlaces relacionados se resuelven mediante `routeAlternates[key].label[locale]` (`src/i18n/routes.ts`) en vez de la clave de ruta en crudo, de modo que un enlace de servicio relacionado siempre muestra la etiqueta localizada. `tools/qa-search-intent-skills-phase-3.mjs`, `tools/qa-commercial-evidence-phase-2.mjs` y las suites de Playwright `tests/e2e/phase-2-projects.spec.ts` / `tests/e2e/phase-3-skills.spec.ts` verifican que estos identificadores internos nunca aparezcan como subcadena literal en el texto renderizado de la página.
+
 ---
 
 ## 4. Renderizado 3D y pipeline de rendimiento

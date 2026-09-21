@@ -155,7 +155,7 @@ if (skillGroups) {
         }
       }
 
-      for (const field of ["searchIntent", "businessProblem", "businessValue", "scope"]) {
+      for (const field of ["searchIntent", "businessProblem", "businessValue", "evidence", "scope"]) {
         if (typeof skill[field] !== "string" || skill[field].trim().length < 35) {
           modelErrors.push(`${locale}/${skill.title}: ${field} debe ser texto explícito.`);
         }
@@ -173,8 +173,13 @@ if (skillGroups) {
         modelErrors.push(`${locale}/${skill.title}: relatedServices debe tener al menos 1 elemento.`);
       }
 
-      if (!Array.isArray(skill.relatedProjects) || skill.relatedProjects.length < 1) {
-        modelErrors.push(`${locale}/${skill.title}: relatedProjects debe tener al menos 1 elemento.`);
+      // Not every skill needs a related project: professional experience and
+      // certificates (checked above via the `evidence` field's minimum
+      // length) are legitimate evidence on their own. relatedProjects only
+      // needs to be an array — TypeScript's ProjectKey union already
+      // guarantees every entry references a real project.
+      if (!Array.isArray(skill.relatedProjects)) {
+        modelErrors.push(`${locale}/${skill.title}: relatedProjects debe ser un array.`);
       }
 
       const searchableText = JSON.stringify(skill);
@@ -252,6 +257,37 @@ if (skillGroups) {
   if (esTitles === enTitles || enTitles === deTitles || esTitles === deTitles) {
     i18nErrors.push("Los títulos ES/EN/DE parecen no estar localizados.");
   }
+
+  // Evidence-diversity contract: relatedProjects is locale-independent, so a
+  // single locale's array is enough to verify the aggregated capability model
+  // does not regress to citing only one or two portfolio projects.
+  //
+  // The threshold is a SHARE of the portfolio, not a fixed count, and the
+  // share is deliberately 0.5 rather than 1.0: the regression this guards
+  // against concentrated evidence in 2 of 8 projects (25%), so 50% clears
+  // that failure state with a wide margin while staying well short of
+  // forcing every skill to cite most/all projects (which would itself
+  // incentivize the fabricated associations this contract exists to catch —
+  // see Section 16/20 of the portfolio repositioning task). Not every
+  // project needs a skill: industrial skills legitimately rely on declared
+  // professional experience rather than portfolio code.
+  //
+  // CURRENT_PORTFOLIO_PROJECT_COUNT must be kept in sync with the number of
+  // ProjectKey variants in src/data/projects.ts — it is not derived
+  // dynamically, to avoid coupling this skills-only QA script to the
+  // projects data model for a single constant.
+  const CURRENT_PORTFOLIO_PROJECT_COUNT = 8;
+  const MIN_DIVERSE_PROJECT_SHARE = 0.5;
+
+  const allRelatedProjects = skillGroups.es.flatMap((skill) => skill.relatedProjects);
+  const uniqueRelatedProjects = new Set(allRelatedProjects);
+  const minDiverseProjects = Math.ceil(CURRENT_PORTFOLIO_PROJECT_COUNT * MIN_DIVERSE_PROJECT_SHARE);
+
+  if (uniqueRelatedProjects.size < minDiverseProjects) {
+    modelErrors.push(
+      `Evidencia de Skills concentrada en muy pocos proyectos (${uniqueRelatedProjects.size} únicos); se esperan al menos ${minDiverseProjects} de los ${CURRENT_PORTFOLIO_PROJECT_COUNT} proyectos del portfolio.`
+    );
+  }
 }
 
 const routeSource = existsSync("src/i18n/routes.ts") ? readFileSync("src/i18n/routes.ts", "utf8") : "";
@@ -269,7 +305,6 @@ for (const requiredRoute of ["/es/habilidades/", "/en/skills/", "/de/faehigkeite
 }
 
 for (const requiredCardToken of [
-  "skill.searchIntent",
   "skill.businessProblem",
   "skill.businessValue",
   "skill.useCases",
@@ -282,6 +317,13 @@ for (const requiredCardToken of [
   if (!cardSource.includes(requiredCardToken)) {
     routesErrors.push(`SkillCard no muestra ${requiredCardToken}.`);
   }
+}
+
+// searchIntent is internal SEO governance metadata, not customer-facing copy:
+// it must remain in the data model (for SEO tooling) but must never be
+// rendered by SkillCard.
+if (cardSource.includes("skill.searchIntent")) {
+  routesErrors.push("SkillCard expone skill.searchIntent como copy pública; searchIntent debe permanecer interno.");
 }
 
 if (!pageSource.includes("skillStructuredData")) {

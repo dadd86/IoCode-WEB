@@ -1,5 +1,5 @@
 ---
-import type { Project } from "../data/projects";
+import type { Project, ProjectCapability } from "../data/projects";
 
 type Props = {
   project: Project;
@@ -10,6 +10,20 @@ type Props = {
 };
 
 const { project, labels, tabId, active = false, detailHref } = Astro.props;
+
+// ProjectCapability is an internal kebab-case slug; map it to the matching
+// `labels.capability*` key so the tag never renders the raw identifier.
+const capabilityLabelKeys: Record<ProjectCapability, string> = {
+  "industrial-web": "capabilityIndustrialWeb",
+  "mobile-development": "capabilityMobileDevelopment",
+  "devsecops-docker": "capabilityDevsecopsDocker",
+  "database-design": "capabilityDatabaseDesign",
+  "software-architecture": "capabilitySoftwareArchitecture",
+  "java-oop": "capabilityJavaOop",
+  "quality-assurance": "capabilityQualityAssurance",
+  "erp-integration": "capabilityErpIntegration",
+  "python-development": "capabilityPythonDevelopment"
+};
 ---
 
 <article
@@ -24,7 +38,12 @@ const { project, labels, tabId, active = false, detailHref } = Astro.props;
 >
   <div class="projectCard__top">
     <span class="projectCard__type">{project.type}</span>
-    <span class="projectCard__status">{project.claimLevel}</span>
+    {/* claimLevel is an internal governance enum; the chip shows its
+       human-readable label instead of the raw "verified"/"technical-demonstration"
+       value. */}
+    <span class="projectCard__status">
+      {project.claimLevel === "verified" ? labels.claimLevelVerified : labels.claimLevelTechnicalDemonstration}
+    </span>
   </div>
 
   <div class="projectCard__body">
@@ -57,16 +76,6 @@ const { project, labels, tabId, active = false, detailHref } = Astro.props;
         <dt>{labels.projectEvidenceSummary}</dt>
         <dd>{project.evidenceSummary}</dd>
       </div>
-
-      <div>
-        <dt>{labels.projectEvidenceLevel}</dt>
-        <dd>{project.evidenceLevel}</dd>
-      </div>
-
-      <div>
-        <dt>{labels.projectClaimLevel}</dt>
-        <dd>{project.claimLevel}</dd>
-      </div>
     </dl>
 
     <div class="tagList" aria-label={labels.projectTechnologies}>
@@ -77,7 +86,7 @@ const { project, labels, tabId, active = false, detailHref } = Astro.props;
 
     <div class="tagList" aria-label={labels.projectCapabilities}>
       {project.capabilities.map((capability) => (
-        <span class="tag tag--secondary">{capability}</span>
+        <span class="tag tag--secondary">{labels[capabilityLabelKeys[capability]]}</span>
       ))}
     </div>
 
